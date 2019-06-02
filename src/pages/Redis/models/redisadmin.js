@@ -65,7 +65,7 @@ export default {
     *fetchKeyValue({ payload, callback  }, { call, put }) {
       const response = yield call(queryRedisKeyValue, payload);
       yield put({
-        type: 'save',
+        type: 'saveKeyValue',
         payload: response,
       });
       if (callback) callback();
@@ -85,6 +85,13 @@ export default {
       return {
         ...state,
         ...payload,
+      };
+    },
+    saveKeyValue(state, action) {
+      state.keyValue = action.payload.keyValue;
+      return {
+        ...state,
+        ...action.payload,
       };
     },
   },

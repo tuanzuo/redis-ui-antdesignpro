@@ -17,6 +17,7 @@ import {
   message,
   Descriptions,
   Typography,
+  Drawer,
 } from 'antd';
 
 import {findDOMNode} from "react-dom";
@@ -35,14 +36,20 @@ const formItemLayout = {
   },
 };
 
+// RedisDataUpdate对象
+let RedisDataUpdateObject;
 // RedisData对象
 let RedisDataObject;
-// 当前redis的id
+// 当前redis页面的id
 let id;
-// 搜索的value
+// 搜索的key
 let searchKeyConst = {};
 // 当前checked的节点
 let currentCheckedKeys = [];
+// 当前选中的叶子节点
+let currentKey=[];
+// 当前选中的叶子节点对应的value
+let currentKeyValue={};
 
 @connect(({redisadmin, loading}) => ({
   redisadmin,
@@ -84,6 +91,11 @@ class SearchForm extends PureComponent {
     searchKeyConst = {};
     const searchParam = {id, ...searchKeyConst};
     RedisDataObject.searchKeyList(searchParam);
+  };
+
+  // 显示修改keyValue的抽屉页面
+  showEditDrawer = () =>{
+    RedisDataUpdateObject.showDrawer();
   };
 
   // 删除选中的节点
@@ -136,7 +148,7 @@ class SearchForm extends PureComponent {
                   </Button>
                 </Col>
                 <Col span={3}>
-                  <Button onClick={this.handleFormReset}>
+                  <Button onClick={this.showEditDrawer}>
                     修改
                   </Button>
                 </Col>
@@ -154,10 +166,152 @@ class SearchForm extends PureComponent {
   }
 }
 
-// 当前选中的叶子节点
-let currentKey=[];
-// 当前选中的叶子节点对应的value
-let currentKeyValue;
+
+@connect(({redisadmin, loading}) => ({
+  redisadmin,
+  loading: loading.models.redisadmin,
+}))
+@Form.create({name: 'redisDataUpdate'})
+class RedisDataUpdateForm extends React.Component {
+  state = {
+    visible: false,
+    drawerTitle: "",
+    data: {},
+  };
+
+  // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
+  componentDidMount() {
+    console.log(this.state)
+
+    console.log("redis-dataupdate-init")
+    const { dispatch } = this.props;
+
+    // 初始化后把当前对象保存到RedisDataUpdateObject变量中去
+    RedisDataUpdateObject = this;
+
+  };
+
+  // 显示keyValue修改的抽屉页面
+  showDrawer = () => {
+    console.log("drawer", currentKey, currentKeyValue);
+    let currentKeyOne = {};
+    if(currentKey && currentKey.length>0){
+      // eslint-disable-next-line prefer-destructuring
+      currentKeyOne = currentKey[0];
+      console.log(currentKeyOne);
+    } else {
+      message.warning('请先选中一个key!');
+    }
+
+    if (currentKeyOne.title && currentKeyOne.keyType) {
+      let titleName = currentKeyOne.title;
+      if (titleName && titleName.length > 60) {
+        titleName = titleName.substr(0, 60) + "...";
+      }
+      titleName = "修改" + titleName + "(" + currentKeyOne.keyType.toUpperCase() + ")";
+      this.setState({
+        drawerTitle: titleName,
+        visible: true,
+        data: {
+          key: currentKeyOne.dataRef.key,
+          keyType: currentKeyOne.keyType,
+          expireTime: currentKeyValue.expireTime,
+          keyValue: currentKeyValue.value,
+        },
+      });
+    }
+  };
+
+  onClose = () => {
+    this.setState({
+      visible: false,
+    });
+  };
+
+  render() {
+    const { getFieldDecorator } = this.props.form;
+    const {data} = this.state;
+    return (
+      <div>
+        <Drawer
+          title={this.state.drawerTitle}
+          width={720}
+          onClose={this.onClose}
+          visible={this.state.visible}
+        >
+          <Form layout="vertical" hideRequiredMark>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item label="key">
+                  {getFieldDecorator('key', {
+                    rules: [{ required: true, message: 'Please enter key name' }],
+                    initialValue: data.key,
+                  })(<Input placeholder="Please enter key name" />)}
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="ttl(s)">
+                  {getFieldDecorator('expireTime', {
+                    rules: [{ required: true, message: 'Please enter ttl' }],
+                    initialValue: data.expireTime,
+                  })(
+                    <Input
+                      style={{ width: '100%' }}
+                      placeholder="Please enter ttl"
+                    />,
+                  )}
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={12}>
+
+              </Col>
+              <Col span={12}>
+
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item label="Description">
+                  {getFieldDecorator('description', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'please enter url description',
+                      },
+                    ],
+                    initialValue: JSON.stringify(data.keyValue),
+                  })(<Input.TextArea rows={4} placeholder="please enter url description" />)}
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              bottom: 0,
+              width: '100%',
+              borderTop: '1px solid #e9e9e9',
+              padding: '10px 16px',
+              background: '#fff',
+              textAlign: 'right',
+            }}
+          >
+            <Button onClick={this.onClose} style={{ marginRight: 8 }}>
+              Cancel
+            </Button>
+            <Button onClick={this.onClose} type="primary">
+              Submit
+            </Button>
+          </div>
+        </Drawer>
+      </div>
+    );
+  }
+}
+
 
 @connect(({redisadmin, loading}) => ({
   redisadmin,
@@ -226,7 +380,8 @@ class RedisData extends PureComponent {
     });
   };
 
-  searchKeyValue = (params) => {
+  // 查询key对应的value
+  searchKeyValue = (params,node) => {
     const {dispatch} = this.props;
     dispatch({
       type: 'redisadmin/fetchKeyValue',
@@ -239,8 +394,12 @@ class RedisData extends PureComponent {
         const {keyValue} = redisadmin;
         currentKeyValue = keyValue;
         console.log(currentKeyValue);
-        console.log(typeof currentKeyValue);
-        console.log(typeof currentKeyValue === 'string');
+        console.log(currentKeyValue.expireTime);
+        console.log(currentKeyValue.value);
+        console.log(typeof currentKeyValue.value);
+        console.log(typeof currentKeyValue.value === 'string');
+
+        currentKey[0] = node.props;
       },
     });
   };
@@ -309,7 +468,6 @@ class RedisData extends PureComponent {
     console.log(info.node);
     console.log(info.node.props);
     console.log(info.node.props.eventKey);
-    // currentKey[0] = info.node.props.eventKey;
 
     // 是叶子节点才给当前key设置值
     if (info.node.props.isLeaf) {
@@ -319,8 +477,7 @@ class RedisData extends PureComponent {
         keyType: info.node.props.keyType,
       };
       console.log(params);
-      this.searchKeyValue(params);
-      currentKey[0] = info.node.props;
+      this.searchKeyValue(params,info.node);
     } else {
       this.initCurrentKeyForNull();
     }
@@ -390,13 +547,14 @@ class RedisData extends PureComponent {
     const contentRight = currentKey.map((k, index) => (
       <Card bordered={false} key={k.eventKey}>
         <p key={k.eventKey + 0}>type：{k.keyType.toUpperCase()}</p>
+        <p key={k.eventKey + 1}>ttl：{currentKeyValue.expireTime ? currentKeyValue.expireTime : ""}(s)</p>
         <Paragraph ellipsis={{rows: 1, expandable: true}}>
           key：{k.eventKey}
         </Paragraph>
         <p key={k.eventKey + 3}>
-          value：{typeof currentKeyValue === 'string' ? currentKeyValue : JSON.stringify(currentKeyValue)}
+          value：{currentKeyValue.value && typeof currentKeyValue.value === 'string' ? currentKeyValue.value : JSON.stringify(currentKeyValue.value)}
         </p>
-        <ReactJson name="JsonValue" src={currentKeyValue} displayDataTypes={false} theme="monokai" />
+        <ReactJson name="JsonValue" src={currentKeyValue.value ? currentKeyValue.value : ""} displayDataTypes={false} theme="monokai" />
       </Card>
     ));
 
@@ -429,6 +587,7 @@ class RedisData extends PureComponent {
               {contentRight}
             </Col>
           </Row>
+          <RedisDataUpdateForm />
         </div>
       </Card>
     );
