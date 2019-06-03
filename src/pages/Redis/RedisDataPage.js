@@ -18,6 +18,7 @@ import {
   Descriptions,
   Typography,
   Drawer,
+  Spin,
 } from 'antd';
 
 import {findDOMNode} from "react-dom";
@@ -203,18 +204,18 @@ class RedisDataUpdateForm extends React.Component {
       message.warning('请先选中一个key!');
     }
 
-    if (currentKeyOne.title && currentKeyOne.keyType) {
+    if (currentKeyOne.title && currentKeyValue.keyType) {
       let titleName = currentKeyOne.title;
       if (titleName && titleName.length > 60) {
         titleName = titleName.substr(0, 60) + "...";
       }
-      titleName = "修改" + titleName + "(" + currentKeyOne.keyType.toUpperCase() + ")";
+      titleName = "修改" + titleName + "(" + currentKeyValue.keyType.toUpperCase() + ")";
       this.setState({
         drawerTitle: titleName,
         visible: true,
         data: {
           key: currentKeyOne.dataRef.key,
-          keyType: currentKeyOne.keyType,
+          keyType: currentKeyValue.keyType,
           expireTime: currentKeyValue.expireTime,
           keyValue: currentKeyValue.value,
         },
@@ -327,7 +328,10 @@ class RedisData extends PureComponent {
     { title: 'Tree Node', key: '2', isLeaf: true },
     ], */
     treeData: [],
-    visible: false, done: false
+    visible: false,
+    done: false,
+    treeLoading: true, // 开启tree加载中
+    keyValueLoading: false, // 关闭keyValue加载中
   };
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
@@ -371,6 +375,7 @@ class RedisData extends PureComponent {
         const {keyList} = redisadmin;
         this.setState({
           treeData: keyList,
+          treeLoading: false, // 关闭加载中
         });
         // 还原currentKey为空
         this.initCurrentKeyForNull();
@@ -382,6 +387,9 @@ class RedisData extends PureComponent {
 
   // 查询key对应的value
   searchKeyValue = (params,node) => {
+    this.setState({
+      keyValueLoading: true, // 开启加载中
+    });
     const {dispatch} = this.props;
     dispatch({
       type: 'redisadmin/fetchKeyValue',
@@ -391,14 +399,11 @@ class RedisData extends PureComponent {
         const {
           redisadmin,
         } = this.props;
+        this.setState({
+          keyValueLoading: false, // 关闭加载中
+        });
         const {keyValue} = redisadmin;
         currentKeyValue = keyValue;
-        console.log(currentKeyValue);
-        console.log(currentKeyValue.expireTime);
-        console.log(currentKeyValue.value);
-        console.log(typeof currentKeyValue.value);
-        console.log(typeof currentKeyValue.value === 'string');
-
         currentKey[0] = node.props;
       },
     });
@@ -457,6 +462,7 @@ class RedisData extends PureComponent {
   initTreeData = () => {
     this.setState({
       treeData: [],
+      treeLoading: true, // 开启加载中
     });
   };
 
@@ -474,10 +480,9 @@ class RedisData extends PureComponent {
       const params = {
         id,
         searchKey: info.node.props.eventKey,
-        keyType: info.node.props.keyType,
       };
       console.log(params);
-      this.searchKeyValue(params,info.node);
+      this.searchKeyValue(params, info.node);
     } else {
       this.initCurrentKeyForNull();
     }
@@ -546,7 +551,7 @@ class RedisData extends PureComponent {
 
     const contentRight = currentKey.map((k, index) => (
       <Card bordered={false} key={k.eventKey}>
-        <p key={k.eventKey + 0}>type：{k.keyType.toUpperCase()}</p>
+        <p key={k.eventKey + 0}>type：{currentKeyValue.keyType.toUpperCase()}</p>
         <p key={k.eventKey + 1}>ttl：{currentKeyValue.expireTime ? currentKeyValue.expireTime : ""}(s)</p>
         <Paragraph ellipsis={{rows: 1, expandable: true}}>
           key：{k.eventKey}
@@ -577,14 +582,18 @@ class RedisData extends PureComponent {
           </Row>
           <Row>
             <Col span={10} className={styles.treeContainer}>
-              <Card bordered={false}>
-                <Tree checkable showLine loadData={this.onLoadData} onSelect={this.onSelect} onCheck={this.onCheck}>
-                  {this.renderTreeNodes(this.state.treeData)}
-                </Tree>
-              </Card>
+              <Spin spinning={this.state.treeLoading} delay={500}>
+                <Card bordered={false}>
+                  <Tree checkable showLine loadData={this.onLoadData} onSelect={this.onSelect} onCheck={this.onCheck}>
+                    {this.renderTreeNodes(this.state.treeData)}
+                  </Tree>
+                </Card>
+              </Spin>
             </Col>
             <Col span={14}>
-              {contentRight}
+              <Spin spinning={this.state.keyValueLoading} delay={500}>
+                {contentRight}
+              </Spin>
             </Col>
           </Row>
           <RedisDataUpdateForm />

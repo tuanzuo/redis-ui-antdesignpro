@@ -14,6 +14,7 @@ import {
   Radio,
   Tooltip,
   Popconfirm,
+  Spin,
 } from 'antd';
 
 import {findDOMNode} from "react-dom";
@@ -142,7 +143,11 @@ class RedisHome extends PureComponent {
     wrapperCol: {span: 13},
   };
 
-  state = {visible: false, done: false};
+  state = {
+    visible: false,
+    done: false,
+    dataLoading: true, // 开启加载中
+  };
 
   componentDidMount() {
     console.log("redis-home-init")
@@ -160,10 +165,19 @@ class RedisHome extends PureComponent {
   }
 
   refeshList = (searchKey) => {
+    this.setState({
+      dataLoading: true, // 开启加载中
+    });
     const {dispatch} = this.props;
     dispatch({
       type: 'redisadmin/fetchConfigList',
       payload: searchKey,
+      callback: () => {
+        console.log("fetchConfigListcallback");
+        this.setState({
+          dataLoading: false, // 关闭加载中
+        });
+      },
     });
   }
 
@@ -400,32 +414,34 @@ class RedisHome extends PureComponent {
       <div>
         <SearchForm />
         <Row gutter={24} style={{marginTop: 10}}>
-          {colItems}
-          <Col {...topColResponsiveProps}>
-            <Card
-              bordered={false}
-              size="small"
-              title="新建redis连接信息"
-              style={{width: 240}}
-              hoverable="true"
-            >
-              <p>
-                <Button
-                  type="dashed"
-                  style={{width: '80%', margin: 20}}
-                  icon="plus"
-                  onClick={this.showModal}
-                  ref={component => {
-                    /* eslint-disable */
-                    this.addBtn = findDOMNode(component);
-                    /* eslint-enable */
-                  }}
-                >
-                  添加
-                </Button>
-              </p>
-            </Card>
-          </Col>
+          <Spin spinning={this.state.dataLoading} delay={500}>
+            {colItems}
+            <Col {...topColResponsiveProps}>
+              <Card
+                bordered={false}
+                size="small"
+                title="新建redis连接信息"
+                style={{width: 240}}
+                hoverable="true"
+              >
+                <p>
+                  <Button
+                    type="dashed"
+                    style={{width: '80%', margin: 20}}
+                    icon="plus"
+                    onClick={this.showModal}
+                    ref={component => {
+                      /* eslint-disable */
+                      this.addBtn = findDOMNode(component);
+                      /* eslint-enable */
+                    }}
+                  >
+                    添加
+                  </Button>
+                </p>
+              </Card>
+            </Col>
+          </Spin>
         </Row>
 
         <Modal
