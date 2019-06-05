@@ -1,8 +1,10 @@
 import React, {PureComponent} from 'react';
 import { connect } from 'dva';
-// JSON 显示器:https://ant.design/docs/react/recommendation-cn
+// JSON显示器:https://ant.design/docs/react/recommendation-cn
 // https://github.com/mac-s-g/react-json-view
 import ReactJson from 'react-json-view';
+// JSON格式化显示：https://www.npmjs.com/package/react-json-pretty
+import JSONPretty from 'react-json-pretty';
 import {
   Form,
   Row,
@@ -51,6 +53,8 @@ let currentCheckedKeys = [];
 let currentKey=[];
 // 当前选中的叶子节点对应的value
 let currentKeyValue={};
+// 当前选中的叶子节点对应的value的Json数据
+let currentKeyValueToJsonValue;
 
 @connect(({redisadmin, loading}) => ({
   redisadmin,
@@ -404,6 +408,17 @@ class RedisData extends PureComponent {
         });
         const {keyValue} = redisadmin;
         currentKeyValue = keyValue;
+
+        try {
+          if (currentKeyValue.value && typeof currentKeyValue.value === 'string') {
+            currentKeyValueToJsonValue = JSON.parse(currentKeyValue.value);
+          } else {
+            currentKeyValueToJsonValue = currentKeyValue.value;
+          }
+        } catch (error) {
+          currentKeyValueToJsonValue = currentKeyValue.value;
+        }
+
         currentKey[0] = node.props;
       },
     });
@@ -556,10 +571,11 @@ class RedisData extends PureComponent {
         <Paragraph ellipsis={{rows: 1, expandable: true}}>
           key：{k.eventKey}
         </Paragraph>
-        <Paragraph ellipsis={{rows: 5, expandable: true}}>
-          value：{currentKeyValue.value && typeof currentKeyValue.value === 'string' ? currentKeyValue.value : JSON.stringify(currentKeyValue.value)}
+        <Paragraph ellipsis={{rows: 10, expandable: true}}>
+          value：
+          <JSONPretty id="json-pretty" data={currentKeyValue.value}></JSONPretty>
         </Paragraph>
-        <ReactJson name="JsonValue" src={currentKeyValue.value && typeof currentKeyValue.value === 'string' ? JSON.parse(currentKeyValue.value) : currentKeyValue.value} displayDataTypes={false} theme="monokai" />
+        <ReactJson name="JsonValue" src={currentKeyValueToJsonValue} displayDataTypes={false} theme="monokai" />
       </Card>
     ));
 
