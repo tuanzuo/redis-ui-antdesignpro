@@ -209,7 +209,7 @@ class RedisDataUpdateForm extends React.Component {
       if (titleName && titleName.length > 60) {
         titleName = titleName.substr(0, 60) + "...";
       }
-      titleName = "修改" + titleName + "(" + currentKeyValue.keyType.toUpperCase() + ")";
+      titleName = "修改" + titleName + "(" + currentKeyValue.keyType + ")";
       this.setState({
         drawerTitle: titleName,
         visible: true,
@@ -551,15 +551,15 @@ class RedisData extends PureComponent {
 
     const contentRight = currentKey.map((k, index) => (
       <Card bordered={false} key={k.eventKey}>
-        <p key={k.eventKey + 0}>type：{currentKeyValue.keyType.toUpperCase()}</p>
+        <p key={k.eventKey + 0}>type：{currentKeyValue.keyType}</p>
         <p key={k.eventKey + 1}>ttl：{currentKeyValue.expireTime ? currentKeyValue.expireTime : ""}(s)</p>
         <Paragraph ellipsis={{rows: 1, expandable: true}}>
           key：{k.eventKey}
         </Paragraph>
-        <p key={k.eventKey + 3}>
+        <Paragraph ellipsis={{rows: 5, expandable: true}}>
           value：{currentKeyValue.value && typeof currentKeyValue.value === 'string' ? currentKeyValue.value : JSON.stringify(currentKeyValue.value)}
-        </p>
-        <ReactJson name="JsonValue" src={currentKeyValue.value ? currentKeyValue.value : ""} displayDataTypes={false} theme="monokai" />
+        </Paragraph>
+        <ReactJson name="JsonValue" src={currentKeyValue.value && typeof currentKeyValue.value === 'string' ? JSON.parse(currentKeyValue.value) : currentKeyValue.value} displayDataTypes={false} theme="monokai" />
       </Card>
     ));
 
