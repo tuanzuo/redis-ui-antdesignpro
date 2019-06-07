@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // JSON显示器:https://ant.design/docs/react/recommendation-cn
 // https://github.com/mac-s-g/react-json-view
@@ -23,7 +23,7 @@ import {
   Spin,
 } from 'antd';
 
-import {findDOMNode} from "react-dom";
+import { findDOMNode } from 'react-dom';
 import styles from './RedisDataPage.less';
 import StandardFormRow from '@/components/StandardFormRow';
 
@@ -50,26 +50,26 @@ let searchKeyConst = {};
 // 当前checked的节点
 let currentCheckedKeys = [];
 // 当前选中的叶子节点
-let currentKey=[];
+let currentKey = [];
 // 当前选中的叶子节点对应的value
-let currentKeyValue={};
+let currentKeyValue = {};
 // 当前选中的叶子节点对应的value的Json数据
 let currentKeyValueToJsonValue;
 
-@connect(({redisadmin, loading}) => ({
+@connect(({ redisadmin, loading }) => ({
   redisadmin,
   loading: loading.models.redisadmin,
 }))
 @Form.create()
 class SearchForm extends PureComponent {
-  state = {formValues: []};
+  state = { formValues: [] };
 
   // 查询
   handleSearch = e => {
-    console.log(this)
+    console.log(this);
 
     e.preventDefault();
-    const {dispatch, form} = this.props;
+    const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
@@ -88,18 +88,18 @@ class SearchForm extends PureComponent {
 
   // 重置
   handleFormReset = () => {
-    const {form, dispatch} = this.props;
+    const { form, dispatch } = this.props;
     form.resetFields();
     this.setState({
       formValues: {},
     });
     searchKeyConst = {};
-    const searchParam = {id, ...searchKeyConst};
+    const searchParam = { id, ...searchKeyConst };
     RedisDataObject.searchKeyList(searchParam);
   };
 
   // 显示修改keyValue的抽屉页面
-  showEditDrawer = () =>{
+  showEditDrawer = () => {
     RedisDataUpdateObject.showDrawer();
   };
 
@@ -114,15 +114,15 @@ class SearchForm extends PureComponent {
 
   render() {
     const {
-      form: {getFieldDecorator},
+      form: { getFieldDecorator },
     } = this.props;
 
-    const {formValues = {}} = this.state;
+    const { formValues = {} } = this.state;
 
     const genExtra = () => (
       <Icon
         type="search"
-        onClick={(event) => {
+        onClick={event => {
           // If you don't want click extra trigger collapse, you can prevent this:
           // event.stopPropagation();
         }}
@@ -136,7 +136,7 @@ class SearchForm extends PureComponent {
             <Col span={8}>
               <FormItem {...formItemLayout} label="">
                 {getFieldDecorator('searchKey', {
-                  rules: [{required: false, message: "名称不能为空"}],
+                  rules: [{ required: false, message: '名称不能为空' }],
                 })(<Input autoComplete="off" placeholder="" />)}
               </FormItem>
             </Col>
@@ -148,14 +148,10 @@ class SearchForm extends PureComponent {
                   </Button>
                 </Col>
                 <Col span={3}>
-                  <Button onClick={this.handleFormReset}>
-                    重置
-                  </Button>
+                  <Button onClick={this.handleFormReset}>重置</Button>
                 </Col>
                 <Col span={3}>
-                  <Button onClick={this.showEditDrawer}>
-                    修改
-                  </Button>
+                  <Button onClick={this.showEditDrawer}>修改</Button>
                 </Col>
                 <Col span={3}>
                   <Button type="danger" onClick={this.delCheckedNodes}>
@@ -171,36 +167,34 @@ class SearchForm extends PureComponent {
   }
 }
 
-
-@connect(({redisadmin, loading}) => ({
+@connect(({ redisadmin, loading }) => ({
   redisadmin,
   loading: loading.models.redisadmin,
 }))
-@Form.create({name: 'redisDataUpdate'})
+@Form.create({ name: 'redisDataUpdate' })
 class RedisDataUpdateForm extends React.Component {
   state = {
     visible: false,
-    drawerTitle: "",
+    drawerTitle: '',
     data: {},
   };
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
   componentDidMount() {
-    console.log(this.state)
+    console.log(this.state);
 
-    console.log("redis-dataupdate-init")
+    console.log('redis-dataupdate-init');
     const { dispatch } = this.props;
 
     // 初始化后把当前对象保存到RedisDataUpdateObject变量中去
     RedisDataUpdateObject = this;
-
-  };
+  }
 
   // 显示keyValue修改的抽屉页面
   showDrawer = () => {
-    console.log("drawer", currentKey, currentKeyValue);
+    console.log('drawer', currentKey, currentKeyValue);
     let currentKeyOne = {};
-    if(currentKey && currentKey.length>0){
+    if (currentKey && currentKey.length > 0) {
       // eslint-disable-next-line prefer-destructuring
       currentKeyOne = currentKey[0];
       console.log(currentKeyOne);
@@ -211,9 +205,9 @@ class RedisDataUpdateForm extends React.Component {
     if (currentKeyOne.title && currentKeyValue.keyType) {
       let titleName = currentKeyOne.title;
       if (titleName && titleName.length > 60) {
-        titleName = titleName.substr(0, 60) + "...";
+        titleName = titleName.substr(0, 60) + '...';
       }
-      titleName = "修改" + titleName + "(" + currentKeyValue.keyType + ")";
+      titleName = '修改' + titleName + '(' + currentKeyValue.keyType + ')';
       this.setState({
         drawerTitle: titleName,
         visible: true,
@@ -235,7 +229,7 @@ class RedisDataUpdateForm extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const {data} = this.state;
+    const { data } = this.state;
     return (
       <div>
         <Drawer
@@ -259,22 +253,13 @@ class RedisDataUpdateForm extends React.Component {
                   {getFieldDecorator('expireTime', {
                     rules: [{ required: true, message: 'Please enter ttl' }],
                     initialValue: data.expireTime,
-                  })(
-                    <Input
-                      style={{ width: '100%' }}
-                      placeholder="Please enter ttl"
-                    />,
-                  )}
+                  })(<Input style={{ width: '100%' }} placeholder="Please enter ttl" />)}
                 </Form.Item>
               </Col>
             </Row>
             <Row gutter={16}>
-              <Col span={12}>
-
-              </Col>
-              <Col span={12}>
-
-              </Col>
+              <Col span={12} />
+              <Col span={12} />
             </Row>
             <Row gutter={16}>
               <Col span={24}>
@@ -317,16 +302,14 @@ class RedisDataUpdateForm extends React.Component {
   }
 }
 
-
-@connect(({redisadmin, loading}) => ({
+@connect(({ redisadmin, loading }) => ({
   redisadmin,
   loading: loading.models.redisadmin,
 }))
-@Form.create({name: 'redisData'})
+@Form.create({ name: 'redisData' })
 class RedisData extends PureComponent {
-
   state = {
-  /* treeData: [
+    /* treeData: [
     { title: 'Expand to load', key: '0' },
     { title: 'Expand to load', key: '1' },
     { title: 'Tree Node', key: '2', isLeaf: true },
@@ -340,9 +323,9 @@ class RedisData extends PureComponent {
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
   componentDidMount() {
-    console.log(this.state)
+    console.log(this.state);
 
-    console.log("redis-data-init")
+    console.log('redis-data-init');
     const { dispatch, match } = this.props;
     const { params } = match;
     console.log(params.id);
@@ -353,30 +336,28 @@ class RedisData extends PureComponent {
       type: 'redisadmin/initContext',
       payload: id,
       callback: () => {
-        console.log("initContextcallback")
-        const searchParam = {id, searchKey: "*"};
+        console.log('initContextcallback');
+        const searchParam = { id, searchKey: '*' };
         this.searchKeyList(searchParam);
         // 初始化后把当前对象保存到RedisDataObject变量中去
         RedisDataObject = this;
       },
     });
-  };
+  }
 
   // 查询
-  searchKeyList = (searchParam) => {
+  searchKeyList = searchParam => {
     // 初始化treeData
     this.initTreeData();
 
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'redisadmin/fetchKeyList',
       payload: searchParam,
       callback: () => {
-        console.log("fetchKeyListcallback")
-        const {
-          redisadmin,
-        } = this.props;
-        const {keyList} = redisadmin;
+        console.log('fetchKeyListcallback');
+        const { redisadmin } = this.props;
+        const { keyList } = redisadmin;
         this.setState({
           treeData: keyList,
           treeLoading: false, // 关闭加载中
@@ -390,23 +371,21 @@ class RedisData extends PureComponent {
   };
 
   // 查询key对应的value
-  searchKeyValue = (params,node) => {
+  searchKeyValue = (params, node) => {
     this.setState({
       keyValueLoading: true, // 开启加载中
     });
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'redisadmin/fetchKeyValue',
       payload: params,
       callback: () => {
-        console.log("fetchKeyValuecallback");
-        const {
-          redisadmin,
-        } = this.props;
+        console.log('fetchKeyValuecallback');
+        const { redisadmin } = this.props;
         this.setState({
           keyValueLoading: false, // 关闭加载中
         });
-        const {keyValue} = redisadmin;
+        const { keyValue } = redisadmin;
         currentKeyValue = keyValue;
 
         try {
@@ -424,18 +403,18 @@ class RedisData extends PureComponent {
     });
   };
 
-  deleteModel = (params) => {
+  deleteModel = params => {
     if (params && params.keys && params.keys.length > 0) {
       let contentConst = params.keys;
       const keySize = params.keys.length;
       if (params.keys.length > 5) {
-        contentConst = "";
-        for (let i = 0; i < 5; i = (i + 1)) {
+        contentConst = '';
+        for (let i = 0; i < 5; i = i + 1) {
           contentConst += params.keys[i];
           if (i === 4) {
-            contentConst += "......";
+            contentConst += '......';
           } else {
-            contentConst += ",";
+            contentConst += ',';
           }
         }
       }
@@ -451,20 +430,20 @@ class RedisData extends PureComponent {
     }
   };
 
-  delKeys = (params) => {
-    const {dispatch} = this.props;
+  delKeys = params => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'redisadmin/delKeys',
       payload: params,
       callback: () => {
-        console.log("delKeyscallback");
+        console.log('delKeyscallback');
         this.searchKeyList(searchKeyConst);
       },
     });
   };
 
   // 还原currentKey为空
-  initCurrentKeyForNull = ()=>{
+  initCurrentKeyForNull = () => {
     currentKey = [];
   };
 
@@ -513,7 +492,7 @@ class RedisData extends PureComponent {
     console.log('onCheck', checkedKeys, info);
     console.log(info.checkedNodes);
 
-    info.checkedNodes.forEach((temp) => {
+    info.checkedNodes.forEach(temp => {
       console.log(temp.props.isLeaf);
       console.log(temp.props.dataRef.key);
       if (temp.props.isLeaf) {
@@ -523,40 +502,43 @@ class RedisData extends PureComponent {
     console.log(currentCheckedKeys);
   };
 
-  onLoadDataRefreshRightContent = treeNode => new Promise((resolve) => {
-    console.log(treeNode);
-    this.setState({
-      treeData: [...this.state.treeData],
-    });
-  });
-
-  onLoadData = treeNode => new Promise((resolve) => {
-    if (treeNode.props.children) {
-      resolve();
-      return;
-    }
-    setTimeout(() => {
-      treeNode.props.dataRef.children = [
-        { title: 'Child Node', key: `${treeNode.props.eventKey}-0` },
-        { title: 'Child Node', key: `${treeNode.props.eventKey}-1` },
-      ];
+  onLoadDataRefreshRightContent = treeNode =>
+    new Promise(resolve => {
+      console.log(treeNode);
       this.setState({
         treeData: [...this.state.treeData],
       });
-      resolve();
-    }, 1000);
-  });
+    });
 
-  renderTreeNodes = data => data.map((item) => {
-    if (item.children) {
-      return (
-        <TreeNode title={item.title} key={item.key} dataRef={item}>
-          {this.renderTreeNodes(item.children)}
-        </TreeNode>
-      );
-    }
-    return <TreeNode {...item} dataRef={item} />;
-  });
+  onLoadData = treeNode =>
+    new Promise(resolve => {
+      if (treeNode.props.children) {
+        resolve();
+        return;
+      }
+      setTimeout(() => {
+        treeNode.props.dataRef.children = [
+          { title: 'Child Node', key: `${treeNode.props.eventKey}-0` },
+          { title: 'Child Node', key: `${treeNode.props.eventKey}-1` },
+        ];
+        this.setState({
+          treeData: [...this.state.treeData],
+        });
+        resolve();
+      }, 1000);
+    });
+
+  renderTreeNodes = data =>
+    data.map(item => {
+      if (item.children) {
+        return (
+          <TreeNode title={item.title} key={item.key} dataRef={item}>
+            {this.renderTreeNodes(item.children)}
+          </TreeNode>
+        );
+      }
+      return <TreeNode {...item} dataRef={item} />;
+    });
 
   render() {
     const {
@@ -567,24 +549,25 @@ class RedisData extends PureComponent {
     const contentRight = currentKey.map((k, index) => (
       <Card bordered={false} key={k.eventKey}>
         <p key={k.eventKey + 0}>type：{currentKeyValue.keyType}</p>
-        <p key={k.eventKey + 1}>ttl：{currentKeyValue.expireTime ? currentKeyValue.expireTime : ""}(s)</p>
-        <Paragraph ellipsis={{rows: 1, expandable: true}}>
-          key：{k.eventKey}
-        </Paragraph>
-        <Paragraph ellipsis={{rows: 10, expandable: true}}>
+        <p key={k.eventKey + 1}>
+          ttl：{currentKeyValue.expireTime ? currentKeyValue.expireTime : ''}(s)
+        </p>
+        <Paragraph ellipsis={{ rows: 1, expandable: true }}>key：{k.eventKey}</Paragraph>
+        <Paragraph ellipsis={{ rows: 10, expandable: true }}>
           value：
-          <JSONPretty id="json-pretty" data={currentKeyValue.value}></JSONPretty>
+          <JSONPretty id="json-pretty" data={currentKeyValue.value} />
         </Paragraph>
-        <ReactJson name="JsonValue" src={currentKeyValueToJsonValue} displayDataTypes={false} theme="monokai" />
+        <ReactJson
+          name="JsonValue"
+          src={currentKeyValueToJsonValue}
+          displayDataTypes={false}
+          theme="monokai"
+        />
       </Card>
     ));
 
     return (
-      <Card
-        bordered={false}
-        size="small"
-        hoverable
-      >
+      <Card bordered={false} size="small" hoverable>
         <div>
           <Row>
             <Col span={24}>
@@ -593,20 +576,26 @@ class RedisData extends PureComponent {
           </Row>
           <Row>
             <Col span={24}>
-              <Divider dashed style={{marginTop: 19, marginBottom: -1}} />
+              <Divider dashed style={{ marginTop: 19, marginBottom: -1 }} />
             </Col>
           </Row>
           <Row>
             <Col span={10} className={styles.treeContainer}>
               <Spin spinning={this.state.treeLoading} delay={500}>
                 <Card bordered={false}>
-                  <Tree checkable showLine loadData={this.onLoadData} onSelect={this.onSelect} onCheck={this.onCheck}>
+                  <Tree
+                    checkable
+                    showLine
+                    loadData={this.onLoadData}
+                    onSelect={this.onSelect}
+                    onCheck={this.onCheck}
+                  >
                     {this.renderTreeNodes(this.state.treeData)}
                   </Tree>
                 </Card>
               </Spin>
             </Col>
-            <Col span={14}>
+            <Col span={14} className={styles.treeContainer}>
               <Spin spinning={this.state.keyValueLoading} delay={500}>
                 {contentRight}
               </Spin>
