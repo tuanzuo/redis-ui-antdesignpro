@@ -249,7 +249,7 @@ class RedisDataUpdateForm extends React.Component {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label="ttl(s)">
+                <Form.Item label="ttl">
                   {getFieldDecorator('expireTime', {
                     rules: [{ required: true, message: 'Please enter ttl' }],
                     initialValue: data.expireTime,
@@ -550,7 +550,7 @@ class RedisData extends PureComponent {
       <Card bordered={false} key={k.eventKey}>
         <p key={k.eventKey + 0}>type：{currentKeyValue.keyType}</p>
         <p key={k.eventKey + 1}>
-          ttl：{currentKeyValue.expireTime ? currentKeyValue.expireTime : ''}(s)
+          ttl：{currentKeyValue.expireTime ? currentKeyValue.expireTime : ''}
         </p>
         <Paragraph ellipsis={{ rows: 1, expandable: true }}>key：{k.eventKey}</Paragraph>
         <Paragraph ellipsis={{ rows: 10, expandable: true }}>
