@@ -37,8 +37,9 @@ const topColResponsiveProps = {
   xs: 24,
   sm: 12,
   md: 12,
-  lg: 12,
+  lg: 10,
   xl: 5,
+  xxl: 1,
   style: { marginBottom: 24, margin: 17, marginTop: 5 },
 };
 const formItemLayout = {
@@ -115,7 +116,7 @@ class SearchForm extends PureComponent {
     return (
       <Row
         gutter={24}
-        style={{ marginLeft: 16, marginRight: 19, marginTop: -8, marginBottom: -25 }}
+        style={{ marginLeft: 16, marginRight: 19, marginTop: -8, marginBottom: -25}}
       >
         <Collapse defaultActiveKey={['1']}>
           <Panel header="搜索" key="10" extra={genExtra()}>
@@ -261,7 +262,7 @@ class RedisHomeViewForm extends React.Component {
           <Form layout="vertical" hideRequiredMark>
             <Row gutter={16}>
               <Col span={24}>
-                <FormItem {...this.formLayout} label="Serializable code example">
+                <FormItem label="Serializable code example">
                   {getFieldDecorator('serCode', {
                     rules: [{ required: false, message: 'Serializable code' }],
                     initialValue: data.serCode,
@@ -582,7 +583,7 @@ class RedisHome extends PureComponent {
     return (
       <div>
         <SearchForm />
-        <Row gutter={24} style={{ marginTop: 10 }}>
+        <Row gutter={24} style={{ marginTop: 30 }}>
           <Spin spinning={this.state.dataLoading} delay={500}>
             {colItems}
             <Col {...topColResponsiveProps}>
