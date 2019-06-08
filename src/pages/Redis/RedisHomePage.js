@@ -116,7 +116,7 @@ class SearchForm extends PureComponent {
     return (
       <Row
         gutter={24}
-        style={{ marginLeft: 16, marginRight: 19, marginTop: -8, marginBottom: -25}}
+        style={{ marginLeft: 16, marginRight: 19, marginTop: -8, marginBottom: -25 }}
       >
         <Collapse defaultActiveKey={['1']}>
           <Panel header="搜索" key="10" extra={genExtra()}>
@@ -568,7 +568,12 @@ class RedisHome extends PureComponent {
             {getFieldDecorator('serCode', {
               rules: [{ required: false, message: 'Serializable code' }],
               initialValue: current.serCode,
-            })(<TextArea placeholder="序列化code(Groovy)" rows={4} />)}
+            })(
+              <TextArea
+                placeholder="序列化code(Groovy)。默认key和hashkey使用：StringRedisSerializer；value和hashvalue使用：JdkSerializationRedisSerializer"
+                rows={4}
+              />
+            )}
           </FormItem>
           <FormItem {...this.formLayout} label="备注">
             {getFieldDecorator('note', {
