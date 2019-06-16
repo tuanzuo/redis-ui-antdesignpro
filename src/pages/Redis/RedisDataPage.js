@@ -55,6 +55,8 @@ let currentKey = [];
 let currentKeyValue = {};
 // 当前选中的叶子节点对应的value的Json数据
 let currentKeyValueToJsonValue;
+// 执行onSelect时的参数
+let onSelectParams = {};
 
 @connect(({ redisadmin, loading }) => ({
   redisadmin,
@@ -177,6 +179,10 @@ class RedisDataUpdateForm extends React.Component {
     visible: false,
     drawerTitle: '',
     data: {},
+    optKey: '',
+    optKeyButtont: '',
+    optTTL: '',
+    optTTLButtont: '',
   };
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
@@ -227,9 +233,154 @@ class RedisDataUpdateForm extends React.Component {
     });
   };
 
+  // -------key--------
+  updateKeyContent = key => {
+    this.setState({
+      optKey: key,
+      optKeyButtont: 'update',
+    });
+  };
+
+  getKeyContent = () => {
+    const { getFieldDecorator } = this.props.form;
+    const { data, optKey } = this.state;
+    if (optKey && optKey === 'update') {
+      return (
+        <Form.Item label="key:">
+          {getFieldDecorator('key', {
+            rules: [{ required: true, message: 'Please enter key name' }],
+            initialValue: data.key,
+          })(<Input placeholder="Please enter key name" />)}
+        </Form.Item>
+      );
+    }
+    return <Form.Item label="key:">{data.key}</Form.Item>;
+  };
+
+  updateKeyButtonContent = key => {
+    this.setState({
+      optKey: '',
+      optKeyButtont: key,
+    });
+  };
+
+  reNameKey = key => {
+    this.updateKeyButtonContent(key);
+  };
+
+  getKeyButtonContent = () => {
+    const { optKeyButtont } = this.state;
+    if (optKeyButtont && optKeyButtont === 'update') {
+      return (
+        <Form.Item label="&nbsp;&nbsp;">
+          <Button size="small" onClick={() => this.reNameKey('')}>
+            保存
+          </Button>
+          <Button size="small" onClick={() => this.updateKeyButtonContent('')}>
+            取消
+          </Button>
+        </Form.Item>
+      );
+    }
+    return (
+      <Form.Item label="&nbsp;&nbsp;">
+        <Button size="small" onClick={() => this.updateKeyContent('update')}>
+          修改key
+        </Button>
+      </Form.Item>
+    );
+  };
+
+  // -------TTL--------
+  updateTTLContent = key => {
+    this.setState({
+      optTTL: key,
+      optTTLButtont: 'update',
+    });
+  };
+
+  getTTLContent = () => {
+    const { getFieldDecorator } = this.props.form;
+    const { data, optTTL } = this.state;
+    if (optTTL && optTTL === 'update') {
+      return (
+        <Form.Item label="ttl:">
+          {getFieldDecorator('expireTime', {
+            rules: [{ required: true, message: 'Please enter expireTime' }],
+            initialValue: data.expireTime,
+          })(<Input placeholder="Please enter expireTime" />)}
+        </Form.Item>
+      );
+    }
+    return <Form.Item label="ttl:">{data.expireTime}</Form.Item>;
+  };
+
+  updateTTLButtonContent = key => {
+    this.setState({
+      optTTL: '',
+      optTTLButtont: key,
+    });
+  };
+
+  reSetTTL = tempKey => {
+    const { dispatch, form } = this.props;
+    const { data } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      console.log('reSetTTL');
+      console.log(id);
+      console.log(data.key);
+      console.log(fieldsValue);
+
+      const key = data.key;
+      const values = {
+        id,
+        key,
+        ...fieldsValue,
+      };
+      console.log(values);
+      // 保存数据到后台
+      dispatch({
+        type: 'redisadmin/setKeyTTL',
+        payload: { ...values },
+        callback: () => {
+          console.log('reSetTTLcallback');
+          this.updateTTLButtonContent(tempKey);
+          this.onClose();
+          // 重新执行选中操作
+          RedisDataObject.onSelect(onSelectParams.selectedKeys, onSelectParams.info);
+        },
+      });
+    });
+  };
+
+  getTTLButtonContent = () => {
+    const { optTTLButtont } = this.state;
+    if (optTTLButtont && optTTLButtont === 'update') {
+      return (
+        <Form.Item label="&nbsp;&nbsp;">
+          <Button size="small" onClick={() => this.reSetTTL('')}>
+            保存
+          </Button>
+          <Button size="small" onClick={() => this.updateTTLButtonContent('')}>
+            取消
+          </Button>
+        </Form.Item>
+      );
+    }
+    return (
+      <Form.Item label="&nbsp;&nbsp;">
+        <Button size="small" onClick={() => this.updateTTLContent('update')}>
+          设置TTL
+        </Button>
+      </Form.Item>
+    );
+  };
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const { data } = this.state;
+
     return (
       <div>
         <Drawer
@@ -240,26 +391,10 @@ class RedisDataUpdateForm extends React.Component {
         >
           <Form layout="vertical" hideRequiredMark>
             <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item label="key">
-                  {getFieldDecorator('key', {
-                    rules: [{ required: true, message: 'Please enter key name' }],
-                    initialValue: data.key,
-                  })(<Input placeholder="Please enter key name" />)}
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="ttl">
-                  {getFieldDecorator('expireTime', {
-                    rules: [{ required: true, message: 'Please enter ttl' }],
-                    initialValue: data.expireTime,
-                  })(<Input style={{ width: '100%' }} placeholder="Please enter ttl" />)}
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={12} />
-              <Col span={12} />
+              <Col span={8}>{this.getKeyContent()}</Col>
+              <Col span={4}>{this.getKeyButtonContent()}</Col>
+              <Col span={8}>{this.getTTLContent()}</Col>
+              <Col span={4}>{this.getTTLButtonContent()}</Col>
             </Row>
             <Row gutter={16}>
               <Col span={24}>
@@ -409,7 +544,7 @@ class RedisData extends PureComponent {
       const keySize = params.keys.length;
       if (params.keys.length > 5) {
         contentConst = '';
-        for (let i = 0; i < 5; i = i + 1) {
+        for (let i = 0; i < 5; i += 1) {
           contentConst += params.keys[i];
           if (i === 4) {
             contentConst += '......';
@@ -462,6 +597,9 @@ class RedisData extends PureComponent {
 
   // 点击节点
   onSelect = (selectedKeys, info) => {
+    onSelectParams.selectedKeys = selectedKeys;
+    onSelectParams.info = info;
+
     console.log('selected');
     console.log(selectedKeys);
     console.log(info);

@@ -10,7 +10,7 @@ export async function queryActivities() {
 }
 
 export async function queryRule(params) {
-  console.log("queryRule");
+  console.log('queryRule');
   return request(`http://127.0.0.1/api/rule?${stringify(params)}`);
 }
 
@@ -127,11 +127,11 @@ export async function getFakeCaptcha(mobile) {
 }
 
 //--------------------
-const apiUrl="http://127.0.0.1";
+const apiUrl = 'http://127.0.0.1';
 // const apiUrl="";
 
 export async function queryRedisConfigList(params) {
-  console.log("queryRedisConfigList");
+  console.log('queryRedisConfigList');
   console.log(params);
   return request(`${apiUrl}/redis/config/list?${stringify(params)}`);
 }
@@ -162,19 +162,19 @@ export async function updateRedisConfig(params) {
 }
 
 export async function initRedisContext(id) {
-  console.log("initRedisContext");
+  console.log('initRedisContext');
   console.log(id);
   return request(`${apiUrl}/redis/admin/context/init/${id}`);
 }
 
 export async function queryRedisKeyList(params) {
-  console.log("queryRedisKeyList");
+  console.log('queryRedisKeyList');
   console.log(params);
   return request(`${apiUrl}/redis/admin/key/list?${stringify(params)}`);
 }
 
 export async function queryRedisKeyValue(params) {
-  console.log("queryRedisKeyValue");
+  console.log('queryRedisKeyValue');
   console.log(params);
   return request(`${apiUrl}/redis/admin/key/value`, {
     method: 'POST',
@@ -186,7 +186,7 @@ export async function queryRedisKeyValue(params) {
 }
 
 export async function delRedisKeys(params) {
-  console.log("delRedisKeys");
+  console.log('delRedisKeys');
   console.log(params);
   return request(`${apiUrl}/redis/admin/key/del`, {
     method: 'POST',
@@ -197,3 +197,14 @@ export async function delRedisKeys(params) {
   });
 }
 
+export async function setRedisKeyTTL(params) {
+  console.log('setRedisKeyTTL');
+  console.log(params);
+  return request(`${apiUrl}/redis/admin/key/setTtl`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}

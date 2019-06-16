@@ -46,7 +46,7 @@ export default {
       if (callback) callback();
     },
 
-    *initContext({ payload, callback  }, { call, put }) {
+    *initContext({ payload, callback }, { call, put }) {
       const response = yield call(initRedisContext, payload);
       yield put({
         type: 'save',
@@ -54,7 +54,7 @@ export default {
       });
       if (callback) callback();
     },
-    *fetchKeyList({ payload, callback  }, { call, put }) {
+    *fetchKeyList({ payload, callback }, { call, put }) {
       const response = yield call(queryRedisKeyList, payload);
       yield put({
         type: 'save',
@@ -62,7 +62,7 @@ export default {
       });
       if (callback) callback();
     },
-    *fetchKeyValue({ payload, callback  }, { call, put }) {
+    *fetchKeyValue({ payload, callback }, { call, put }) {
       const response = yield call(queryRedisKeyValue, payload);
       yield put({
         type: 'saveKeyValue',
@@ -70,8 +70,16 @@ export default {
       });
       if (callback) callback();
     },
-    *delKeys({ payload, callback  }, { call, put }) {
+    *delKeys({ payload, callback }, { call, put }) {
       const response = yield call(delRedisKeys, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback();
+    },
+    *setKeyTTL({ payload, callback }, { call, put }) {
+      const response = yield call(setRedisKeyTTL, payload);
       yield put({
         type: 'save',
         payload: response,
