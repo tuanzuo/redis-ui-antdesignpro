@@ -13,6 +13,7 @@ import {
   Button,
   Tree,
   Input,
+  InputNumber,
   Icon,
   Divider,
   Modal,
@@ -21,6 +22,7 @@ import {
   Typography,
   Drawer,
   Spin,
+  Statistic,
 } from 'antd';
 
 import { findDOMNode } from 'react-dom';
@@ -28,9 +30,10 @@ import styles from './RedisDataPage.less';
 import StandardFormRow from '@/components/StandardFormRow';
 
 const FormItem = Form.Item;
-const { TextArea } = Input;
-const { TreeNode } = Tree;
-const { Paragraph } = Typography;
+const {TextArea} = Input;
+const {TreeNode} = Tree;
+const {Paragraph} = Typography;
+const Countdown = Statistic.Countdown;
 
 const formItemLayout = {
   wrapperCol: {
@@ -39,6 +42,8 @@ const formItemLayout = {
   },
 };
 
+// RedisData搜索对象
+let RedisDataSearchObject;
 // RedisDataUpdate对象
 let RedisDataUpdateObject;
 // RedisData对象
@@ -66,9 +71,16 @@ let onSelectParams = {};
 class SearchForm extends PureComponent {
   state = { formValues: [] };
 
+  // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
+  componentDidMount() {
+    console.log('redis-searchfrom-init');
+    // 初始化后把当前对象保存到RedisDataSearchObject变量中去
+    RedisDataSearchObject = this;
+  }
+
   // 查询
   handleSearch = e => {
-    console.log(this);
+    console.log("search");
 
     e.preventDefault();
     const { dispatch, form } = this.props;
@@ -264,8 +276,36 @@ class RedisDataUpdateForm extends React.Component {
     });
   };
 
-  reNameKey = key => {
-    this.updateKeyButtonContent(key);
+  reNameKey = tempKey => {
+    const { dispatch, form } = this.props;
+    const { data } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      console.log('reNameKey');
+      console.log(id);
+      console.log(data.key);
+      console.log(fieldsValue);
+
+      const oldKey = data.key;
+      const values = {
+        id,
+        oldKey,
+        ...fieldsValue,
+      };
+      console.log(values);
+      // 保存数据到后台
+      dispatch({
+        type: 'redisadmin/reNameKey',
+        payload: { ...values },
+        callback: () => {
+          console.log('reNameKeycallback');
+          this.updateKeyButtonContent(tempKey);
+          this.onClose();
+          // 重新执行查询操作
+          RedisDataObject.searchKeyList(searchKeyConst);
+        },
+      });
+    });
   };
 
   getKeyButtonContent = () => {
@@ -308,11 +348,22 @@ class RedisDataUpdateForm extends React.Component {
           {getFieldDecorator('expireTime', {
             rules: [{ required: true, message: 'Please enter expireTime' }],
             initialValue: data.expireTime,
-          })(<Input placeholder="Please enter expireTime" />)}
+          })(<InputNumber min={-1} placeholder="Please enter expireTime" style={{width:"100%"}} />)}
         </Form.Item>
       );
     }
-    return <Form.Item label="ttl:">{data.expireTime}</Form.Item>;
+   /* if (data && data.expireTime && data.expireTime > 0) {
+      return (
+        <Form.Item label="ttl:">
+          <Countdown value={Date.now() + data.expireTime * 1000} format="DD:HH:mm:ss" />
+        </Form.Item>
+      );
+    } */
+    return (
+      <Form.Item label="ttl:">
+        {data.expireTime}
+      </Form.Item>
+    );
   };
 
   updateTTLButtonContent = key => {
@@ -640,6 +691,17 @@ class RedisData extends PureComponent {
     console.log(currentCheckedKeys);
   };
 
+  // 得到TTL显示的html
+  getTtlContent = expireTime => {
+    // expireTime：过期时间--单位是s
+    if (expireTime && expireTime > 0) {
+      return (
+        <Countdown title="" value={Date.now() + expireTime * 1000} format="DD:HH:mm:ss" valueStyle={{ fontSize:"13px",color:"rgba(0, 0, 0, 0.62)" }} />
+      );
+    }
+    return expireTime;
+  };
+
   onLoadDataRefreshRightContent = treeNode =>
     new Promise(resolve => {
       console.log(treeNode);
@@ -684,12 +746,15 @@ class RedisData extends PureComponent {
     } = this.props;
     const { visible, done, current = {} } = this.state;
 
+    // 右边的内容(key对应的value数据)
     const contentRight = currentKey.map((k, index) => (
       <Card bordered={false} key={k.eventKey}>
         <p key={k.eventKey + 0}>type：{currentKeyValue.keyType}</p>
-        <p key={k.eventKey + 1}>
-          ttl：{currentKeyValue.expireTime ? currentKeyValue.expireTime : ''}
-        </p>
+        ttl：
+        <div style={{display:"inline-block"}}>
+          {this.getTtlContent(currentKeyValue.expireTime)}
+        </div>
+        <p key={k.eventKey + 1} />
         <Paragraph ellipsis={{ rows: 1, expandable: true }}>key：{k.eventKey}</Paragraph>
         <Paragraph ellipsis={{ rows: 10, expandable: true }}>
           value：

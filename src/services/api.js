@@ -208,3 +208,15 @@ export async function setRedisKeyTTL(params) {
     },
   });
 }
+
+export async function reNameRedisKey(params) {
+  console.log('reNameRedisKey');
+  console.log(params);
+  return request(`${apiUrl}/redis/admin/key/rename`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
