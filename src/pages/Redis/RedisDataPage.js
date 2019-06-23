@@ -30,9 +30,9 @@ import styles from './RedisDataPage.less';
 import StandardFormRow from '@/components/StandardFormRow';
 
 const FormItem = Form.Item;
-const {TextArea} = Input;
-const {TreeNode} = Tree;
-const {Paragraph} = Typography;
+const { TextArea } = Input;
+const { TreeNode } = Tree;
+const { Paragraph } = Typography;
 const Countdown = Statistic.Countdown;
 
 const formItemLayout = {
@@ -40,6 +40,15 @@ const formItemLayout = {
     xs: { span: 24 },
     sm: { span: 16 },
   },
+};
+
+const searchColButton = {
+  xs: 25,
+  sm: 15,
+  md: 6,
+  lg: 7,
+  xl: 6,
+  xxl: 10,
 };
 
 // RedisData搜索对象
@@ -80,7 +89,7 @@ class SearchForm extends PureComponent {
 
   // 查询
   handleSearch = e => {
-    console.log("search");
+    console.log('search');
 
     e.preventDefault();
     const { dispatch, form } = this.props;
@@ -146,28 +155,28 @@ class SearchForm extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <StandardFormRow title="查询条件" grid last>
-          <Row>
-            <Col span={8}>
-              <FormItem {...formItemLayout} label="">
+          <Row gutter={24}>
+            <Col xxl={3} xl={5} lg={8} md={9} sm={10} xs={24}>
+              <FormItem label="">
                 {getFieldDecorator('searchKey', {
                   rules: [{ required: false, message: '名称不能为空' }],
                 })(<Input autoComplete="off" placeholder="" />)}
               </FormItem>
             </Col>
-            <Col span={16} pull={2}>
-              <Row>
-                <Col span={3}>
+            <Col xxl={3} xl={5} lg={8} md={9} sm={10} xs={24}>
+              <Row gutter={24} style={{ width: '350px' }}>
+                <Col {...searchColButton}>
                   <Button type="primary" htmlType="submit">
                     查询
                   </Button>
                 </Col>
-                <Col span={3}>
+                <Col {...searchColButton}>
                   <Button onClick={this.handleFormReset}>重置</Button>
                 </Col>
-                <Col span={3}>
+                <Col {...searchColButton}>
                   <Button onClick={this.showEditDrawer}>修改</Button>
                 </Col>
-                <Col span={3}>
+                <Col {...searchColButton}>
                   <Button type="danger" onClick={this.delCheckedNodes}>
                     删除
                   </Button>
@@ -348,22 +357,20 @@ class RedisDataUpdateForm extends React.Component {
           {getFieldDecorator('expireTime', {
             rules: [{ required: true, message: 'Please enter expireTime' }],
             initialValue: data.expireTime,
-          })(<InputNumber min={-1} placeholder="Please enter expireTime" style={{width:"100%"}} />)}
+          })(
+            <InputNumber min={-1} placeholder="Please enter expireTime" style={{ width: '100%' }} />
+          )}
         </Form.Item>
       );
     }
-   /* if (data && data.expireTime && data.expireTime > 0) {
+    /* if (data && data.expireTime && data.expireTime > 0) {
       return (
         <Form.Item label="ttl:">
           <Countdown value={Date.now() + data.expireTime * 1000} format="DD:HH:mm:ss" />
         </Form.Item>
       );
     } */
-    return (
-      <Form.Item label="ttl:">
-        {data.expireTime}
-      </Form.Item>
-    );
+    return <Form.Item label="ttl:">{data.expireTime}</Form.Item>;
   };
 
   updateTTLButtonContent = key => {
@@ -696,7 +703,12 @@ class RedisData extends PureComponent {
     // expireTime：过期时间--单位是s
     if (expireTime && expireTime > 0) {
       return (
-        <Countdown title="" value={Date.now() + expireTime * 1000} format="DD:HH:mm:ss" valueStyle={{ fontSize:"13px",color:"rgba(0, 0, 0, 0.62)" }} />
+        <Countdown
+          title=""
+          value={Date.now() + expireTime * 1000}
+          format="DD:HH:mm:ss"
+          valueStyle={{ fontSize: '13px', color: 'rgba(0, 0, 0, 0.62)' }}
+        />
       );
     }
     return expireTime;
@@ -751,7 +763,7 @@ class RedisData extends PureComponent {
       <Card bordered={false} key={k.eventKey}>
         <p key={k.eventKey + 0}>type：{currentKeyValue.keyType}</p>
         ttl：
-        <div style={{display:"inline-block"}}>
+        <div style={{ display: 'inline-block' }}>
           {this.getTtlContent(currentKeyValue.expireTime)}
         </div>
         <p key={k.eventKey + 1} />

@@ -38,15 +38,15 @@ const topColResponsiveProps = {
   sm: 12,
   md: 12,
   lg: 10,
-  xl: 5,
-  xxl: 1,
-  style: { marginBottom: 24, margin: 17, marginTop: 5 },
+  xl: 8,
+  xxl: 6,
+  style: { marginTop: 10, marginRight: 0, marginBottom: 0, marginLeft: 0 },
 };
 const formItemLayout = {
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
-  },
+  //  wrapperCol: {
+  //   xs: { span: 24 },
+  //   sm: { span: 16 },
+  // },
 };
 
 // RedisHome对象
@@ -114,16 +114,13 @@ class SearchForm extends PureComponent {
     );
 
     return (
-      <Row
-        gutter={24}
-        style={{ marginLeft: 16, marginRight: 19, marginTop: -8, marginBottom: -25 }}
-      >
+      <Row gutter={24} style={{ margin: 0 }}>
         <Collapse defaultActiveKey={['1']}>
           <Panel header="搜索" key="10" extra={genExtra()}>
             <Form onSubmit={this.handleSearch} layout="inline">
               <StandardFormRow title="查询条件" grid last>
                 <Row gutter={16}>
-                  <Col lg={8} md={10} sm={10} xs={24} style={{ marginRight: -88 }}>
+                  <Col xxl={6} xl={8} lg={10} md={12} sm={15} xs={25} style={{ marginRight: -88 }}>
                     <FormItem {...formItemLayout} label="">
                       {getFieldDecorator('searchKey', {
                         rules: [{ required: false, message: '名称不能为空' }],
@@ -132,7 +129,7 @@ class SearchForm extends PureComponent {
                       )}
                     </FormItem>
                   </Col>
-                  <Col lg={8} md={10} sm={10} xs={24}>
+                  <Col xxl={6} xl={8} lg={10} md={12} sm={15} xs={25}>
                     <Button type="primary" htmlType="submit">
                       查询
                     </Button>
@@ -464,6 +461,7 @@ class RedisHome extends PureComponent {
           title={`[${temp.name}]redis连接信息`}
           extra={
             <a
+              title={'删除链接'}
               onClick={e => {
                 e.preventDefault();
                 this.deleteModel(temp);
@@ -472,7 +470,11 @@ class RedisHome extends PureComponent {
               <Icon type="close-circle" theme="twoTone" width={50} height={50} />
             </a>
           }
-          style={{ width: 240 }}
+          style={
+            {
+              /* width: 240 */
+            }
+          }
           hoverable="true"
           onDoubleClick={e => {
             e.preventDefault();
@@ -498,8 +500,16 @@ class RedisHome extends PureComponent {
           ]}
         >
           <p className={styles.pStyle}>名称：{temp.name}</p>
-          <p className={styles.pStyle}>地址：{temp.address}</p>
+          <p className={styles.pStyle}>
+            类型：{temp.type === 1 ? '单机' : temp.type === 2 ? '集群' : '未知'}
+          </p>
+          <p className={styles.pStyle} title={temp.address}>
+            地址：{temp.address}
+          </p>
           <p className={styles.pStyle}>创建时间：{temp.createTime}</p>
+          <p className={styles.pStyle} title={temp.note}>
+            备注：{temp.note ? temp.note : '-'}
+          </p>
         </Card>
       </Col>
     ));
@@ -588,7 +598,7 @@ class RedisHome extends PureComponent {
     return (
       <div>
         <SearchForm />
-        <Row gutter={24} style={{ marginTop: 30 }}>
+        <Row gutter={24} style={{ marginTop: 0 }}>
           <Spin spinning={this.state.dataLoading} delay={500}>
             {colItems}
             <Col {...topColResponsiveProps}>
@@ -596,7 +606,11 @@ class RedisHome extends PureComponent {
                 bordered={false}
                 size="small"
                 title="新建redis连接信息"
-                style={{ width: 240 }}
+                style={
+                  {
+                    /* width: 240 */
+                  }
+                }
                 hoverable="true"
               >
                 <p>
