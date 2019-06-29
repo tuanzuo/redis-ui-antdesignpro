@@ -1,25 +1,19 @@
 /* eslint-disable react/prefer-stateless-function */
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Row,
-  Input,
-  Button,
-  Col,
-  Card,
-  Tree,
-  Modal,
-  DatePicker,
-  Select,
-} from 'antd';
-import styles from "../../List/BasicList.less";
-import moment from "../../List/BasicList";
+
+import ReactZtree from '../../../components/ZTree/ztree'; //封装的tree.js路径
+// 样式文件一定不要忘了引入，不然会没有样式
+import 'ztree/css/zTreeStyle/zTreeStyle.css';
+
+import { Form, Row, Input, Button, Col, Card, Tree, Modal, DatePicker, Select } from 'antd';
+import styles from '../../List/BasicList.less';
+import moment from '../../List/BasicList';
 
 import Result from '@/components/Result';
 
 const FormItem = Form.Item;
-const {TreeNode} = Tree;
+const { TreeNode } = Tree;
 const { TextArea } = Input;
 const SelectOption = Select.Option;
 
@@ -29,21 +23,108 @@ const topColResponsiveProps = {
   md: 12,
   lg: 12,
   xl: 5,
-  style: {marginBottom: 24,margin: 17},
+  style: { marginBottom: 24, margin: 17 },
 };
 
 let id = 0;
 let data = {};
-@connect(({ loading }) => ({
-  submitting: loading.effects['form/submitRegularForm'],
-}))
+let ztreeObj;
+let reactZtreeObj;
+
 @Form.create({ name: 'testuser' })
 class UserTest extends PureComponent {
-  state = { visible: false, done: false };
+  state = {
+    visible: false,
+    done: false,
+    nodes: [
+      {
+        name: '父节点1',
+        id: 0,
+        key: 0,
+        children: [
+          { name: '子节点1', id: 1 ,key: 1},
+          { name: '子节点2', id: 2,key: 2, children: [{ name: '子节点3', id: 3,key: 3 }] },
+        ],
+      },
+    ],
+    renderZtreeFlag: false, //标识是否需要重新渲染ztree
+  };
 
   formLayout = {
     labelCol: { span: 7 },
     wrapperCol: { span: 13 },
+  };
+
+  setting = {
+    view: {
+      showIcon: false,
+      showLine: true,
+      fontCss: { color: '#666' },
+    },
+    data: {
+      simpleData: {
+        enable: false,
+      },
+      key: {
+        children: "children",
+        name: "name",
+        isParent:"",
+      }
+    },
+    check: {
+      enable: true,
+      chkStyle: 'checkbox',
+      chkboxType: { Y: 'ps', N: 'ps' },
+    },
+  };
+
+  // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
+  componentDidMount() {
+    console.log('userinit');
+  }
+
+  handleInitTree = (ztree, reactZtree) => {
+    var ztreeObj = ztree;
+    var reactZtreeObj = reactZtree;
+    console.log(ztreeObj);
+    console.log(reactZtree);
+  };
+
+
+  initTreeData = ()=>{
+    let nodeArray = [
+      {
+        name: 'tz001',
+        open: false,
+        children: [{ name: 'tz001_1' }, { name: 'tz001_2' }],
+      }
+    ];
+    this.setState({
+      nodes: nodeArray,
+      renderZtreeFlag: true,
+    });
+    // 还原renderZtreeFlag
+    this.setState({
+      renderZtreeFlag: false,
+    });
+  };
+
+  handleClick = (event, treeId, treeNode, selectedNodes) => {
+    console.log('handleClick');
+    console.log(treeNode);
+    console.log(selectedNodes);
+
+    console.log("handleClick-end");
+  };
+
+  handleCheck = (event, treeId, treeNode, checkedNodes) => {
+    console.log('check');
+    console.log(treeNode);
+    console.log(checkedNodes);
+  };
+
+  showIconForTree = (treeId, treeNode) => {
+    return !treeNode.isParent;
   };
 
   showModal = () => {
@@ -55,15 +136,30 @@ class UserTest extends PureComponent {
 
   onSelect = (selectedKeys, info) => {
     console.log('selected', selectedKeys, info);
-  }
+    let nodeArray = [
+      {
+        name: 'test3',
+        open: false,
+        children: [{ name: 'test3_1' }, { name: 'test3_2' }],
+      },
+    ];
+    this.setState({
+      nodes: nodeArray,
+      renderZtreeFlag: true,
+    });
+    // 还原renderZtreeFlag
+    this.setState({
+      renderZtreeFlag: false,
+    });
+  };
 
   onCheck = (checkedKeys, info) => {
     console.log('onCheck', checkedKeys, info);
-  }
+  };
 
-  add = (params) => {
-    data[id]=params;
-    console.log(data)
+  add = params => {
+    data[id] = params;
+    console.log(data);
 
     console.log('add');
     const { form } = this.props;
@@ -73,10 +169,10 @@ class UserTest extends PureComponent {
     form.setFieldsValue({
       keys: nextKeys,
     });
-  }
+  };
 
   handleSubmit = e => {
-    const {dispatch, form} = this.props;
+    const { dispatch, form } = this.props;
     e.preventDefault();
     let validFlag = true;
     form.validateFieldsAndScroll((err, values) => {
@@ -95,7 +191,7 @@ class UserTest extends PureComponent {
 
       const keys = form.getFieldValue('keys');
       form.resetFields();
-      form.setFieldsValue({keys: keys});
+      form.setFieldsValue({ keys: keys });
     }
   };
 
@@ -125,21 +221,20 @@ class UserTest extends PureComponent {
       },
     };
 
-
     const { visible, done, current = {} } = this.state;
 
     const { submitting } = this.props;
-    const {getFieldDecorator, getFieldValue} = this.props.form;
-    getFieldDecorator('keys', {initialValue: []});
+    const { getFieldDecorator, getFieldValue } = this.props.form;
+    getFieldDecorator('keys', { initialValue: [] });
     const keys = getFieldValue('keys');
     const colItems = keys.map((k, index) => (
       <Col {...topColResponsiveProps}>
         <Card
           bordered={false}
           size="small"
-          title={data[k].name+"redis连接信息"}
+          title={data[k].name + 'redis连接信息'}
           extra={<a href="#">More</a>}
-          style={{width: 240}}
+          style={{ width: 240 }}
           hoverable="true"
           actions={[<a onClick={this.showModal}>连接信息</a>, <a>数据信息</a>]}
         >
@@ -170,13 +265,8 @@ class UserTest extends PureComponent {
           />
         );
       }
-      return (
-        <div>
-          content
-        </div>
-      );
+      return <div>content</div>;
     };
-
 
     return (
       <div>
@@ -187,74 +277,75 @@ class UserTest extends PureComponent {
               bordered={false}
               size="small"
               title="新建redis连接信息"
-              style={{width: 240}}
+              style={{ width: 240 }}
               hoverable="true"
             >
-              <Form onSubmit={this.handleSubmit} style={{marginTop: 2}}>
-                <FormItem {...formItemLayout} style={{marginBottom: 0}} label={"名称"}>
+              <Form onSubmit={this.handleSubmit} style={{ marginTop: 2 }}>
+                <FormItem {...formItemLayout} style={{ marginBottom: 0 }} label={'名称'}>
                   {getFieldDecorator('name', {
                     rules: [
                       {
                         required: true,
-                        message: "名称不能为空"
+                        message: '名称不能为空',
                       },
                     ],
-                  })(<Input autoComplete={"off"} placeholder={"给redis连接取个名称吧"}/>)}
+                  })(<Input autoComplete={'off'} placeholder={'给redis连接取个名称吧'} />)}
                 </FormItem>
-                <FormItem {...formItemLayout} style={{marginBottom: 0}} label={"地址"}>
+                <FormItem {...formItemLayout} style={{ marginBottom: 0 }} label={'地址'}>
                   {getFieldDecorator('address', {
                     rules: [
                       {
                         required: true,
-                        message: "地址不能为空"
+                        message: '地址不能为空',
                       },
                     ],
-                  })(<Input autoComplete={"off"} placeholder={"redis连接地址"}/>)}
+                  })(<Input autoComplete={'off'} placeholder={'redis连接地址'} />)}
                 </FormItem>
-                <FormItem {...formItemLayout} style={{marginBottom: 0}} label={"密码"}>
+                <FormItem {...formItemLayout} style={{ marginBottom: 0 }} label={'密码'}>
                   {getFieldDecorator('password', {
                     rules: [
                       {
                         required: false,
-                        message: "密码信息"
+                        message: '密码信息',
                       },
                     ],
-                  })(<Input autoComplete={"off"} type={"password"} placeholder={"redis的密码"}/>)}
+                  })(<Input autoComplete={'off'} type={'password'} placeholder={'redis的密码'} />)}
                 </FormItem>
-                <FormItem {...formItemLayout} style={{marginBottom: 0}} label={"key Serializable"}>
+                <FormItem
+                  {...formItemLayout}
+                  style={{ marginBottom: 0 }}
+                  label={'key Serializable'}
+                >
                   {getFieldDecorator('keySer', {
                     rules: [
                       {
                         required: false,
-                        message: "key Serializable"
+                        message: 'key Serializable',
                       },
                     ],
-                  })(
-                    <TextArea
-                      style={{minHeight: 32}}
-                      placeholder={"key序列化"}
-                      rows={4}
-                    />
-                  )}
+                  })(<TextArea style={{ minHeight: 32 }} placeholder={'key序列化'} rows={4} />)}
                 </FormItem>
-                <FormItem {...formItemLayout} style={{marginBottom: 0}} label={"value Serializable"}>
+                <FormItem
+                  {...formItemLayout}
+                  style={{ marginBottom: 0 }}
+                  label={'value Serializable'}
+                >
                   {getFieldDecorator('valueSer', {
                     rules: [
                       {
                         required: false,
-                        message: "value Serializable"
+                        message: 'value Serializable',
                       },
                     ],
-                  })(
-                    <TextArea
-                      style={{minHeight: 32}}
-                      placeholder={"value序列化"}
-                      rows={4}
-                    />
-                  )}
+                  })(<TextArea style={{ minHeight: 32 }} placeholder={'value序列化'} rows={4} />)}
                 </FormItem>
-                <FormItem {...formItemLayout} style={{marginBottom: 0}}>
-                  <Button id="redisSubmitFrom" type="primary" htmlType="submit" loading={submitting}>
+                <FormItem {...formItemLayout} style={{ marginBottom: 0 }}>
+                  <Button
+                    id="redisSubmitFrom"
+                    type="primary"
+                    htmlType="submit"
+                    loading={submitting}
+                  >
                     提交
                   </Button>
                 </FormItem>
@@ -267,7 +358,7 @@ class UserTest extends PureComponent {
               size="small"
               title="tree"
               extra={<a href="#">More</a>}
-              style={{width: 240}}
+              style={{ width: 240 }}
               hoverable="true"
             >
               <Tree
@@ -280,16 +371,41 @@ class UserTest extends PureComponent {
               >
                 <TreeNode title="parent 1" key="0-0">
                   <TreeNode title="parent 1-0" key="0-0-0" disabled>
-                    <TreeNode title="leaf" key="0-0-0-0" disableCheckbox/>
-                    <TreeNode title="leaf" key="0-0-0-1"/>
+                    <TreeNode title="leaf" key="0-0-0-0" disableCheckbox />
+                    <TreeNode title="leaf" key="0-0-0-1" />
                   </TreeNode>
                   <TreeNode title="parent 1-1" key="0-0-1">
-                    <TreeNode title={<span style={{color: '#1890ff'}}>sss</span>} key="0-0-1-0"/>
+                    <TreeNode title={<span style={{ color: '#1890ff' }}>sss</span>} key="0-0-1-0" />
                   </TreeNode>
                 </TreeNode>
               </Tree>
             </Card>
           </Col>
+
+          <Col {...topColResponsiveProps}>
+            <Card
+              bordered={false}
+              size="small"
+              title="ztree"
+              extra={<a href="http://www.treejs.cn">More</a>}
+              style={{ width: 240 }}
+              hoverable="true"
+            >
+              <Button onClick={this.initTreeData}>ZTree重新初始化数据</Button>
+              <ReactZtree
+                nodes={this.state.nodes}
+                renderZtreeFlag={this.state.renderZtreeFlag}
+                ref="ztree"
+                treeName={'tree2'}
+                check={this.setting.check}
+                view={this.setting.view}
+                onInitTree={this.handleInitTree}
+                onClick={this.handleClick}
+                onCheck={this.handleCheck}
+              />
+            </Card>
+          </Col>
+
           <Col>
             <Modal
               title={done ? null : `任务${current.id ? '编辑' : '添加'}`}
@@ -310,4 +426,3 @@ class UserTest extends PureComponent {
 }
 
 export default UserTest;
-

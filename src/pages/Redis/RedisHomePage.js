@@ -599,7 +599,7 @@ class RedisHome extends PureComponent {
       <div>
         <SearchForm />
         <Row gutter={24} style={{ marginTop: 0 }}>
-          <Spin spinning={this.state.dataLoading} delay={500}>
+          <Spin spinning={this.state.dataLoading} delay={100}>
             {colItems}
             <Col {...topColResponsiveProps}>
               <Card
