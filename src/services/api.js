@@ -10,7 +10,6 @@ export async function queryActivities() {
 }
 
 export async function queryRule(params) {
-  console.log('queryRule');
   return request(`http://127.0.0.1/api/rule?${stringify(params)}`);
 }
 
@@ -131,8 +130,6 @@ const apiUrl = 'http://127.0.0.1';
 // const apiUrl="";
 
 export async function queryRedisConfigList(params) {
-  console.log('queryRedisConfigList');
-  console.log(params);
   return request(`${apiUrl}/redis/config/list?${stringify(params)}`);
 }
 
@@ -147,7 +144,6 @@ export async function addRedisConfig(params) {
 }
 
 export async function removeRedisConfig(id) {
-  console.log(id);
   return request(`${apiUrl}/redis/config/del/${id}`);
 }
 
@@ -162,20 +158,14 @@ export async function updateRedisConfig(params) {
 }
 
 export async function initRedisContext(id) {
-  console.log('initRedisContext');
-  console.log(id);
   return request(`${apiUrl}/redis/admin/context/init/${id}`);
 }
 
 export async function queryRedisKeyList(params) {
-  console.log('queryRedisKeyList');
-  console.log(params);
   return request(`${apiUrl}/redis/admin/key/list?${stringify(params)}`);
 }
 
 export async function queryRedisKeyValue(params) {
-  console.log('queryRedisKeyValue');
-  console.log(params);
   return request(`${apiUrl}/redis/admin/key/value`, {
     method: 'POST',
     body: {
@@ -186,8 +176,6 @@ export async function queryRedisKeyValue(params) {
 }
 
 export async function delRedisKeys(params) {
-  console.log('delRedisKeys');
-  console.log(params);
   return request(`${apiUrl}/redis/admin/key/del`, {
     method: 'POST',
     body: {
@@ -198,8 +186,6 @@ export async function delRedisKeys(params) {
 }
 
 export async function setRedisKeyTTL(params) {
-  console.log('setRedisKeyTTL');
-  console.log(params);
   return request(`${apiUrl}/redis/admin/key/setTtl`, {
     method: 'POST',
     body: {
@@ -210,8 +196,6 @@ export async function setRedisKeyTTL(params) {
 }
 
 export async function reNameRedisKey(params) {
-  console.log('reNameRedisKey');
-  console.log(params);
   return request(`${apiUrl}/redis/admin/key/rename`, {
     method: 'POST',
     body: {

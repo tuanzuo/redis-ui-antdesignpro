@@ -221,8 +221,7 @@ class RedisHomeViewForm extends React.Component {
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
   componentDidMount() {
-    console.log(this.state);
-    console.log('redis-HomeView-init');
+    // console.log('redis-HomeView-init');
     const { dispatch } = this.props;
     // 初始化后把当前对象保存到RedisDataUpdateObject变量中去
     RedisHomeViewObject = this;
@@ -317,13 +316,9 @@ class RedisHome extends PureComponent {
   };
 
   componentDidMount() {
-    console.log('redis-home-init');
-
+    // console.log('redis-home-init');
     this.refeshList(searchKeyConst);
-
     const { redisadmin, loading } = this.props;
-    console.log(redisadmin);
-
     // 初始化后把当前对象保存到RedisHomeObject变量中去
     RedisHomeObject = this;
   }
@@ -337,7 +332,6 @@ class RedisHome extends PureComponent {
       type: 'redisadmin/fetchConfigList',
       payload: searchKey,
       callback: () => {
-        console.log('fetchConfigListcallback');
         this.setState({
           dataLoading: false, // 关闭加载中
         });
@@ -372,7 +366,6 @@ class RedisHome extends PureComponent {
   };
 
   showEditModal = item => {
-    console.log(item);
     this.setState({
       visible: true,
       current: item,
@@ -400,8 +393,6 @@ class RedisHome extends PureComponent {
     const { dispatch, form } = this.props;
     const { current } = this.state;
     const id = current ? current.id : '';
-    console.log(current);
-
     setTimeout(() => this.addBtn.blur(), 0);
     form.validateFieldsAndScroll((err, fieldsValue) => {
       if (err) return;
@@ -414,16 +405,11 @@ class RedisHome extends PureComponent {
       const values = {
         ...fieldsValue,
       };
-
-      console.log(values);
-
       // 保存数据到后台
       dispatch({
         type: id ? 'redisadmin/updateConfig' : 'redisadmin/addConfig',
         payload: { id, ...values },
         callback: () => {
-          console.log(id ? 'true' : 'false');
-          console.log('submitcallback');
           this.refeshList(searchKeyConst);
         },
       });
@@ -431,8 +417,6 @@ class RedisHome extends PureComponent {
   };
 
   deleteItem = id => {
-    console.log(id);
-
     const { dispatch } = this.props;
     dispatch({
       type: 'redisadmin/removeConfig',

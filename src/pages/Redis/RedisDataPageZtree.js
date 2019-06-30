@@ -29,7 +29,6 @@ import { findDOMNode } from 'react-dom';
 import styles from './RedisDataPage.less';
 import StandardFormRow from '@/components/StandardFormRow';
 
-
 import ReactZtree from '../../components/ZTree/ztree'; //封装的tree.js路径
 // 样式文件一定不要忘了引入，不然会没有样式
 import 'ztree/css/zTreeStyle/zTreeStyle.css';
@@ -91,15 +90,13 @@ class SearchFormZtree extends PureComponent {
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
   componentDidMount() {
-    console.log('redis-searchfrom-init');
+    // console.log('redis-searchfrom-init');
     // 初始化后把当前对象保存到RedisDataSearchObject变量中去
     RedisDataSearchObject = this;
   }
 
   // 查询
   handleSearch = e => {
-    console.log('search');
-
     e.preventDefault();
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
@@ -217,27 +214,20 @@ class RedisDataUpdateFormZtree extends React.Component {
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
   componentDidMount() {
-    console.log(this.state);
-
-    console.log('redis-dataupdate-init');
+    // console.log('redis-dataupdate-init');
     const { dispatch } = this.props;
-
     // 初始化后把当前对象保存到RedisDataUpdateObject变量中去
     RedisDataUpdateObject = this;
   }
 
   // 显示keyValue修改的抽屉页面
   showDrawer = () => {
-    console.log('drawer', currentKey, currentKeyValue);
     let currentKeyOne = {};
     if (currentKey && currentKey.length > 0) {
-      // eslint-disable-next-line prefer-destructuring
       currentKeyOne = currentKey[0];
-      console.log(currentKeyOne);
     } else {
       message.warning('请先选中一个key!');
     }
-
     if (currentKeyOne.title && currentKeyValue.keyType) {
       let titleName = currentKeyOne.title;
       if (titleName && titleName.length > 60) {
@@ -299,24 +289,17 @@ class RedisDataUpdateFormZtree extends React.Component {
     const { data } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      console.log('reNameKey');
-      console.log(id);
-      console.log(data.key);
-      console.log(fieldsValue);
-
       const oldKey = data.key;
       const values = {
         id,
         oldKey,
         ...fieldsValue,
       };
-      console.log(values);
       // 保存数据到后台
       dispatch({
         type: 'redisadmin/reNameKey',
         payload: { ...values },
         callback: () => {
-          console.log('reNameKeycallback');
           this.updateKeyButtonContent(tempKey);
           this.onClose();
           // 重新执行查询操作
@@ -394,28 +377,21 @@ class RedisDataUpdateFormZtree extends React.Component {
     const { data } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      console.log('reSetTTL');
-      console.log(id);
-      console.log(data.key);
-      console.log(fieldsValue);
-
       const key = data.key;
       const values = {
         id,
         key,
         ...fieldsValue,
       };
-      console.log(values);
       // 保存数据到后台
       dispatch({
         type: 'redisadmin/setKeyTTL',
         payload: { ...values },
         callback: () => {
-          console.log('reSetTTLcallback');
           this.updateTTLButtonContent(tempKey);
           this.onClose();
           // 重新执行选中操作
-          RedisDataObject.onSelect(null,null,onSelectParams.selectedKeys, onSelectParams.info);
+          RedisDataObject.onSelect(null, null, onSelectParams.selectedKeys, onSelectParams.info);
         },
       });
     });
@@ -536,10 +512,10 @@ class RedisDataZtree extends PureComponent {
         enable: false,
       },
       key: {
-        children: "children",
-        name: "name",
-        isParent:"",
-      }
+        children: 'children',
+        name: 'name',
+        isParent: '',
+      },
     },
     check: {
       enable: true,
@@ -550,20 +526,15 @@ class RedisDataZtree extends PureComponent {
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
   componentDidMount() {
-    console.log(this.state);
-
-    console.log('redis-data-init');
+    // console.log('redis-data-init');
     const { dispatch, match } = this.props;
     const { params } = match;
-    console.log(params.id);
-
     id = params.id;
     // 初始化redis上下文
     dispatch({
       type: 'redisadmin/initContext',
       payload: id,
       callback: () => {
-        console.log('initContextcallback');
         const searchParam = { id, searchKey: '*' };
         this.searchKeyList(searchParam);
         // 初始化后把当前对象保存到RedisDataObject变量中去
@@ -582,7 +553,6 @@ class RedisDataZtree extends PureComponent {
       type: 'redisadmin/fetchKeyList',
       payload: searchParam,
       callback: () => {
-        console.log('fetchKeyListcallback');
         const { redisadmin } = this.props;
         const { keyList } = redisadmin;
         this.setState({
@@ -612,7 +582,6 @@ class RedisDataZtree extends PureComponent {
       type: 'redisadmin/fetchKeyValue',
       payload: params,
       callback: () => {
-        console.log('fetchKeyValuecallback');
         const { redisadmin } = this.props;
 
         this.setState({
@@ -672,7 +641,6 @@ class RedisDataZtree extends PureComponent {
       type: 'redisadmin/delKeys',
       payload: params,
       callback: () => {
-        console.log('delKeyscallback');
         this.searchKeyList(searchKeyConst);
       },
     });
@@ -706,18 +674,11 @@ class RedisDataZtree extends PureComponent {
 
   // ztree初始化后的回调方法
   handleInitTree = (ztree, reactZtree) => {
-    console.log("handleInitTree")
     ztreeObj = ztree;
     reactZtreeObj = reactZtree;
-    console.log(ztreeObj);
-    console.log(reactZtree);
   };
 
   onSelect = (event, treeId, treeNode, selectedNodes) => {
-    console.log('selected');
-    console.log(treeNode);
-    console.log(selectedNodes);
-
     onSelectParams.selectedKeys = treeNode;
     onSelectParams.info = selectedNodes;
 
@@ -727,7 +688,6 @@ class RedisDataZtree extends PureComponent {
         id,
         searchKey: treeNode.key,
       };
-      console.log(params);
       this.searchKeyValue(params, treeNode);
     } else {
       this.initCurrentKeyForNull();
@@ -737,14 +697,11 @@ class RedisDataZtree extends PureComponent {
   // 选中节点
   onCheck = (event, treeId, treeNode, checkedNodes) => {
     this.initCurrentCheckedKeys();
-    console.log('onCheck');
-    debugger;
     checkedNodes.forEach(temp => {
       if (temp.isLeaf) {
         currentCheckedKeys.push(temp.key);
       }
     });
-    console.log(currentCheckedKeys);
   };
 
   // 得到TTL显示的html
@@ -767,7 +724,7 @@ class RedisDataZtree extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { visible, done, current , currentKey = {} } = this.state;
+    const { visible, done, current, currentKey = {} } = this.state;
 
     // 右边的内容(key对应的value数据)
     const contentRight = currentKey.map((k, index) => (

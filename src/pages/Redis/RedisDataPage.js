@@ -82,15 +82,13 @@ class SearchForm extends PureComponent {
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
   componentDidMount() {
-    console.log('redis-searchfrom-init');
+    // console.log('redis-searchfrom-init');
     // 初始化后把当前对象保存到RedisDataSearchObject变量中去
     RedisDataSearchObject = this;
   }
 
   // 查询
   handleSearch = e => {
-    console.log('search');
-
     e.preventDefault();
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
@@ -208,23 +206,18 @@ class RedisDataUpdateForm extends React.Component {
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
   componentDidMount() {
-    console.log(this.state);
-
-    console.log('redis-dataupdate-init');
+    // console.log('redis-dataupdate-init');
     const { dispatch } = this.props;
-
     // 初始化后把当前对象保存到RedisDataUpdateObject变量中去
     RedisDataUpdateObject = this;
   }
 
   // 显示keyValue修改的抽屉页面
   showDrawer = () => {
-    console.log('drawer', currentKey, currentKeyValue);
     let currentKeyOne = {};
     if (currentKey && currentKey.length > 0) {
       // eslint-disable-next-line prefer-destructuring
       currentKeyOne = currentKey[0];
-      console.log(currentKeyOne);
     } else {
       message.warning('请先选中一个key!');
     }
@@ -290,24 +283,17 @@ class RedisDataUpdateForm extends React.Component {
     const { data } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      console.log('reNameKey');
-      console.log(id);
-      console.log(data.key);
-      console.log(fieldsValue);
-
       const oldKey = data.key;
       const values = {
         id,
         oldKey,
         ...fieldsValue,
       };
-      console.log(values);
       // 保存数据到后台
       dispatch({
         type: 'redisadmin/reNameKey',
         payload: { ...values },
         callback: () => {
-          console.log('reNameKeycallback');
           this.updateKeyButtonContent(tempKey);
           this.onClose();
           // 重新执行查询操作
@@ -385,24 +371,17 @@ class RedisDataUpdateForm extends React.Component {
     const { data } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      console.log('reSetTTL');
-      console.log(id);
-      console.log(data.key);
-      console.log(fieldsValue);
-
       const key = data.key;
       const values = {
         id,
         key,
         ...fieldsValue,
       };
-      console.log(values);
       // 保存数据到后台
       dispatch({
         type: 'redisadmin/setKeyTTL',
         payload: { ...values },
         callback: () => {
-          console.log('reSetTTLcallback');
           this.updateTTLButtonContent(tempKey);
           this.onClose();
           // 重新执行选中操作
@@ -517,20 +496,15 @@ class RedisData extends PureComponent {
 
   // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
   componentDidMount() {
-    console.log(this.state);
-
-    console.log('redis-data-init');
+    // console.log('redis-data-init');
     const { dispatch, match } = this.props;
     const { params } = match;
-    console.log(params.id);
-
     id = params.id;
     // 初始化redis上下文
     dispatch({
       type: 'redisadmin/initContext',
       payload: id,
       callback: () => {
-        console.log('initContextcallback');
         const searchParam = { id, searchKey: '*' };
         this.searchKeyList(searchParam);
         // 初始化后把当前对象保存到RedisDataObject变量中去
@@ -549,7 +523,6 @@ class RedisData extends PureComponent {
       type: 'redisadmin/fetchKeyList',
       payload: searchParam,
       callback: () => {
-        console.log('fetchKeyListcallback');
         const { redisadmin } = this.props;
         const { keyList } = redisadmin;
         this.setState({
@@ -574,7 +547,6 @@ class RedisData extends PureComponent {
       type: 'redisadmin/fetchKeyValue',
       payload: params,
       callback: () => {
-        console.log('fetchKeyValuecallback');
         const { redisadmin } = this.props;
         this.setState({
           keyValueLoading: false, // 关闭加载中
@@ -634,7 +606,6 @@ class RedisData extends PureComponent {
       type: 'redisadmin/delKeys',
       payload: params,
       callback: () => {
-        console.log('delKeyscallback');
         this.searchKeyList(searchKeyConst);
       },
     });
@@ -666,36 +637,27 @@ class RedisData extends PureComponent {
     onSelectParams.selectedKeys = selectedKeys;
     onSelectParams.info = info;
 
-    console.log('selected');
-
     // 是叶子节点才给当前key设置值
     if (info.node.props.isLeaf) {
       const params = {
         id,
         searchKey: info.node.props.eventKey,
       };
-      console.log(params);
       this.searchKeyValue(params, info.node);
     } else {
       this.initCurrentKeyForNull();
     }
-    console.log(currentKey);
   };
 
   // 选中节点
   onCheck = (checkedKeys, info) => {
     this.initCurrentCheckedKeys();
-    console.log('onCheck', checkedKeys, info);
-    console.log(info.checkedNodes);
 
     info.checkedNodes.forEach(temp => {
-      console.log(temp.props.isLeaf);
-      console.log(temp.props.dataRef.key);
       if (temp.props.isLeaf) {
         currentCheckedKeys.push(temp.props.dataRef.key);
       }
     });
-    console.log(currentCheckedKeys);
   };
 
   // 得到TTL显示的html
@@ -722,8 +684,8 @@ class RedisData extends PureComponent {
       }
       setTimeout(() => {
         treeNode.props.dataRef.children = [
-          {title: 'Child Node', key: `${treeNode.props.eventKey}-0`},
-          {title: 'Child Node', key: `${treeNode.props.eventKey}-1`},
+          { title: 'Child Node', key: `${treeNode.props.eventKey}-0` },
+          { title: 'Child Node', key: `${treeNode.props.eventKey}-1` },
         ];
         this.setState({
           treeData: [...this.state.treeData],

@@ -9,7 +9,7 @@ module.exports = {
   menu: {
     disableLocal: false,
   },
-  title: 'Ant Design Pro',
+  title: 'Redis Manager',
   pwa: true,
   // your iconfont Symbol Scrip Url
   // eg：//at.alicdn.com/t/font_1039637_btcrd5co4w.js

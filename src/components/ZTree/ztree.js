@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, } from 'antd';
+import { Button } from 'antd';
 // 需要提前安装md5-->npm install md5 --save
 // import md5 from "md5"; // 加载md5
 // import { stringify } from 'qs';
@@ -14,7 +14,6 @@ let className = 'dark',
 let renderZtreeDomFlag = false;
 
 export default class ReactZtree extends Component {
-
   constructor(props) {
     super(props);
   }
@@ -28,7 +27,7 @@ export default class ReactZtree extends Component {
   };
 
   // 在组件接收到一个新的 prop (更新后)时被调用。这个方法在初始化render时不会被调用。
-  componentWillReceiveProps = (nextProps) => {
+  componentWillReceiveProps = nextProps => {
     // console.log("ztree-componentWillReceiveProps");
     // 比较之前的属性和当前传入的属性他们的Md5是否相等,如果相等说明没有改变，不重新渲染ztree；
     // 否则就需要重新渲染ztree，从而设置renderZtreeDomFlag为true
@@ -296,10 +295,15 @@ export default class ReactZtree extends Component {
   render() {
     return (
       <div>
-        <Button size="small" onClick={this.expandAll}>展开全部</Button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <Button size="small" onClick={this.expandAll}>
+          展开全部
+        </Button>
         &nbsp;&nbsp;
-        <Button size="small" onClick={this.foldAll}>折叠全部</Button>
-        <div className="ztree" ref="ztree" id={`ztree_${ztreeIndex++}`}/>
+        <Button size="small" onClick={this.foldAll}>
+          折叠全部
+        </Button>
+        <div className="ztree" ref="ztree" id={`ztree_${ztreeIndex++}`} />
       </div>
     );
   }
