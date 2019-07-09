@@ -445,7 +445,7 @@ class RedisHome extends PureComponent {
           title={`[${temp.name}]redis连接信息`}
           extra={
             <a
-              title={'删除链接'}
+              title={'删除连接信息'}
               onClick={e => {
                 e.preventDefault();
                 this.deleteModel(temp);

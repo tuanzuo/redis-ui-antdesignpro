@@ -414,6 +414,64 @@ class RedisDataUpdateForm extends React.Component {
     );
   };
 
+  // -------value--------
+  getValueContent = () => {
+    const { getFieldDecorator } = this.props.form;
+    const { data, optKey } = this.state;
+    if (data && data.keyType === 'string') {
+      return (
+        <Form.Item label="value:">
+          {getFieldDecorator('keyValue', {
+            rules: [
+              {
+                required: false,
+                message: 'please keyValue',
+              },
+            ],
+            initialValue: JSON.stringify(data.keyValue),
+          })(<Input.TextArea rows={6} placeholder="please keyValue" />)}
+        </Form.Item>
+      );
+    }
+    return <Form.Item label="value:">{JSON.stringify(data.keyValue)}</Form.Item>;
+  };
+
+  updateValue = tempKey => {
+    const { dispatch, form } = this.props;
+    const { data } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const oldKey = data.key;
+      const values = {
+        id,
+        oldKey,
+        ...fieldsValue,
+      };
+      // 保存数据到后台
+      dispatch({
+        type: 'redisadmin/updateValue',
+        payload: { ...values },
+        callback: () => {
+          this.updateKeyButtonContent(tempKey);
+          this.onClose();
+          // 重新执行查询操作
+          RedisDataObject.searchKeyList(searchKeyConst);
+        },
+      });
+    });
+  };
+
+  getValueButtonContent = () => {
+    return (
+      <Form.Item label="&nbsp;&nbsp;">
+        <Button size="small" onClick={() => this.updateValue('')}>
+          保存
+        </Button>
+      </Form.Item>
+    );
+  };
+
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const { data } = this.state;
@@ -435,17 +493,12 @@ class RedisDataUpdateForm extends React.Component {
             </Row>
             <Row gutter={16}>
               <Col span={24}>
-                <Form.Item label="Description">
-                  {getFieldDecorator('description', {
-                    rules: [
-                      {
-                        required: true,
-                        message: 'please enter url description',
-                      },
-                    ],
-                    initialValue: JSON.stringify(data.keyValue),
-                  })(<Input.TextArea rows={4} placeholder="please enter url description" />)}
-                </Form.Item>
+                {this.getValueContent()}
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={24}>
+                {this.getValueButtonContent()}
               </Col>
             </Row>
           </Form>
@@ -462,11 +515,11 @@ class RedisDataUpdateForm extends React.Component {
             }}
           >
             <Button onClick={this.onClose} style={{ marginRight: 8 }}>
-              Cancel
+              Close
             </Button>
-            <Button onClick={this.onClose} type="primary">
+            {/*<Button onClick={this.onClose} type="primary">
               Submit
-            </Button>
+            </Button>*/}
           </div>
         </Drawer>
       </div>
@@ -488,6 +541,8 @@ class RedisData extends PureComponent {
     ], */
     treeData: [],
     currentKeyData: [],
+    keyValueIsJson: false,
+    keyValueType: null,
     visible: false,
     done: false,
     treeLoading: true, // 开启tree加载中
@@ -554,23 +609,61 @@ class RedisData extends PureComponent {
         const { keyValue } = redisadmin;
         currentKeyValue = keyValue;
 
+        // 当前key对应value的类型
+        let currentKeyValueType;
         try {
           if (currentKeyValue.value && typeof currentKeyValue.value === 'string') {
             currentKeyValueToJsonValue = JSON.parse(currentKeyValue.value);
+            currentKeyValueType = 'string';
+          } else if (currentKeyValue.value && typeof currentKeyValue.value === 'object') {
+            currentKeyValueToJsonValue = JSON.parse(JSON.stringify(currentKeyValue.value));
+            currentKeyValueType = 'object';
           } else {
             currentKeyValueToJsonValue = currentKeyValue.value;
           }
         } catch (error) {
+          // console.log("error", currentKeyValue);
           currentKeyValueToJsonValue = currentKeyValue.value;
+        }
+        // 当前key对应的value是否是json
+        let isJsonKeyValue;
+        switch (currentKeyValueType) {
+          case 'string':
+            isJsonKeyValue = this.isJSON(currentKeyValue.value);
+            break;
+          case 'object':
+            isJsonKeyValue = this.isJSON(JSON.stringify(currentKeyValue.value));
+            break;
         }
 
         currentKey[0] = node.props;
 
         this.setState({
+          keyValueIsJson: isJsonKeyValue,
+          keyValueType: currentKeyValueType,
           currentKeyData: currentKey,
         });
       },
     });
+  };
+
+  // 判断是否是json
+  isJSON = (str) => {
+    if (typeof str == 'string') {
+      try {
+        var obj = JSON.parse(str);
+        if (typeof obj == 'object' && obj) {
+          return true;
+        } else {
+          return false;
+        }
+
+      } catch (e) {
+        console.log('error：' + str + '!!!' + e);
+        return false;
+      }
+    }
+    console.log('It is not a string!')
   };
 
   deleteModel = params => {
@@ -706,11 +799,46 @@ class RedisData extends PureComponent {
       return <TreeNode {...item} dataRef={item} />;
     });
 
+  getJSONPrettyHtml = (keyValueIsJson, currentKeyValueData, currentKeyValueType) => {
+    let keyValue = "";
+    switch (currentKeyValueType) {
+      case 'string':
+        keyValue = currentKeyValueData.value;
+        break;
+      case 'object':
+        keyValue = JSON.stringify(currentKeyValueData.value);
+        break;
+      default:
+        keyValue = JSON.stringify(currentKeyValueData.value);
+        break;
+    }
+    if (keyValueIsJson) {
+      return (
+        <JSONPretty id="json-pretty" data={keyValue}/>
+      );
+    }
+    return keyValue;
+  };
+
+  getReactJsonHtml = (keyValueIsJson)=>{
+    if(keyValueIsJson){
+      return (
+        <ReactJson
+          name="JsonValue"
+          src={currentKeyValueToJsonValue}
+          displayDataTypes={false}
+          onEdit={false}
+          theme="monokai"
+        />
+      );
+    }
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { visible, done, current, currentKeyData = {} } = this.state;
+    const {visible, done, current, currentKeyData, keyValueIsJson, keyValueType = {}} = this.state;
 
     // 右边的内容(key对应的value数据)
     const contentRight = currentKeyData.map((k, index) => (
@@ -723,15 +851,9 @@ class RedisData extends PureComponent {
         <p key={k.eventKey + 1} />
         <Paragraph ellipsis={{ rows: 1, expandable: true }}>key：{k.eventKey}</Paragraph>
         <Paragraph ellipsis={{ rows: 10, expandable: true }}>
-          value：
-          <JSONPretty id="json-pretty" data={currentKeyValue.value} />
+          value：{this.getJSONPrettyHtml(keyValueIsJson, currentKeyValue, keyValueType)}
         </Paragraph>
-        <ReactJson
-          name="JsonValue"
-          src={currentKeyValueToJsonValue}
-          displayDataTypes={false}
-          theme="monokai"
-        />
+        {this.getReactJsonHtml(keyValueIsJson)}
       </Card>
     ));
 
