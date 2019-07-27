@@ -1,7 +1,7 @@
 import {
   queryRedisConfigList, addRedisConfig, removeRedisConfig, updateRedisConfig,
   initRedisContext, queryRedisKeyList, queryRedisKeyValue, delRedisKeys,
-  setRedisKeyTTL, reNameRedisKey,
+  setRedisKeyTTL, reNameRedisKey,updateKeyValue,
 } from '@/services/api';
 
 export default {
@@ -89,6 +89,14 @@ export default {
     },
     *reNameKey({ payload, callback }, { call, put }) {
       const response = yield call(reNameRedisKey, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback();
+    },
+    *updateKeyValue({ payload, callback }, { call, put }) {
+      const response = yield call(updateKeyValue, payload);
       yield put({
         type: 'save',
         payload: response,

@@ -204,3 +204,13 @@ export async function reNameRedisKey(params) {
     },
   });
 }
+
+export async function updateKeyValue(params) {
+  return request(`${apiUrl}/redis/admin/key/updateValue`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
