@@ -43,12 +43,12 @@ const formItemLayout = {
 };
 
 const searchColButton = {
-  xs: 25,
-  sm: 15,
+  xs: 24,
+  sm: 5,
   md: 6,
-  lg: 7,
+  lg: 6,
   xl: 6,
-  xxl: 10,
+  xxl: 6,
 };
 
 // RedisData搜索对象
@@ -154,14 +154,14 @@ class SearchForm extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <StandardFormRow title="查询条件" grid last>
           <Row gutter={24}>
-            <Col xxl={3} xl={5} lg={8} md={9} sm={10} xs={24}>
+            <Col xxl={3} xl={5} lg={6} md={8} sm={8} xs={6}>
               <FormItem label="">
                 {getFieldDecorator('searchKey', {
                   rules: [{ required: false, message: '名称不能为空' }],
                 })(<Input autoComplete="off" placeholder="" />)}
               </FormItem>
             </Col>
-            <Col xxl={3} xl={5} lg={8} md={9} sm={10} xs={24}>
+            <Col xxl={21} xl={19} lg={18} md={16} sm={16} xs={18}>
               <Row gutter={24} style={{ width: '350px' }}>
                 <Col {...searchColButton}>
                   <Button type="primary" htmlType="submit">
@@ -260,7 +260,7 @@ class RedisDataUpdateForm extends React.Component {
     const { data, optKey } = this.state;
     if (optKey && optKey === 'update') {
       return (
-        <Form.Item label="key:">
+        <Form.Item label="key：">
           {getFieldDecorator('key', {
             rules: [{ required: true, message: 'Please enter key name' }],
             initialValue: data.key,
@@ -268,7 +268,7 @@ class RedisDataUpdateForm extends React.Component {
         </Form.Item>
       );
     }
-    return <Form.Item label="key:">{data.key}</Form.Item>;
+    return <Form.Item label="key：">{data.key}</Form.Item>;
   };
 
   updateKeyButtonContent = key => {
@@ -339,7 +339,7 @@ class RedisDataUpdateForm extends React.Component {
     const { data, optTTL } = this.state;
     if (optTTL && optTTL === 'update') {
       return (
-        <Form.Item label="ttl:">
+        <Form.Item label="ttl：">
           {getFieldDecorator('expireTime', {
             rules: [{ required: true, message: 'Please enter expireTime' }],
             initialValue: data.expireTime,
@@ -356,7 +356,7 @@ class RedisDataUpdateForm extends React.Component {
         </Form.Item>
       );
     } */
-    return <Form.Item label="ttl:">{data.expireTime}</Form.Item>;
+    return <Form.Item label="ttl：">{data.expireTime}</Form.Item>;
   };
 
   updateTTLButtonContent = key => {
@@ -420,7 +420,7 @@ class RedisDataUpdateForm extends React.Component {
     const { data, optKey } = this.state;
     if (data && data.keyType === 'string') {
       return (
-        <Form.Item label="value:">
+        <Form.Item label="value：">
           {getFieldDecorator('keyValue', {
             rules: [
               {
@@ -433,7 +433,7 @@ class RedisDataUpdateForm extends React.Component {
         </Form.Item>
       );
     }
-    return <Form.Item label="value:">{JSON.stringify(data.keyValue)}</Form.Item>;
+    return <Form.Item label="value：">{JSON.stringify(data.keyValue)}</Form.Item>;
   };
 
   updateValue = tempKey => {
@@ -471,7 +471,6 @@ class RedisDataUpdateForm extends React.Component {
     );
   };
 
-
   render() {
     const { getFieldDecorator } = this.props.form;
     const { data } = this.state;
@@ -492,14 +491,10 @@ class RedisDataUpdateForm extends React.Component {
               <Col span={4}>{this.getTTLButtonContent()}</Col>
             </Row>
             <Row gutter={16}>
-              <Col span={24}>
-                {this.getValueContent()}
-              </Col>
+              <Col span={24}>{this.getValueContent()}</Col>
             </Row>
             <Row gutter={16}>
-              <Col span={24}>
-                {this.getValueButtonContent()}
-              </Col>
+              <Col span={24}>{this.getValueButtonContent()}</Col>
             </Row>
           </Form>
           <div
@@ -648,7 +643,7 @@ class RedisData extends PureComponent {
   };
 
   // 判断是否是json
-  isJSON = (str) => {
+  isJSON = str => {
     if (typeof str == 'string') {
       try {
         var obj = JSON.parse(str);
@@ -657,13 +652,12 @@ class RedisData extends PureComponent {
         } else {
           return false;
         }
-
       } catch (e) {
         console.log('error：' + str + '!!!' + e);
         return false;
       }
     }
-    console.log('It is not a string!')
+    console.log('It is not a string!');
   };
 
   deleteModel = params => {
@@ -800,7 +794,7 @@ class RedisData extends PureComponent {
     });
 
   getJSONPrettyHtml = (keyValueIsJson, currentKeyValueData, currentKeyValueType) => {
-    let keyValue = "";
+    let keyValue = '';
     switch (currentKeyValueType) {
       case 'string':
         keyValue = currentKeyValueData.value;
@@ -813,15 +807,13 @@ class RedisData extends PureComponent {
         break;
     }
     if (keyValueIsJson) {
-      return (
-        <JSONPretty id="json-pretty" data={keyValue}/>
-      );
+      return <JSONPretty id="json-pretty" data={keyValue} />;
     }
     return keyValue;
   };
 
-  getReactJsonHtml = (keyValueIsJson)=>{
-    if(keyValueIsJson){
+  getReactJsonHtml = keyValueIsJson => {
+    if (keyValueIsJson) {
       return (
         <ReactJson
           name="JsonValue"
@@ -838,7 +830,14 @@ class RedisData extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const {visible, done, current, currentKeyData, keyValueIsJson, keyValueType = {}} = this.state;
+    const {
+      visible,
+      done,
+      current,
+      currentKeyData,
+      keyValueIsJson,
+      keyValueType = {},
+    } = this.state;
 
     // 右边的内容(key对应的value数据)
     const contentRight = currentKeyData.map((k, index) => (

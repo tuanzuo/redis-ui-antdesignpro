@@ -120,7 +120,7 @@ class SearchForm extends PureComponent {
             <Form onSubmit={this.handleSearch} layout="inline">
               <StandardFormRow title="查询条件" grid last>
                 <Row gutter={16}>
-                  <Col xxl={6} xl={8} lg={10} md={12} sm={15} xs={25} style={{ marginRight: -88 }}>
+                  <Col xxl={6} xl={8} lg={10} md={12} sm={15} xs={24} style={{ marginRight: -88 }}>
                     <FormItem {...formItemLayout} label="">
                       {getFieldDecorator('searchKey', {
                         rules: [{ required: false, message: '名称不能为空' }],
@@ -129,7 +129,7 @@ class SearchForm extends PureComponent {
                       )}
                     </FormItem>
                   </Col>
-                  <Col xxl={6} xl={8} lg={10} md={12} sm={15} xs={25}>
+                  <Col xxl={6} xl={8} lg={10} md={12} sm={15} xs={24}>
                     <Button type="primary" htmlType="submit">
                       查询
                     </Button>
