@@ -825,7 +825,7 @@ class RedisData extends PureComponent {
         keyValue = JSON.stringify(currentKeyValueData.value);
         break;
       default:
-        keyValue = JSON.stringify(currentKeyValueData.value);
+        keyValue = currentKeyValueData.value;
         break;
     }
     /*if (keyValueIsJson) {
