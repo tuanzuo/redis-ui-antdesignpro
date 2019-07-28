@@ -232,12 +232,12 @@ class RedisDataUpdateForm extends React.Component {
       let stringValueTemp = '';
       if (currentKeyValue.keyType && 'string' === currentKeyValue.keyType) {
         try {
-          if (currentKeyValue.value && typeof currentKeyValue.value === 'string') {
+          if (typeof currentKeyValue.value === 'string') {
             stringValueTemp = currentKeyValue.value;
-          } else if (currentKeyValue.value && typeof currentKeyValue.value === 'object') {
+          } else if (typeof currentKeyValue.value === 'object') {
             stringValueTemp = JSON.stringify(currentKeyValue.value)
           } else {
-            stringValueTemp = currentKeyValue.value;
+            stringValueTemp = currentKeyValue.value + '';
           }
         } catch (error) {
           stringValueTemp = currentKeyValue.value;
@@ -625,14 +625,19 @@ class RedisData extends PureComponent {
         });
         const { keyValue } = redisadmin;
         currentKeyValue = keyValue;
-
         // 当前key对应value的类型
         let currentKeyValueType;
         try {
-          if (currentKeyValue.value && typeof currentKeyValue.value === 'string') {
+          if (typeof currentKeyValue.value === 'boolean') {
+            currentKeyValueToJsonValue = currentKeyValue.value;
+            currentKeyValueType = 'boolean';
+          }else if (typeof currentKeyValue.value === 'number') {
+            currentKeyValueToJsonValue = currentKeyValue.value;
+            currentKeyValueType = 'number';
+          }else if (typeof currentKeyValue.value === 'string') {
             currentKeyValueToJsonValue = JSON.parse(currentKeyValue.value);
             currentKeyValueType = 'string';
-          } else if (currentKeyValue.value && typeof currentKeyValue.value === 'object') {
+          } else if (typeof currentKeyValue.value === 'object') {
             currentKeyValueToJsonValue = JSON.parse(JSON.stringify(currentKeyValue.value));
             currentKeyValueType = 'object';
           } else {
@@ -825,7 +830,7 @@ class RedisData extends PureComponent {
         keyValue = JSON.stringify(currentKeyValueData.value);
         break;
       default:
-        keyValue = currentKeyValueData.value;
+        keyValue = currentKeyValueData.value + '';
         break;
     }
     /*if (keyValueIsJson) {
@@ -858,7 +863,7 @@ class RedisData extends PureComponent {
       current,
       currentKeyData,
       keyValueIsJson,
-      keyValueType = {},
+      keyValueType,
     } = this.state;
 
     // 右边的内容(key对应的value数据)

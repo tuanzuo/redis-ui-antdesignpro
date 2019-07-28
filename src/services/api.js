@@ -161,6 +161,10 @@ export async function initRedisContext(id) {
   return request(`${apiUrl}/redis/admin/context/init/${id}`);
 }
 
+export async function clearRedisTemplateCache(id) {
+  return request(`${apiUrl}/redis/admin/context/cache/clear/${id}`);
+}
+
 export async function queryRedisKeyList(params) {
   return request(`${apiUrl}/redis/admin/key/list?${stringify(params)}`);
 }

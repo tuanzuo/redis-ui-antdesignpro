@@ -23,6 +23,7 @@ import {
   Popconfirm,
   Spin,
   Drawer,
+  message,
 } from 'antd';
 
 import { findDOMNode } from 'react-dom';
@@ -47,6 +48,15 @@ const formItemLayout = {
   //   xs: { span: 24 },
   //   sm: { span: 16 },
   // },
+};
+
+const searchColButton = {
+  xs: 15,
+  sm: 10,
+  md: 5,
+  lg: 4,
+  xl: 3,
+  xxl: 2,
 };
 
 // RedisHome对象
@@ -120,7 +130,7 @@ class SearchForm extends PureComponent {
             <Form onSubmit={this.handleSearch} layout="inline">
               <StandardFormRow title="查询条件" grid last>
                 <Row gutter={16}>
-                  <Col xxl={6} xl={8} lg={10} md={12} sm={15} xs={24} style={{ marginRight: -88 }}>
+                  <Col xxl={3} xl={4} lg={6} md={7} sm={10} xs={10} style={{  }}>
                     <FormItem {...formItemLayout} label="">
                       {getFieldDecorator('searchKey', {
                         rules: [{ required: false, message: '名称不能为空' }],
@@ -129,11 +139,11 @@ class SearchForm extends PureComponent {
                       )}
                     </FormItem>
                   </Col>
-                  <Col xxl={6} xl={8} lg={10} md={12} sm={15} xs={24}>
+                  <Col xxl={21} xl={20} lg={18} md={17} sm={12} xs={12}>
                     <Button type="primary" htmlType="submit">
                       查询
                     </Button>
-                    <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                    <Button style={{marginLeft:'10px'}} onClick={this.handleFormReset}>
                       重置
                     </Button>
                   </Col>
@@ -343,6 +353,17 @@ class RedisHome extends PureComponent {
     router.push(`/redis/data/${id}`);
   };
 
+  clearRedisTemplateCache = temp => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'redisadmin/clearCache',
+      payload: temp.id,
+      callback: () => {
+        message.info(temp.name + ' cleaning the cache successfully!');
+      },
+    });
+  };
+
   showModal = () => {
     this.setState({
       visible: true,
@@ -468,18 +489,32 @@ class RedisHome extends PureComponent {
             <a
               onClick={e => {
                 e.preventDefault();
+                this.toRedisDataPage(temp.id);
+              }}
+            >
+              <Icon type="database" />
+              &nbsp;
+              数据信息
+            </a>,
+            <a
+              onClick={e => {
+                e.preventDefault();
                 this.showEditModal(temp);
               }}
             >
+              <Icon type="edit" />
+              &nbsp;
               连接信息
             </a>,
             <a
               onClick={e => {
                 e.preventDefault();
-                this.toRedisDataPage(temp.id);
+                this.clearRedisTemplateCache(temp);
               }}
             >
-              数据信息
+              <Icon type="delete" />
+              &nbsp;
+              清理缓存
             </a>,
           ]}
         >

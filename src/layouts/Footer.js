@@ -8,13 +8,25 @@ const FooterView = () => (
     <GlobalFooter
       links={[
         {
-          key: 'Pro 首页',
-          title: 'Pro 首页',
+          key: 'RedisManger',
+          title: <Icon type="github" />,
+          href: 'https://github.com/tuanzuo/redismanager',
+          blankTarget: true,
+        },
+        {
+          key: 'RedisMangerUI',
+          title: <Icon type="github" />,
+          href: 'https://github.com/tuanzuo/redis-ui-antdesignpro',
+          blankTarget: true,
+        },
+        {
+          key: 'Pro首页',
+          title: 'Pro首页',
           href: 'https://pro.ant.design',
           blankTarget: true,
         },
         {
-          key: 'github',
+          key: 'AntDesignPro',
           title: <Icon type="github" />,
           href: 'https://github.com/ant-design/ant-design-pro',
           blankTarget: true,
@@ -28,7 +40,7 @@ const FooterView = () => (
       ]}
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" /> 2018 蚂蚁金服体验技术部出品
+          Copyright <Icon type="copyright" /> 2019-{new Date().getFullYear()} tuanzuo
         </Fragment>
       }
     />
