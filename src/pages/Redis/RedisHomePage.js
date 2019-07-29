@@ -24,6 +24,7 @@ import {
   Spin,
   Drawer,
   message,
+  notification,
 } from 'antd';
 
 import { findDOMNode } from 'react-dom';
@@ -125,7 +126,7 @@ class SearchForm extends PureComponent {
 
     return (
       <Row gutter={24} style={{ margin: 0 }}>
-        <Collapse defaultActiveKey={['1']}>
+        <Collapse defaultActiveKey={['10']}>
           <Panel header="搜索" key="10" extra={genExtra()}>
             <Form onSubmit={this.handleSearch} layout="inline">
               <StandardFormRow title="查询条件" grid last>
@@ -402,6 +403,41 @@ class RedisHome extends PureComponent {
     });
   };
 
+  handleTestConnection = () => {
+    const { dispatch, form } = this.props;
+    form.validateFieldsAndScroll((err, fieldsValue) => {
+      if (err) return;
+
+      const { current } = this.state;
+      const id = current ? current.id : '';
+      let source = 1; //添加
+      if (id && id!='') {
+        source = 2; //修改
+      }
+      const values = {
+        ...fieldsValue,
+      };
+      dispatch({
+        type: 'redisadmin/testConnection',
+        payload: { source,...values },
+        callback: (response) => {
+          let notifyType = 'warning';
+          let msg = '连接失败!';
+          if (response && response.code == 200) {
+            notifyType = 'success';
+            msg = '连接成功!';
+          } else if (response && response.msg && response.msg != '') {
+            msg = response.msg + '!';
+          }
+          notification[notifyType]({
+            message: '测试连接',
+            description: msg
+          });
+        },
+      });
+    });
+  };
+
   handleCancel = () => {
     setTimeout(() => this.addBtn.blur(), 0);
     this.setState({
@@ -537,6 +573,22 @@ class RedisHome extends PureComponent {
       ? { footer: null, onCancel: this.handleDone }
       : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
 
+    const addUpdateFootContent = () => {
+      return (
+        [
+          <Button key="testCon" type="primary" onClick={this.handleTestConnection}>
+            测试连接
+          </Button>,
+          <Button key="cancle" onClick={this.handleCancel}>
+            取消
+          </Button>,
+          <Button key="save" type="primary" onClick={this.handleSubmit}>
+            保存
+          </Button>
+        ]
+      );
+    };
+
     const getModalContent = () => {
       return (
         <Form onSubmit={this.handleSubmit}>
@@ -599,7 +651,7 @@ class RedisHome extends PureComponent {
               initialValue: current.serCode,
             })(
               <TextArea
-                placeholder="序列化code(Groovy)。默认key和hashkey使用：StringRedisSerializer；value和hashvalue使用：JdkSerializationRedisSerializer"
+                placeholder="序列化code(Groovy)。默认key,hashKey,value,hashValue使用：StringRedisSerializer"
                 rows={4}
               />
             )}
@@ -659,6 +711,7 @@ class RedisHome extends PureComponent {
           bodyStyle={done ? { padding: '5px 0' } : { padding: '5px 0 0' }}
           destroyOnClose
           visible={visible}
+          footer={addUpdateFootContent()}
           {...modalFooter}
         >
           {getModalContent()}
