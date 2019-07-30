@@ -419,19 +419,22 @@ class RedisHome extends PureComponent {
       };
       dispatch({
         type: 'redisadmin/testConnection',
-        payload: { source,...values },
+        payload: {source, ...values},
         callback: (response) => {
           let notifyType = 'warning';
-          let msg = '连接失败!';
+          let msg = '连接失败! ';
+          let showTime = 4.5;
           if (response && response.code == 200) {
             notifyType = 'success';
             msg = '连接成功!';
           } else if (response && response.msg && response.msg != '') {
-            msg = response.msg + '!';
+            msg = msg + response.msg;
+            showTime = 30;
           }
           notification[notifyType]({
             message: '测试连接',
-            description: msg
+            description: msg,
+            duration: showTime,
           });
         },
       });
@@ -576,7 +579,7 @@ class RedisHome extends PureComponent {
     const addUpdateFootContent = () => {
       return (
         [
-          <Button key="testCon" type="primary" onClick={this.handleTestConnection}>
+          <Button key="testCon" type="primary" loading={loading} onClick={this.handleTestConnection}>
             测试连接
           </Button>,
           <Button key="cancle" onClick={this.handleCancel}>
