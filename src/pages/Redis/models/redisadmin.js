@@ -78,7 +78,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *fetchKeyValue({ payload, callback }, { call, put }) {
       const response = yield call(queryRedisKeyValue, payload);
@@ -86,7 +86,7 @@ export default {
         type: 'saveKeyValue',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *delKeys({ payload, callback }, { call, put }) {
       const response = yield call(delRedisKeys, payload);

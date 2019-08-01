@@ -429,7 +429,7 @@ class RedisHome extends PureComponent {
             msg = '连接成功!';
           } else if (response && response.msg && response.msg != '') {
             msg = msg + response.msg;
-            showTime = 30;
+            showTime = 10;
           }
           notification[notifyType]({
             message: '测试连接',
@@ -471,6 +471,7 @@ class RedisHome extends PureComponent {
         payload: { id, ...values },
         callback: () => {
           this.refeshList(searchKeyConst);
+          message.success('添加成功!');
         },
       });
     });
@@ -483,6 +484,7 @@ class RedisHome extends PureComponent {
       payload: id,
       callback: () => {
         this.refeshList(searchKeyConst);
+        message.success('删除成功!');
       },
     });
   };
@@ -528,22 +530,22 @@ class RedisHome extends PureComponent {
             <a
               onClick={e => {
                 e.preventDefault();
-                this.toRedisDataPage(temp.id);
-              }}
-            >
-              <Icon type="database" />
-              &nbsp;
-              数据信息
-            </a>,
-            <a
-              onClick={e => {
-                e.preventDefault();
                 this.showEditModal(temp);
               }}
             >
               <Icon type="edit" />
               &nbsp;
               连接信息
+            </a>,
+            <a
+              onClick={e => {
+                e.preventDefault();
+                this.toRedisDataPage(temp.id);
+              }}
+            >
+              <Icon type="database" />
+              &nbsp;
+              数据信息
             </a>,
             <a
               onClick={e => {

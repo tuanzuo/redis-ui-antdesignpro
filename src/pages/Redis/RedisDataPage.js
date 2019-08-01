@@ -23,6 +23,7 @@ import {
   Drawer,
   Spin,
   Statistic,
+  notification,
 } from 'antd';
 
 import { findDOMNode } from 'react-dom';
@@ -594,7 +595,7 @@ class RedisData extends PureComponent {
     dispatch({
       type: 'redisadmin/fetchKeyList',
       payload: searchParam,
-      callback: () => {
+      callback: (response) => {
         const { redisadmin } = this.props;
         const { keyList } = redisadmin;
         this.setState({
@@ -605,6 +606,12 @@ class RedisData extends PureComponent {
         this.initCurrentKeyForNull();
         // 还原currentCheckedKeys为空
         this.initCurrentCheckedKeys();
+
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
       },
     });
   };
@@ -618,11 +625,16 @@ class RedisData extends PureComponent {
     dispatch({
       type: 'redisadmin/fetchKeyValue',
       payload: params,
-      callback: () => {
+      callback: (response) => {
         const { redisadmin } = this.props;
         this.setState({
           keyValueLoading: false, // 关闭加载中
         });
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         const { keyValue } = redisadmin;
         currentKeyValue = keyValue;
         // 当前key对应value的类型
@@ -667,6 +679,23 @@ class RedisData extends PureComponent {
         });
       },
     });
+  };
+
+  tipMsg = response =>{
+    let flag = true;
+    if (response && response.code == 500) {
+      let notifyType = 'warning';
+      let msg = '查询失败! ';
+      let showTime = 4.5;
+      msg = msg + (response.msg && response.msg != '') ? response.msg : '';
+      notification[notifyType]({
+        message: '提示信息',
+        description: msg,
+        duration: showTime,
+      });
+      flag = false;
+    }
+    return flag;
   };
 
   // 判断是否是json
