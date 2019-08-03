@@ -106,6 +106,11 @@ class SearchForm extends PureComponent {
     RedisHomeObject.refeshList(searchKeyConst);
   };
 
+  // 添加
+  showAddModal = () => {
+    RedisHomeObject.showModal();
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
@@ -145,6 +150,9 @@ class SearchForm extends PureComponent {
                     </Button>
                     <Button style={{marginLeft:'10px'}} onClick={this.handleFormReset}>
                       重置
+                    </Button>
+                    <Button style={{marginLeft:'10px'}} onClick={this.showAddModal}>
+                      添加
                     </Button>
                   </Col>
                 </Row>
