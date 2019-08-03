@@ -25,6 +25,7 @@ import {
   Drawer,
   message,
   notification,
+  Popover,
 } from 'antd';
 
 import { findDOMNode } from 'react-dom';
@@ -62,8 +63,6 @@ const searchColButton = {
 
 // RedisHome对象
 let RedisHomeObject;
-// RedisHome对象view对象
-let RedisHomeViewObject;
 // 搜索的value
 let searchKeyConst = {};
 // 当前操作的redis连接信息
@@ -218,96 +217,26 @@ const serCodeExample =
   '    }\n' +
   '}';
 
-@connect(({ redisadmin, loading }) => ({
-  redisadmin,
-  loading: loading.models.redisadmin,
-}))
-@Form.create({ name: 'redisHomeView' })
-class RedisHomeViewForm extends React.Component {
-  state = {
-    visible: false,
-    drawerTitle: '',
-    data: {},
-  };
+const serCodeExampleContent = (
+  <div style={{width:'800px',height:'100%'}}>
+    <MonacoEditor
+      width="100%"
+      height="500"
+      language="JavaScript"
+      theme="vs-dark"
+      value={serCodeExample}
+      options={{ selectOnLineNumbers: true }}
+    />
+  </div>
+);
 
-  // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
-  componentDidMount() {
-    // console.log('redis-HomeView-init');
-    const { dispatch } = this.props;
-    // 初始化后把当前对象保存到RedisDataUpdateObject变量中去
-    RedisHomeViewObject = this;
-  }
+const redisTypeExampleContent = (
+  <div style={{width:'400px',wordBreak: 'break-all'}}>
+    <p>单机地址：192.168.1.32:6379</p>
+    <p>集群地址：192.168.1.32:7000,192.168.1.32:7001,192.168.1.32:7002,192.168.1.32:7003,192.168.1.32:7004,192.168.1.32:7005</p>
+  </div>
+);
 
-  // 显示抽屉页面
-  showDrawer = () => {
-    this.setState({
-      drawerTitle: 'show example',
-      visible: true,
-      data: {
-        serCode: serCodeExample,
-      },
-    });
-  };
-
-  onClose = () => {
-    this.setState({
-      visible: false,
-    });
-  };
-
-  render() {
-    const { getFieldDecorator } = this.props.form;
-    const { data } = this.state;
-    return (
-      <div>
-        <Drawer
-          title={this.state.drawerTitle}
-          width={'70%'}
-          onClose={this.onClose}
-          visible={this.state.visible}
-        >
-          <Form layout="vertical" hideRequiredMark>
-            <Row gutter={16}>
-              <Col span={24}>
-                <FormItem label="Serializable code example">
-                  {getFieldDecorator('serCode', {
-                    rules: [{ required: false, message: 'Serializable code' }],
-                    initialValue: data.serCode,
-                  })(
-                    <MonacoEditor
-                      width="100%"
-                      height="600"
-                      language="JavaScript"
-                      theme="vs-dark"
-                      value={data.serCode}
-                      options={{ selectOnLineNumbers: true }}
-                    />
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
-          </Form>
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              bottom: 0,
-              width: '100%',
-              borderTop: '1px solid #e9e9e9',
-              padding: '10px 16px',
-              background: '#fff',
-              textAlign: 'right',
-            }}
-          >
-            <Button onClick={this.onClose} style={{ marginRight: 8 }}>
-              close
-            </Button>
-          </div>
-        </Drawer>
-      </div>
-    );
-  }
-}
 
 @connect(({ redisadmin, loading }) => ({
   redisadmin,
@@ -370,11 +299,6 @@ class RedisHome extends PureComponent {
       visible: true,
       current: undefined,
     });
-  };
-
-  // 显示修改keyValue的抽屉页面
-  showEditDrawer = () => {
-    RedisHomeViewObject.showDrawer();
   };
 
   deleteModel = item => {
@@ -624,9 +548,9 @@ class RedisHome extends PureComponent {
               <span>
                 地址&nbsp;
                 <em className={styles.optional}>
-                  <Tooltip title="单机地址：192.168.1.32:6379  集群地址：192.168.1.32:7000,192.168.1.32:7001,192.168.1.32:7002,192.168.1.32:7003,192.168.1.32:7004,192.168.1.32:7005">
+                  <Popover content={redisTypeExampleContent} title="redis连接地址例子" trigger="hover">
                     <Icon type="info-circle-o" style={{ marginRight: 4 }} />
-                  </Tooltip>
+                  </Popover>
                 </em>
               </span>
             }
@@ -645,12 +569,12 @@ class RedisHome extends PureComponent {
           <FormItem
             {...this.formLayout}
             label={
-              <span onClick={this.showEditDrawer}>
+              <span>
                 Serializable code&nbsp;
                 <em className={styles.optional}>
-                  <Tooltip title="点击查看例子">
-                    <Icon type="info-circle-o" style={{ marginRight: 4, cursor: 'pointer' }} />
-                  </Tooltip>
+                  <Popover content={serCodeExampleContent} title="Serializable code example" trigger="hover">
+                    <Icon type="info-circle-o" style={{marginRight: 4, cursor: 'pointer'}}/>
+                  </Popover>
                 </em>
               </span>
             }
@@ -726,8 +650,6 @@ class RedisHome extends PureComponent {
         >
           {getModalContent()}
         </Modal>
-
-        <RedisHomeViewForm />
       </div>
     );
   }
