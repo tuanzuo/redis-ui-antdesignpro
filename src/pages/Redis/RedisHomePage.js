@@ -443,6 +443,9 @@ class RedisHome extends PureComponent {
 
   handleCancel = () => {
     setTimeout(() => this.addBtn.blur(), 0);
+    const {form} = this.props;
+    form.resetFields();
+
     this.setState({
       visible: false,
     });
@@ -456,6 +459,7 @@ class RedisHome extends PureComponent {
     setTimeout(() => this.addBtn.blur(), 0);
     form.validateFieldsAndScroll((err, fieldsValue) => {
       if (err) return;
+      form.resetFields();
 
       this.setState({
         done: false,
@@ -709,6 +713,7 @@ class RedisHome extends PureComponent {
           </Spin>
         </Row>
 
+        {/*redis连接信息modal*/}
         <Modal
           title={done ? null : `${current.id ? '编辑redis连接信息' : '添加redis连接信息'}`}
           className={styles.standardListForm}

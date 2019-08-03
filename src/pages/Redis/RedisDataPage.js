@@ -260,6 +260,9 @@ class RedisDataUpdateForm extends React.Component {
   };
 
   onClose = () => {
+    const { form } = this.props;
+    form.resetFields();
+
     this.setState({
       visible: false,
     });
@@ -464,6 +467,7 @@ class RedisDataUpdateForm extends React.Component {
     const { data } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      form.resetFields();
       const key = data.key;
       const keyType = data.keyType;
       const values = {
