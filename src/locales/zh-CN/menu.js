@@ -40,8 +40,8 @@ export default {
   'menu.account.logout': '退出登录',
   //------------------------
   'menu.connectionadmin': '连接管理',
-  'menu.connectionadmin.redishome': 'redis',
-  'menu.connectionadmin.redisdata': 'redis数据',
+  'menu.connectionadmin.redishome': 'Redis',
+  'menu.connectionadmin.redisdata': 'Redis数据信息',
   'menu.mytest': '测试新建菜单',
   'menu.mytest.testpage': '测试新建页面',
   'menu.mytest.testdynamicpage': '动态添加页面内容',
