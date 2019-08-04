@@ -297,7 +297,7 @@ class RedisHome extends PureComponent {
       type: 'redisadmin/clearCache',
       payload: temp.id,
       callback: () => {
-        message.info(temp.name + ' cleaning the cache successfully!');
+        message.success('[' + temp.name + ']清理redis连接信息缓存成功!');
       },
     });
   };
@@ -438,7 +438,7 @@ class RedisHome extends PureComponent {
     const colItems = configList.map((temp, index) => (
       <Col {...topColResponsiveProps} key={temp.id}>
         <Card
-          bordered={false}
+          bordered={true}
           size="small"
           title={`[${temp.name}]redis连接信息`}
           extra={
@@ -457,13 +457,14 @@ class RedisHome extends PureComponent {
               /* width: 240 */
             }
           }
-          hoverable="true"
+          hoverable={false}
           onDoubleClick={e => {
             e.preventDefault();
             this.toRedisDataPage(temp.id);
           }}
           actions={[
             <a
+              title={'修改redis连接信息'}
               onClick={e => {
                 e.preventDefault();
                 this.showEditModal(temp);
@@ -474,6 +475,7 @@ class RedisHome extends PureComponent {
               连接信息
             </a>,
             <a
+              title={'操作redis数据信息'}
               onClick={e => {
                 e.preventDefault();
                 this.toRedisDataPage(temp.id);
@@ -484,6 +486,7 @@ class RedisHome extends PureComponent {
               数据信息
             </a>,
             <a
+              title={'清理redis连接信息缓存'}
               onClick={e => {
                 e.preventDefault();
                 this.clearRedisTemplateCache(temp);
@@ -615,7 +618,7 @@ class RedisHome extends PureComponent {
             {colItems}
             <Col {...topColResponsiveProps}>
               <Card
-                bordered={false}
+                bordered={true}
                 size="small"
                 title="新建redis连接信息"
                 style={
@@ -623,7 +626,7 @@ class RedisHome extends PureComponent {
                     /* width: 240 */
                   }
                 }
-                hoverable="true"
+                hoverable={false}
               >
                 <p>
                   <Button

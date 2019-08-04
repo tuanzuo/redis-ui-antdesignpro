@@ -917,7 +917,7 @@ class RedisData extends PureComponent {
     ));
 
     return (
-      <Card bordered={false} size="small" hoverable>
+      <Card bordered={false} size="small" hoverable={false}>
         <div>
           <Row>
             <Col span={24}>
