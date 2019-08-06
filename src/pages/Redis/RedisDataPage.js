@@ -24,6 +24,8 @@ import {
   Spin,
   Statistic,
   notification,
+  Popconfirm,
+  Badge,
 } from 'antd';
 
 import { findDOMNode } from 'react-dom';
@@ -262,7 +264,6 @@ class RedisDataUpdateForm extends React.Component {
   onClose = () => {
     const { form } = this.props;
     form.resetFields();
-
     this.setState({
       visible: false,
     });
@@ -496,9 +497,17 @@ class RedisDataUpdateForm extends React.Component {
   getValueButtonContent = () => {
     return (
       <Form.Item label="&nbsp;&nbsp;">
-        <Button size="small" onClick={() => this.updateValue('')}>
-          保存
-        </Button>
+        <Popconfirm
+          title="确定保存吗?"
+          onConfirm={() => this.updateValue('')}
+          onCancel={() => {}}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button size="small">
+            保存
+          </Button>
+        </Popconfirm>
       </Form.Item>
     );
   };
@@ -812,12 +821,14 @@ class RedisData extends PureComponent {
     // expireTime：过期时间--单位是s
     if (expireTime && expireTime > 0) {
       return (
-        <Countdown
-          title=""
-          value={Date.now() + expireTime * 1000}
-          format="DD:HH:mm:ss"
-          valueStyle={{ fontSize: '13px', color: 'rgba(0, 0, 0, 0.62)' }}
-        />
+        <Badge count={<Icon type="clock-circle" style={{color: '#f5222d'}}/>}>
+          <Countdown
+            title=""
+            value={Date.now() + expireTime * 1000}
+            format="DD:HH:mm:ss"
+            valueStyle={{fontSize: '13px', color: 'rgba(0, 0, 0, 0.62)'}}
+          />
+        </Badge>
       );
     }
     return expireTime;
