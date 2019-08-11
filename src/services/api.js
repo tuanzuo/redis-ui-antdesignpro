@@ -127,7 +127,9 @@ export async function getFakeCaptcha(mobile) {
 
 //--------------------
 const apiUrl = 'http://127.0.0.1';
+// const apiUrl = window.location.protocol+"//"+window.location.host
 // const apiUrl="";
+// console.log(window.location.protocol+"//"+window.location.host);
 
 export async function queryRedisConfigList(params) {
   return request(`${apiUrl}/redis/config/list?${stringify(params)}`);

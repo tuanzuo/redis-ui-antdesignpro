@@ -333,6 +333,7 @@ class RedisDataUpdateForm extends React.Component {
           <Button size="small" onClick={() => this.reNameKey('')}>
             保存
           </Button>
+          &nbsp;
           <Button size="small" onClick={() => this.updateKeyButtonContent('')}>
             取消
           </Button>
@@ -421,6 +422,7 @@ class RedisDataUpdateForm extends React.Component {
           <Button size="small" onClick={() => this.reSetTTL('')}>
             保存
           </Button>
+          &nbsp;
           <Button size="small" onClick={() => this.updateTTLButtonContent('')}>
             取消
           </Button>
@@ -520,7 +522,7 @@ class RedisDataUpdateForm extends React.Component {
       <div>
         <Drawer
           title={this.state.drawerTitle}
-          width={720}
+          width={730}
           onClose={this.onClose}
           visible={this.state.visible}
         >
