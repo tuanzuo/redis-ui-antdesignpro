@@ -407,7 +407,7 @@ class RedisHome extends PureComponent {
         payload: { id, ...values },
         callback: () => {
           this.refeshList(searchKeyConst);
-          message.success('添加成功!');
+          message.success(id ? '修改成功!' : '添加成功!');
         },
       });
     });
