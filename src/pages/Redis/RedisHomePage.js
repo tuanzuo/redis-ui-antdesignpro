@@ -67,6 +67,8 @@ let RedisHomeObject;
 let searchKeyConst = {};
 // 当前操作的redis连接信息
 let currentOptObject;
+// 当前页数
+let currentPageNum = 1;
 
 @connect(({ redisadmin, loading }) => ({
   redisadmin,
@@ -261,6 +263,7 @@ class RedisHome extends PureComponent {
     visible: false,
     done: false,
     dataLoading: true, // 开启加载中
+    fetchMoreButtonDisabled: false, //“加载更多”按钮
   };
 
   componentDidMount() {
@@ -280,6 +283,32 @@ class RedisHome extends PureComponent {
       type: 'redisadmin/fetchConfigList',
       payload: searchKey,
       callback: () => {
+        currentPageNum = 1;
+        this.setState({
+          dataLoading: false, // 关闭加载中
+          fetchMoreButtonDisabled: false,
+        });
+      },
+    });
+  };
+
+  fetchMore = () => {
+    this.setState({
+      dataLoading: true, // 开启加载中
+    });
+    var pageNum = currentPageNum+1;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'redisadmin/appendFetchConfigList',
+      payload: {...searchKeyConst, pageNum},
+      callback: (resp) => {
+        if (resp && resp.configList && resp.configList.length > 0) {
+          currentPageNum++;
+        } else {
+          this.setState({
+            fetchMoreButtonDisabled: true,
+          });
+        }
         this.setState({
           dataLoading: false, // 关闭加载中
         });
@@ -647,7 +676,19 @@ class RedisHome extends PureComponent {
             </Col>
           </Spin>
         </Row>
-
+        <Spin spinning={this.state.dataLoading} delay={100}>
+          <div style={{textAlign: 'center', marginTop: 16}}>
+            <Button onClick={this.fetchMore} style={{paddingLeft: 48, paddingRight: 48}} disabled={this.state.fetchMoreButtonDisabled}>
+              {loading ? (
+                <span>
+                <Icon type="loading"/> 加载中...
+              </span>
+              ) : (
+                '加载更多'
+              )}
+            </Button>
+          </div>
+        </Spin>
         {/*redis连接信息modal*/}
         <Modal
           title={done ? null : `${current.id ? '编辑redis连接信息' : '添加redis连接信息'}`}

@@ -21,7 +21,15 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
+    },
+    *appendFetchConfigList({ payload, callback }, { call, put }) {
+      const response = yield call(queryRedisConfigList, payload);
+      yield put({
+        type: 'appendConfigList',
+        payload: response,
+      });
+      if (callback) callback(response);
     },
     *addConfig({ payload, callback }, { call, put }) {
       const response = yield call(addRedisConfig, payload);
@@ -134,6 +142,12 @@ export default {
       return {
         ...state,
         ...action.payload,
+      };
+    },
+    appendConfigList(state, action) {
+      return {
+        ...state,
+        configList: state.configList.concat(action.payload.configList),
       };
     },
   },

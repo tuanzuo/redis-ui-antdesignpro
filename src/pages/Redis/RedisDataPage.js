@@ -118,7 +118,7 @@ class SearchForm extends PureComponent {
       formValues: {},
     });
     searchKeyConst = {};
-    const searchParam = { id, ...searchKeyConst };
+    const searchParam = { id, searchKey: '*' };
     RedisDataObject.searchKeyList(searchParam);
   };
 
@@ -160,8 +160,8 @@ class SearchForm extends PureComponent {
             <Col xxl={3} xl={5} lg={6} md={8} sm={8} xs={6}>
               <FormItem label="">
                 {getFieldDecorator('searchKey', {
-                  rules: [{ required: false, message: '名称不能为空' }],
-                })(<Input autoComplete="off" placeholder="" />)}
+                  rules: [{ required: false, message: '查询条件不能为空' }],
+                })(<Input autoComplete="off" placeholder="不支持直接输入*查询" />)}
               </FormItem>
             </Col>
             <Col xxl={21} xl={19} lg={18} md={16} sm={16} xs={18}>
