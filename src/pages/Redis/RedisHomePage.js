@@ -26,6 +26,7 @@ import {
   message,
   notification,
   Popover,
+  BackTop,
 } from 'antd';
 
 import { findDOMNode } from 'react-dom';
@@ -676,6 +677,7 @@ class RedisHome extends PureComponent {
             </Col>
           </Spin>
         </Row>
+        {/*加载更多*/}
         <Spin spinning={this.state.dataLoading} delay={100}>
           <div style={{textAlign: 'center', marginTop: 16}}>
             <Button onClick={this.fetchMore} style={{paddingLeft: 48, paddingRight: 48}} disabled={this.state.fetchMoreButtonDisabled}>
@@ -689,6 +691,8 @@ class RedisHome extends PureComponent {
             </Button>
           </div>
         </Spin>
+        {/*返回顶部*/}
+        <BackTop />
         {/*redis连接信息modal*/}
         <Modal
           title={done ? null : `${current.id ? '编辑redis连接信息' : '添加redis连接信息'}`}
