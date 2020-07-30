@@ -238,13 +238,15 @@ class RedisDataUpdateForm extends React.Component {
           if (typeof currentKeyValue.value === 'string') {
             stringValueTemp = currentKeyValue.value;
           } else if (typeof currentKeyValue.value === 'object') {
-            stringValueTemp = JSON.stringify(currentKeyValue.value)
+            stringValueTemp = JSON.stringify(currentKeyValue.value);
           } else {
             stringValueTemp = currentKeyValue.value + '';
           }
         } catch (error) {
           stringValueTemp = currentKeyValue.value;
         }
+      } else if (currentKeyValue.keyType) {
+        stringValueTemp = JSON.stringify(currentKeyValue.value);
       }
 
       this.setState({
@@ -442,7 +444,7 @@ class RedisDataUpdateForm extends React.Component {
   getValueContent = () => {
     const { getFieldDecorator } = this.props.form;
     const { data } = this.state;
-    if (data && data.keyType === 'string') {
+    if (data) {
       return (
         <Row gutter={16}>
           <Col span={20}>
@@ -473,10 +475,12 @@ class RedisDataUpdateForm extends React.Component {
       form.resetFields();
       const key = data.key;
       const keyType = data.keyType;
+      const oldStringValue = JSON.stringify(data.keyValue);
       const values = {
         id,
         key,
         keyType,
+        oldStringValue,
         ...fieldsValue,
       };
       // 保存数据到后台
@@ -506,9 +510,7 @@ class RedisDataUpdateForm extends React.Component {
           okText="Yes"
           cancelText="No"
         >
-          <Button size="small">
-            保存
-          </Button>
+          <Button size="small">保存</Button>
         </Popconfirm>
       </Form.Item>
     );
@@ -610,7 +612,7 @@ class RedisData extends PureComponent {
     dispatch({
       type: 'redisadmin/fetchKeyList',
       payload: searchParam,
-      callback: (response) => {
+      callback: response => {
         const { redisadmin } = this.props;
         const { keyList } = redisadmin;
         this.setState({
@@ -640,7 +642,7 @@ class RedisData extends PureComponent {
     dispatch({
       type: 'redisadmin/fetchKeyValue',
       payload: params,
-      callback: (response) => {
+      callback: response => {
         const { redisadmin } = this.props;
         this.setState({
           keyValueLoading: false, // 关闭加载中
@@ -658,10 +660,10 @@ class RedisData extends PureComponent {
           if (typeof currentKeyValue.value === 'boolean') {
             currentKeyValueToJsonValue = currentKeyValue.value;
             currentKeyValueType = 'boolean';
-          }else if (typeof currentKeyValue.value === 'number') {
+          } else if (typeof currentKeyValue.value === 'number') {
             currentKeyValueToJsonValue = currentKeyValue.value;
             currentKeyValueType = 'number';
-          }else if (typeof currentKeyValue.value === 'string') {
+          } else if (typeof currentKeyValue.value === 'string') {
             currentKeyValueToJsonValue = JSON.parse(currentKeyValue.value);
             currentKeyValueType = 'string';
           } else if (typeof currentKeyValue.value === 'object') {
@@ -696,7 +698,7 @@ class RedisData extends PureComponent {
     });
   };
 
-  tipMsg = response =>{
+  tipMsg = response => {
     let flag = true;
     if (response && response.code == 500) {
       let notifyType = 'warning';
@@ -823,12 +825,12 @@ class RedisData extends PureComponent {
     // expireTime：过期时间--单位是s
     if (expireTime && expireTime > 0) {
       return (
-        <Badge count={<Icon type="clock-circle" style={{color: '#f5222d'}}/>}>
+        <Badge count={<Icon type="clock-circle" style={{ color: '#f5222d' }} />}>
           <Countdown
             title=""
             value={Date.now() + expireTime * 1000}
             format="DD:HH:mm:ss"
-            valueStyle={{fontSize: '13px', color: 'rgba(0, 0, 0, 0.62)'}}
+            valueStyle={{ fontSize: '13px', color: 'rgba(0, 0, 0, 0.62)' }}
           />
         </Badge>
       );
@@ -903,14 +905,7 @@ class RedisData extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const {
-      visible,
-      done,
-      current,
-      currentKeyData,
-      keyValueIsJson,
-      keyValueType,
-    } = this.state;
+    const { visible, done, current, currentKeyData, keyValueIsJson, keyValueType } = this.state;
 
     // 右边的内容(key对应的value数据)
     const contentRight = currentKeyData.map((k, index) => (
