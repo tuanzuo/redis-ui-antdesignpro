@@ -1,8 +1,18 @@
 import {
-  queryRedisConfigList, addRedisConfig, removeRedisConfig, updateRedisConfig,
-  initRedisContext, clearRedisTemplateCache, testRedisConnection, queryRedisKeyList,
-  queryRedisKeyValue, delRedisKeys,
-  setRedisKeyTTL, reNameRedisKey, updateKeyValue,
+  queryRedisConfigList,
+  addRedisConfig,
+  removeRedisConfig,
+  updateRedisConfig,
+  initRedisContext,
+  clearRedisTemplateCache,
+  testRedisConnection,
+  queryRedisKeyList,
+  queryRedisKeyValue,
+  delRedisKeys,
+  setRedisKeyTTL,
+  reNameRedisKey,
+  updateKeyValue,
+  addKeyValue,
 } from '@/services/api';
 
 export default {
@@ -127,6 +137,14 @@ export default {
         payload: response,
       });
       if (callback) callback();
+    },
+    *addKeyValue({ payload, callback }, { call, put }) {
+      const response = yield call(addKeyValue, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
     },
   },
 

@@ -26,6 +26,7 @@ import {
   notification,
   Popconfirm,
   Badge,
+  Select,
 } from 'antd';
 
 import { findDOMNode } from 'react-dom';
@@ -37,6 +38,7 @@ const { TextArea } = Input;
 const { TreeNode } = Tree;
 const { Paragraph } = Typography;
 const Countdown = Statistic.Countdown;
+const { Option } = Select;
 
 const formItemLayout = {
   wrapperCol: {
@@ -48,16 +50,26 @@ const formItemLayout = {
 const searchColButton = {
   xs: 24,
   sm: 5,
-  md: 6,
-  lg: 6,
-  xl: 6,
-  xxl: 6,
+  md: 5,
+  lg: 5,
+  xl: 5,
+  xxl: 5,
+};
+const searchColButtonToLast = {
+  xs: 24,
+  sm: 5,
+  md: 4,
+  lg: 4,
+  xl: 4,
+  xxl: 4,
 };
 
 // RedisData搜索对象
 let RedisDataSearchObject;
 // RedisDataUpdate对象
 let RedisDataUpdateObject;
+// RedisDataAdd对象
+let RedisDataAddObject;
 // RedisData对象
 let RedisDataObject;
 // 当前redis页面的id
@@ -127,6 +139,11 @@ class SearchForm extends PureComponent {
     RedisDataUpdateObject.showDrawer();
   };
 
+  // 显示添加keyValue的抽屉页面
+  showAddDrawer = () => {
+    RedisDataAddObject.showDrawer();
+  };
+
   // 删除选中的节点
   delCheckedNodes = () => {
     const params = {
@@ -175,9 +192,14 @@ class SearchForm extends PureComponent {
                   <Button onClick={this.handleFormReset}>重置</Button>
                 </Col>
                 <Col {...searchColButton}>
-                  <Button onClick={this.showEditDrawer}>修改</Button>
+                  <Button type="ghost" onClick={this.showAddDrawer}>
+                    添加
+                  </Button>
                 </Col>
                 <Col {...searchColButton}>
+                  <Button onClick={this.showEditDrawer}>修改</Button>
+                </Col>
+                <Col {...searchColButtonToLast}>
                   <Button type="danger" onClick={this.delCheckedNodes}>
                     删除
                   </Button>
@@ -555,6 +577,192 @@ class RedisDataUpdateForm extends React.Component {
             {/*<Button onClick={this.onClose} type="primary">
               Submit
             </Button>*/}
+          </div>
+        </Drawer>
+      </div>
+    );
+  }
+}
+
+@connect(({ redisadmin, loading }) => ({
+  redisadmin,
+  loading: loading.models.redisadmin,
+}))
+@Form.create({ name: 'redisDataAdd' })
+class RedisDataAddForm extends React.Component {
+  state = {
+    visible: false,
+    data: {},
+  };
+
+  // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问
+  componentDidMount() {
+    // console.log('redis-dataupdate-init');
+    const { dispatch } = this.props;
+    // 初始化后把当前对象保存到RedisDataAddObject变量中去
+    RedisDataAddObject = this;
+  }
+
+  // 显示添加的抽屉页面
+  showDrawer = () => {
+    this.setState({
+      drawerTitle: '添加',
+      visible: true,
+      data: {},
+    });
+  };
+
+  save = () => {
+    const { dispatch, form } = this.props;
+    const { data } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const key = data.key;
+      const keyType = data.keyType;
+      const values = {
+        id,
+        key,
+        keyType,
+        ...fieldsValue,
+      };
+      // 保存数据到后台
+      dispatch({
+        type: 'redisadmin/addKeyValue',
+        payload: { ...values },
+        callback: response => {
+          //错误提示信息
+          let flag = this.tipMsg(response);
+          if (!flag) {
+            return;
+          }
+          form.resetFields();
+          //清空数据
+          this.setState({
+            data: {},
+          });
+          this.onClose();
+        },
+      });
+    });
+  };
+
+  onClose = () => {
+    const { form } = this.props;
+    form.resetFields();
+    this.setState({
+      visible: false,
+    });
+  };
+
+  tipMsg = response => {
+    let flag = false;
+    let notifyType = 'warning';
+    let msg = '添加失败! ';
+    let showTime = 4.5;
+    if (response && response.code == 200) {
+      notifyType = 'success';
+      msg = '添加成功!';
+      flag = true;
+    } else if (response && response.msg && response.msg != '') {
+      msg = msg + response.msg;
+      showTime = 10;
+    }
+    notification[notifyType]({
+      message: '提示信息',
+      description: msg,
+      duration: showTime,
+    });
+    return flag;
+  };
+
+  render() {
+    const { redisadmin, loading } = this.props;
+    const { getFieldDecorator } = this.props.form;
+    const { data } = this.state;
+
+    return (
+      <div>
+        <Drawer
+          title={this.state.drawerTitle}
+          width={730}
+          onClose={this.onClose}
+          visible={this.state.visible}
+        >
+          <Form layout="vertical" hideRequiredMark>
+            <Row gutter={16}>
+              <Col span={5}>
+                <Form.Item label="type：">
+                  {getFieldDecorator('keyType', {
+                    rules: [{ required: true, message: 'Please select key type' }],
+                    initialValue: 'string',
+                  })(
+                    <Select style={{ width: 120 }}>
+                      <Option value="string">string</Option>
+                      <Option value="list">list</Option>
+                      <Option value="hash">hash</Option>
+                      <Option value="set">set</Option>
+                      <Option value="zset">zset</Option>
+                    </Select>
+                  )}
+                </Form.Item>
+              </Col>
+              <Col span={10}>
+                <Form.Item label="key：">
+                  {getFieldDecorator('key', {
+                    rules: [{ required: true, message: 'Please enter key name' }],
+                    initialValue: data.key,
+                  })(<Input placeholder="Please enter key name" />)}
+                </Form.Item>
+              </Col>
+              <Col span={7}>
+                <Form.Item label="ttl：">
+                  {getFieldDecorator('expireTime', {
+                    rules: [{ required: true, message: 'Please enter expireTime' }],
+                    initialValue: data.expireTime,
+                  })(
+                    <InputNumber
+                      min={-1}
+                      placeholder="Please enter expireTime"
+                      style={{ width: '100%' }}
+                    />
+                  )}
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={20}>
+                <Form.Item label="value：">
+                  {getFieldDecorator('stringValue', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'please keyValue',
+                      },
+                    ],
+                    initialValue: data.stringValue,
+                  })(<Input.TextArea rows={10} placeholder="Please enter key value" />)}
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              bottom: 0,
+              width: '100%',
+              borderTop: '1px solid #e9e9e9',
+              padding: '10px 16px',
+              background: '#fff',
+              textAlign: 'right',
+            }}
+          >
+            <Button onClick={this.save} type="primary" loading={loading} style={{ marginRight: 8 }}>
+              Submit
+            </Button>
+            <Button onClick={this.onClose} style={{ marginRight: 8 }}>
+              Close
+            </Button>
           </div>
         </Drawer>
       </div>
@@ -960,6 +1168,7 @@ class RedisData extends PureComponent {
             </Col>
           </Row>
           <RedisDataUpdateForm />
+          <RedisDataAddForm />
         </div>
       </Card>
     );

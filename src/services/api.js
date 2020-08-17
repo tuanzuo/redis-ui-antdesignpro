@@ -230,3 +230,13 @@ export async function updateKeyValue(params) {
     },
   });
 }
+
+export async function addKeyValue(params) {
+  return request(`${apiUrl}/redis/admin/key/addKey`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
