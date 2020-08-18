@@ -27,8 +27,12 @@ import {
   Popconfirm,
   Badge,
   Select,
+  Popover,
+  Tooltip,
 } from 'antd';
 
+//需要执行cnpm install --save @ant-design/icons命令进行安装
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { findDOMNode } from 'react-dom';
 import styles from './RedisDataPage.less';
 import StandardFormRow from '@/components/StandardFormRow';
@@ -63,6 +67,28 @@ const searchColButtonToLast = {
   xl: 4,
   xxl: 4,
 };
+
+const listValueExample = '["1","1","22","3","5"]';
+const hashValueExample = '{"address":"chengdu","name":"Tom","age":"123"}';
+const setValueExample = '["1","3","5"]';
+const zsetValueExample =
+  '[{"score":10,"value":"redis"},{"score":500,"value":"mysql"},{"score":800,"value":"oracle"}]';
+
+const addKeyValueExample = (
+  <div style={{ width: '400px', wordBreak: 'break-all' }}>
+    <strong>list：</strong>
+    {listValueExample}
+    <br />
+    <strong>hash：</strong>
+    {hashValueExample}
+    <br />
+    <strong>set：</strong>
+    {setValueExample}
+    <br />
+    <strong>zset：</strong>
+    {zsetValueExample}
+  </div>
+);
 
 // RedisData搜索对象
 let RedisDataSearchObject;
@@ -108,6 +134,26 @@ class SearchForm extends PureComponent {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+
+      let tipFlag = false;
+      let msg = '';
+      if (!fieldsValue.searchKey) {
+        msg = '查询条件不能为空';
+        tipFlag = true;
+      } else if (fieldsValue.searchKey.trim() == '*') {
+        msg = '不支持直接输入*查询';
+        tipFlag = true;
+      }
+      if (tipFlag) {
+        let notifyType = 'warning';
+        let showTime = 4.5;
+        notification[notifyType]({
+          message: '提示信息',
+          description: msg,
+          duration: showTime,
+        });
+        return;
+      }
 
       const values = {
         id,
@@ -386,7 +432,16 @@ class RedisDataUpdateForm extends React.Component {
     const { data, optTTL } = this.state;
     if (optTTL && optTTL === 'update') {
       return (
-        <Form.Item label="ttl：">
+        <Form.Item
+          label={
+            <span>
+              ttl：&nbsp;
+              <Popover content="-1表示永不过期" title="ttl说明" trigger="hover">
+                <QuestionCircleOutlined />
+              </Popover>
+            </span>
+          }
+        >
           {getFieldDecorator('expireTime', {
             rules: [{ required: true, message: 'Please enter expireTime' }],
             initialValue: data.expireTime,
@@ -403,7 +458,20 @@ class RedisDataUpdateForm extends React.Component {
         </Form.Item>
       );
     } */
-    return <Form.Item label="ttl：">{data.expireTime}</Form.Item>;
+    return (
+      <Form.Item
+        label={
+          <span>
+            ttl：&nbsp;
+            <Popover content="-1表示永不过期" title="ttl说明" trigger="hover">
+              <QuestionCircleOutlined />
+            </Popover>
+          </span>
+        }
+      >
+        {data.expireTime}
+      </Form.Item>
+    );
   };
 
   updateTTLButtonContent = key => {
@@ -715,10 +783,19 @@ class RedisDataAddForm extends React.Component {
                 </Form.Item>
               </Col>
               <Col span={7}>
-                <Form.Item label="ttl：">
+                <Form.Item
+                  label={
+                    <span>
+                      ttl：&nbsp;
+                      <Popover content="-1表示永不过期" title="ttl说明" trigger="hover">
+                        <QuestionCircleOutlined />
+                      </Popover>
+                    </span>
+                  }
+                >
                   {getFieldDecorator('expireTime', {
                     rules: [{ required: true, message: 'Please enter expireTime' }],
-                    initialValue: data.expireTime,
+                    initialValue: -1,
                   })(
                     <InputNumber
                       min={-1}
@@ -731,12 +808,25 @@ class RedisDataAddForm extends React.Component {
             </Row>
             <Row gutter={16}>
               <Col span={20}>
-                <Form.Item label="value：">
+                <Form.Item
+                  label={
+                    <span>
+                      value：&nbsp;
+                      <Popover
+                        content={addKeyValueExample}
+                        title="不同类型的value示例"
+                        trigger="hover"
+                      >
+                        <QuestionCircleOutlined />
+                      </Popover>
+                    </span>
+                  }
+                >
                   {getFieldDecorator('stringValue', {
                     rules: [
                       {
                         required: true,
-                        message: 'please keyValue',
+                        message: 'Please enter key value',
                       },
                     ],
                     initialValue: data.stringValue,
@@ -1033,14 +1123,25 @@ class RedisData extends PureComponent {
     // expireTime：过期时间--单位是s
     if (expireTime && expireTime > 0) {
       return (
-        <Badge count={<Icon type="clock-circle" style={{ color: '#f5222d' }} />}>
-          <Countdown
-            title=""
-            value={Date.now() + expireTime * 1000}
-            format="DD:HH:mm:ss"
-            valueStyle={{ fontSize: '13px', color: 'rgba(0, 0, 0, 0.62)' }}
-          />
-        </Badge>
+        <Tooltip title="天:小时:分钟:秒" color="lime">
+          <Badge count={<Icon type="clock-circle" style={{ color: '#f5222d' }} />}>
+            <Countdown
+              title=""
+              value={Date.now() + expireTime * 1000}
+              format="DD:HH:mm:ss"
+              valueStyle={{ fontSize: '13px', color: 'rgba(0, 0, 0, 0.62)' }}
+            />
+          </Badge>
+        </Tooltip>
+      );
+    }
+    if (expireTime && expireTime == -1) {
+      return (
+        <Tooltip title="永不过期" color="lime">
+          <Badge count={<Icon type="clock-circle" style={{ color: 'rgb(5, 135, 24)' }} />}>
+            {expireTime}&nbsp;&nbsp;
+          </Badge>
+        </Tooltip>
       );
     }
     return expireTime;

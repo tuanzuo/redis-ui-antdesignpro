@@ -29,6 +29,8 @@ import {
   BackTop,
 } from 'antd';
 
+//需要执行cnpm install --save @ant-design/icons命令进行安装
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { findDOMNode } from 'react-dom';
 import styles from './RedisHomePage.less';
 import StandardFormRow from '@/components/StandardFormRow';
@@ -138,7 +140,7 @@ class SearchForm extends PureComponent {
             <Form onSubmit={this.handleSearch} layout="inline">
               <StandardFormRow title="查询条件" grid last>
                 <Row gutter={16}>
-                  <Col xxl={3} xl={4} lg={6} md={7} sm={10} xs={10} style={{  }}>
+                  <Col xxl={3} xl={4} lg={6} md={7} sm={10} xs={10} style={{}}>
                     <FormItem {...formItemLayout} label="">
                       {getFieldDecorator('searchKey', {
                         rules: [{ required: false, message: '名称不能为空' }],
@@ -151,10 +153,10 @@ class SearchForm extends PureComponent {
                     <Button type="primary" htmlType="submit">
                       查询
                     </Button>
-                    <Button style={{marginLeft:'10px'}} onClick={this.handleFormReset}>
+                    <Button style={{ marginLeft: '10px' }} onClick={this.handleFormReset}>
                       重置
                     </Button>
-                    <Button style={{marginLeft:'10px'}} onClick={this.showAddModal}>
+                    <Button style={{ marginLeft: '10px' }} onClick={this.showAddModal}>
                       添加
                     </Button>
                   </Col>
@@ -229,7 +231,7 @@ const serCodeExample =
   '}';
 
 const serCodeExampleContent = (
-  <div style={{width:'800px',height:'100%'}}>
+  <div style={{ width: '800px', height: '100%' }}>
     <MonacoEditor
       width="100%"
       height="500"
@@ -242,12 +244,13 @@ const serCodeExampleContent = (
 );
 
 const redisTypeExampleContent = (
-  <div style={{width:'400px',wordBreak: 'break-all'}}>
+  <div style={{ width: '400px', wordBreak: 'break-all' }}>
     <p>单机地址：192.168.1.32:6379</p>
-    <p>集群地址：192.168.1.32:7000,192.168.1.32:7001,192.168.1.32:7002,192.168.1.32:7003,192.168.1.32:7004,192.168.1.32:7005</p>
+    <p>
+      集群地址：192.168.1.32:7000,192.168.1.32:7001,192.168.1.32:7002,192.168.1.32:7003,192.168.1.32:7004,192.168.1.32:7005
+    </p>
   </div>
 );
-
 
 @connect(({ redisadmin, loading }) => ({
   redisadmin,
@@ -297,12 +300,12 @@ class RedisHome extends PureComponent {
     this.setState({
       dataLoading: true, // 开启加载中
     });
-    var pageNum = currentPageNum+1;
+    var pageNum = currentPageNum + 1;
     const { dispatch } = this.props;
     dispatch({
       type: 'redisadmin/appendFetchConfigList',
-      payload: {...searchKeyConst, pageNum},
-      callback: (resp) => {
+      payload: { ...searchKeyConst, pageNum },
+      callback: resp => {
         if (resp && resp.configList && resp.configList.length > 0) {
           currentPageNum++;
         } else {
@@ -373,7 +376,7 @@ class RedisHome extends PureComponent {
       const { current } = this.state;
       const id = current ? current.id : '';
       let source = 1; //添加
-      if (id && id!='') {
+      if (id && id != '') {
         source = 2; //修改
       }
       const values = {
@@ -381,8 +384,8 @@ class RedisHome extends PureComponent {
       };
       dispatch({
         type: 'redisadmin/testConnection',
-        payload: {source, ...values},
-        callback: (response) => {
+        payload: { source, ...values },
+        callback: response => {
           let notifyType = 'warning';
           let msg = '连接失败! ';
           let showTime = 4.5;
@@ -405,7 +408,7 @@ class RedisHome extends PureComponent {
 
   handleCancel = () => {
     setTimeout(() => this.addBtn.blur(), 0);
-    const {form} = this.props;
+    const { form } = this.props;
     form.resetFields();
 
     this.setState({
@@ -479,7 +482,7 @@ class RedisHome extends PureComponent {
                 this.deleteModel(temp);
               }}
             >
-              <Icon type="close-circle" theme="twoTone" width={50} height={50} />
+              <Icon type="close-circle" twoToneColor="red" theme="twoTone" width={50} height={50} />
             </a>
           }
           style={
@@ -501,8 +504,7 @@ class RedisHome extends PureComponent {
               }}
             >
               <Icon type="edit" />
-              &nbsp;
-              连接信息
+              &nbsp; 连接信息
             </a>,
             <a
               title={'操作redis数据信息'}
@@ -512,8 +514,7 @@ class RedisHome extends PureComponent {
               }}
             >
               <Icon type="database" />
-              &nbsp;
-              数据信息
+              &nbsp; 数据信息
             </a>,
             <a
               title={'清理redis连接信息缓存'}
@@ -523,8 +524,7 @@ class RedisHome extends PureComponent {
               }}
             >
               <Icon type="delete" />
-              &nbsp;
-              清理缓存
+              &nbsp; 清理缓存
             </a>,
           ]}
         >
@@ -548,19 +548,23 @@ class RedisHome extends PureComponent {
       : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
 
     const addUpdateFootContent = () => {
-      return (
-        [
-          <Button key="testCon" type="primary" loading={loading} onClick={this.handleTestConnection}>
-            测试连接
-          </Button>,
-          <Button key="cancle" onClick={this.handleCancel}>
-            取消
-          </Button>,
-          <Button key="save" type="primary" onClick={this.handleSubmit}>
-            保存
-          </Button>
-        ]
-      );
+      return [
+        <Button
+          key="testCon"
+          type="primary"
+          style={{ backgroundColor: '#52c41a' }}
+          loading={loading}
+          onClick={this.handleTestConnection}
+        >
+          测试连接
+        </Button>,
+        <Button key="cancle" onClick={this.handleCancel}>
+          取消
+        </Button>,
+        <Button key="save" type="primary" onClick={this.handleSubmit}>
+          保存
+        </Button>,
+      ];
     };
 
     const getModalContent = () => {
@@ -589,8 +593,12 @@ class RedisHome extends PureComponent {
               <span>
                 地址&nbsp;
                 <em className={styles.optional}>
-                  <Popover content={redisTypeExampleContent} title="redis连接地址例子" trigger="hover">
-                    <Icon type="info-circle-o" style={{ marginRight: 4 }} />
+                  <Popover
+                    content={redisTypeExampleContent}
+                    title="redis连接地址示例"
+                    trigger="hover"
+                  >
+                    <QuestionCircleOutlined />
                   </Popover>
                 </em>
               </span>
@@ -613,8 +621,12 @@ class RedisHome extends PureComponent {
               <span>
                 Serializable code&nbsp;
                 <em className={styles.optional}>
-                  <Popover content={serCodeExampleContent} title="Serializable code example" trigger="hover">
-                    <Icon type="info-circle-o" style={{marginRight: 4, cursor: 'pointer'}}/>
+                  <Popover
+                    content={serCodeExampleContent}
+                    title="Serializable code example"
+                    trigger="hover"
+                  >
+                    <QuestionCircleOutlined />
                   </Popover>
                 </em>
               </span>
@@ -679,12 +691,16 @@ class RedisHome extends PureComponent {
         </Row>
         {/*加载更多*/}
         <Spin spinning={this.state.dataLoading} delay={100}>
-          <div style={{textAlign: 'center', marginTop: 16}}>
-            <Button onClick={this.fetchMore} style={{paddingLeft: 48, paddingRight: 48}} disabled={this.state.fetchMoreButtonDisabled}>
+          <div style={{ textAlign: 'center', marginTop: 16 }}>
+            <Button
+              onClick={this.fetchMore}
+              style={{ paddingLeft: 48, paddingRight: 48 }}
+              disabled={this.state.fetchMoreButtonDisabled}
+            >
               {loading ? (
                 <span>
-                <Icon type="loading"/> 加载中...
-              </span>
+                  <Icon type="loading" /> 加载中...
+                </span>
               ) : (
                 '加载更多'
               )}
