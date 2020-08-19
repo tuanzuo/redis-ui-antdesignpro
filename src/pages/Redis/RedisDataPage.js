@@ -436,7 +436,7 @@ class RedisDataUpdateForm extends React.Component {
           label={
             <span>
               ttl：&nbsp;
-              <Tooltip title="-1表示永不过期" color="green">
+              <Tooltip title="-1表示永不过期，ttl的单位为秒" color="green">
                 <QuestionCircleOutlined />
               </Tooltip>
             </span>
@@ -463,7 +463,7 @@ class RedisDataUpdateForm extends React.Component {
         label={
           <span>
             ttl：&nbsp;
-            <Tooltip title="-1表示永不过期" color="green">
+            <Tooltip title="-1表示永不过期，ttl的单位为秒" color="green">
               <QuestionCircleOutlined />
             </Tooltip>
           </span>
@@ -787,7 +787,7 @@ class RedisDataAddForm extends React.Component {
                   label={
                     <span>
                       ttl：&nbsp;
-                      <Tooltip title="-1表示永不过期" color="green">
+                      <Tooltip title="-1表示永不过期，ttl的单位为秒" color="green">
                         <QuestionCircleOutlined />
                       </Tooltip>
                     </span>
