@@ -245,10 +245,10 @@ const serCodeExampleContent = (
 
 const redisTypeExampleContent = (
   <div style={{ width: '400px', wordBreak: 'break-all' }}>
-    <p>单机地址：192.168.1.32:6379</p>
-    <p>
-      集群地址：192.168.1.32:7000,192.168.1.32:7001,192.168.1.32:7002,192.168.1.32:7003,192.168.1.32:7004,192.168.1.32:7005
-    </p>
+    <strong>单机地址：</strong>192.168.1.32:6379
+    <br />
+    <strong>集群地址：</strong>
+    192.168.1.32:7000,192.168.1.32:7001,192.168.1.32:7002,192.168.1.32:7003,192.168.1.32:7004,192.168.1.32:7005
   </div>
 );
 
@@ -552,7 +552,7 @@ class RedisHome extends PureComponent {
         <Button
           key="testCon"
           type="primary"
-          style={{ backgroundColor: '#52c41a' }}
+          style={{ backgroundColor: '#52c41a', border: '1px solid #d9d9d9' }}
           loading={loading}
           onClick={this.handleTestConnection}
         >
