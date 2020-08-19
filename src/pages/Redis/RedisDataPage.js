@@ -436,9 +436,9 @@ class RedisDataUpdateForm extends React.Component {
           label={
             <span>
               ttl：&nbsp;
-              <Popover content="-1表示永不过期" title="ttl说明" trigger="hover">
+              <Tooltip title="-1表示永不过期" color="green">
                 <QuestionCircleOutlined />
-              </Popover>
+              </Tooltip>
             </span>
           }
         >
@@ -463,9 +463,9 @@ class RedisDataUpdateForm extends React.Component {
         label={
           <span>
             ttl：&nbsp;
-            <Popover content="-1表示永不过期" title="ttl说明" trigger="hover">
+            <Tooltip title="-1表示永不过期" color="green">
               <QuestionCircleOutlined />
-            </Popover>
+            </Tooltip>
           </span>
         }
       >
