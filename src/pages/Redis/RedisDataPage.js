@@ -787,9 +787,9 @@ class RedisDataAddForm extends React.Component {
                   label={
                     <span>
                       ttl：&nbsp;
-                      <Popover content="-1表示永不过期" title="ttl说明" trigger="hover">
+                      <Tooltip title="-1表示永不过期" color="green">
                         <QuestionCircleOutlined />
-                      </Popover>
+                      </Tooltip>
                     </span>
                   }
                 >
@@ -1177,6 +1177,20 @@ class RedisData extends PureComponent {
       return <TreeNode {...item} dataRef={item} />;
     });
 
+  getValueTipHtml = keyType => {
+    if (keyType == 'list' || keyType == 'hash' || keyType == 'set' || keyType == 'zset') {
+      return (
+        <Tooltip title="注意：只返回了1000条数据" color="lime">
+          <Badge count={<Icon type="question-circle" style={{ color: 'rgb(0, 0, 0)' }} />}>
+            value
+          </Badge>
+        </Tooltip>
+      );
+    } else {
+      return 'value';
+    }
+  };
+
   getJSONPrettyHtml = (keyValueIsJson, currentKeyValueData, currentKeyValueType) => {
     let keyValue = '';
     switch (currentKeyValueType) {
@@ -1227,7 +1241,9 @@ class RedisData extends PureComponent {
         <p key={k.eventKey + 1} />
         <Paragraph ellipsis={{ rows: 1, expandable: true }}>key：{k.eventKey}</Paragraph>
         <Paragraph ellipsis={{ rows: 1, expandable: true }}>
-          value：{this.getJSONPrettyHtml(keyValueIsJson, currentKeyValue, keyValueType)}
+          {this.getValueTipHtml(currentKeyValue.keyType)}
+          ：&nbsp;
+          {this.getJSONPrettyHtml(keyValueIsJson, currentKeyValue, keyValueType)}
         </Paragraph>
         {this.getReactJsonHtml(keyValueIsJson)}
       </Card>
