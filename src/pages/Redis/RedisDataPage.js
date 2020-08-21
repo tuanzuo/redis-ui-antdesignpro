@@ -1181,13 +1181,14 @@ class RedisData extends PureComponent {
     if (keyType == 'list' || keyType == 'hash' || keyType == 'set' || keyType == 'zset') {
       return (
         <Tooltip title="注意：只返回了1000条数据" color="lime">
-          <Badge count={<Icon type="question-circle" style={{ color: 'rgb(0, 0, 0)' }} />}>
-            value
+          <Badge count={<Icon type="question-circle" style={{ color: 'rgb(38, 38, 38)' }} />}>
+            value&nbsp;&nbsp;
           </Badge>
+          &nbsp;：
         </Tooltip>
       );
     } else {
-      return 'value';
+      return 'value：';
     }
   };
 
@@ -1242,7 +1243,6 @@ class RedisData extends PureComponent {
         <Paragraph ellipsis={{ rows: 1, expandable: true }}>key：{k.eventKey}</Paragraph>
         <Paragraph ellipsis={{ rows: 1, expandable: true }}>
           {this.getValueTipHtml(currentKeyValue.keyType)}
-          ：&nbsp;
           {this.getJSONPrettyHtml(keyValueIsJson, currentKeyValue, keyValueType)}
         </Paragraph>
         {this.getReactJsonHtml(keyValueIsJson)}
