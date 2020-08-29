@@ -103,13 +103,6 @@ export async function updateFakeList(params) {
   });
 }
 
-export async function fakeAccountLogin(params) {
-  return request('/api/login/account', {
-    method: 'POST',
-    body: params,
-  });
-}
-
 export async function fakeRegister(params) {
   return request('/api/register', {
     method: 'POST',
@@ -125,11 +118,29 @@ export async function getFakeCaptcha(mobile) {
   return request(`/api/captcha?mobile=${mobile}`);
 }
 
-//--------------------
+//----------------------------------------------------------------------------------------------------
 const apiUrl = 'http://127.0.0.1';
 // const apiUrl = window.location.protocol + "//" + window.location.host;
 // const apiUrl="";
 // console.log(window.location.protocol+"//"+window.location.host);
+
+//----------user----------
+
+export async function fakeAccountLogin(params) {
+  return request(`${apiUrl}/login`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function fakeAccountLogout(params) {
+  return request(`${apiUrl}/logout`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+//----------redis----------
 
 export async function queryRedisConfigList(params) {
   return request(`${apiUrl}/redis/config/list?${stringify(params)}`);

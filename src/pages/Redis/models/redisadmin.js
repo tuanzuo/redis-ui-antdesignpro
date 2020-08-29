@@ -15,6 +15,11 @@ import {
   addKeyValue,
 } from '@/services/api';
 
+import { routerRedux } from 'dva/router';
+import { stringify } from 'qs';
+import { setAuthority, clearAuthority } from '@/utils/authority';
+import { reloadAuthorized } from '@/utils/Authorized';
+
 export default {
   namespace: 'redisadmin',
 
@@ -32,6 +37,18 @@ export default {
         payload: response,
       });
       if (callback) callback(response);
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *appendFetchConfigList({ payload, callback }, { call, put }) {
       const response = yield call(queryRedisConfigList, payload);
@@ -40,6 +57,18 @@ export default {
         payload: response,
       });
       if (callback) callback(response);
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *addConfig({ payload, callback }, { call, put }) {
       const response = yield call(addRedisConfig, payload);
@@ -48,6 +77,18 @@ export default {
         payload: response,
       });
       if (callback) callback();
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *removeConfig({ payload, callback }, { call, put }) {
       const response = yield call(removeRedisConfig, payload);
@@ -56,6 +97,18 @@ export default {
         payload: response,
       });
       if (callback) callback();
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *updateConfig({ payload, callback }, { call, put }) {
       const response = yield call(updateRedisConfig, payload);
@@ -64,6 +117,18 @@ export default {
         payload: response,
       });
       if (callback) callback();
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
 
     *initContext({ payload, callback }, { call, put }) {
@@ -73,6 +138,18 @@ export default {
         payload: response,
       });
       if (callback) callback();
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *clearCache({ payload, callback }, { call, put }) {
       const response = yield call(clearRedisTemplateCache, payload);
@@ -81,6 +158,18 @@ export default {
         payload: response,
       });
       if (callback) callback();
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *testConnection({ payload, callback }, { call, put }) {
       const response = yield call(testRedisConnection, payload);
@@ -89,6 +178,18 @@ export default {
         payload: response,
       });
       if (callback) callback(response);
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *fetchKeyList({ payload, callback }, { call, put }) {
       const response = yield call(queryRedisKeyList, payload);
@@ -97,6 +198,18 @@ export default {
         payload: response,
       });
       if (callback) callback(response);
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *fetchKeyValue({ payload, callback }, { call, put }) {
       const response = yield call(queryRedisKeyValue, payload);
@@ -105,6 +218,18 @@ export default {
         payload: response,
       });
       if (callback) callback(response);
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *delKeys({ payload, callback }, { call, put }) {
       const response = yield call(delRedisKeys, payload);
@@ -113,6 +238,18 @@ export default {
         payload: response,
       });
       if (callback) callback();
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *setKeyTTL({ payload, callback }, { call, put }) {
       const response = yield call(setRedisKeyTTL, payload);
@@ -121,6 +258,18 @@ export default {
         payload: response,
       });
       if (callback) callback();
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *reNameKey({ payload, callback }, { call, put }) {
       const response = yield call(reNameRedisKey, payload);
@@ -129,6 +278,18 @@ export default {
         payload: response,
       });
       if (callback) callback();
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *updateKeyValue({ payload, callback }, { call, put }) {
       const response = yield call(updateKeyValue, payload);
@@ -137,6 +298,18 @@ export default {
         payload: response,
       });
       if (callback) callback();
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     *addKeyValue({ payload, callback }, { call, put }) {
       const response = yield call(addKeyValue, payload);
@@ -145,11 +318,33 @@ export default {
         payload: response,
       });
       if (callback) callback(response);
+
+      //token验证失败了,就重新登录 v1.3.0
+      if (response && response.code && response.code.startsWith('7')) {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
   },
 
   reducers: {
     save(state, { payload }) {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
+    handleAuth(state, { payload }) {
+      const auth = [];
+      auth.push('admin', 'user');
+      setAuthority(auth);
+      reloadAuthorized();
       return {
         ...state,
         ...payload,

@@ -20,13 +20,13 @@ const FooterView = () => (
           blankTarget: true,
         },
         {
-          key: 'Pro首页',
-          title: 'Pro首页',
+          key: 'Ant Design Pro',
+          title: 'Ant Design Pro',
           href: 'https://pro.ant.design',
           blankTarget: true,
         },
         {
-          key: 'AntDesignPro',
+          key: 'Ant Design Pro',
           title: <Icon type="github" />,
           href: 'https://github.com/ant-design/ant-design-pro',
           blankTarget: true,

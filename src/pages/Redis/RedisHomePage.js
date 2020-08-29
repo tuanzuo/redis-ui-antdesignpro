@@ -34,6 +34,8 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { findDOMNode } from 'react-dom';
 import styles from './RedisHomePage.less';
 import StandardFormRow from '@/components/StandardFormRow';
+//v1.3.0 权限控制
+import Authorized from '@/utils/Authorized';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -536,6 +538,9 @@ class RedisHome extends PureComponent {
             地址：{temp.address}
           </p>
           <p className={styles.pStyle}>创建时间：{temp.createTime}</p>
+          <p className={styles.pStyle}>
+            操作者：{temp.creater}-{temp.updater}
+          </p>
           <p className={styles.pStyle} title={temp.note}>
             备注：{temp.note ? temp.note : '-'}
           </p>
@@ -654,74 +659,77 @@ class RedisHome extends PureComponent {
 
     return (
       <div>
-        <SearchForm />
-        <Row gutter={24} style={{ marginTop: 0 }}>
-          <Spin spinning={this.state.dataLoading} delay={100}>
-            {colItems}
-            <Col {...topColResponsiveProps}>
-              <Card
-                bordered={true}
-                size="small"
-                title="新建redis连接信息"
-                style={
-                  {
-                    /* width: 240 */
+        {/*v1.3.0 权限控制*/}
+        <Authorized authority={['admin', 'test', 'develop']}>
+          <SearchForm />
+          <Row gutter={24} style={{ marginTop: 0 }}>
+            <Spin spinning={this.state.dataLoading} delay={100}>
+              {colItems}
+              <Col {...topColResponsiveProps}>
+                <Card
+                  bordered={true}
+                  size="small"
+                  title="新建redis连接信息"
+                  style={
+                    {
+                      /* width: 240 */
+                    }
                   }
-                }
-                hoverable={false}
+                  hoverable={false}
+                >
+                  <p>
+                    <Button
+                      type="dashed"
+                      style={{ width: '80%', margin: 20 }}
+                      icon="plus"
+                      onClick={this.showModal}
+                      ref={component => {
+                        /* eslint-disable */
+                        this.addBtn = findDOMNode(component);
+                        /* eslint-enable */
+                      }}
+                    >
+                      添加
+                    </Button>
+                  </p>
+                </Card>
+              </Col>
+            </Spin>
+          </Row>
+          {/*加载更多*/}
+          <Spin spinning={this.state.dataLoading} delay={100}>
+            <div style={{ textAlign: 'center', marginTop: 16 }}>
+              <Button
+                onClick={this.fetchMore}
+                style={{ paddingLeft: 48, paddingRight: 48 }}
+                disabled={this.state.fetchMoreButtonDisabled}
               >
-                <p>
-                  <Button
-                    type="dashed"
-                    style={{ width: '80%', margin: 20 }}
-                    icon="plus"
-                    onClick={this.showModal}
-                    ref={component => {
-                      /* eslint-disable */
-                      this.addBtn = findDOMNode(component);
-                      /* eslint-enable */
-                    }}
-                  >
-                    添加
-                  </Button>
-                </p>
-              </Card>
-            </Col>
+                {loading ? (
+                  <span>
+                    <Icon type="loading" /> 加载中...
+                  </span>
+                ) : (
+                  '加载更多'
+                )}
+              </Button>
+            </div>
           </Spin>
-        </Row>
-        {/*加载更多*/}
-        <Spin spinning={this.state.dataLoading} delay={100}>
-          <div style={{ textAlign: 'center', marginTop: 16 }}>
-            <Button
-              onClick={this.fetchMore}
-              style={{ paddingLeft: 48, paddingRight: 48 }}
-              disabled={this.state.fetchMoreButtonDisabled}
-            >
-              {loading ? (
-                <span>
-                  <Icon type="loading" /> 加载中...
-                </span>
-              ) : (
-                '加载更多'
-              )}
-            </Button>
-          </div>
-        </Spin>
-        {/*返回顶部*/}
-        <BackTop />
-        {/*redis连接信息modal*/}
-        <Modal
-          title={done ? null : `${current.id ? '编辑redis连接信息' : '添加redis连接信息'}`}
-          className={styles.standardListForm}
-          width={640}
-          bodyStyle={done ? { padding: '5px 0' } : { padding: '5px 0 0' }}
-          destroyOnClose
-          visible={visible}
-          footer={addUpdateFootContent()}
-          {...modalFooter}
-        >
-          {getModalContent()}
-        </Modal>
+          {/*返回顶部*/}
+          <BackTop />
+          {/*redis连接信息modal*/}
+          <Modal
+            title={done ? null : `${current.id ? '编辑redis连接信息' : '添加redis连接信息'}`}
+            className={styles.standardListForm}
+            width={640}
+            bodyStyle={done ? { padding: '5px 0' } : { padding: '5px 0 0' }}
+            destroyOnClose
+            visible={visible}
+            footer={addUpdateFootContent()}
+            {...modalFooter}
+          >
+            {getModalContent()}
+          </Modal>
+        </Authorized>
       </div>
     );
   }

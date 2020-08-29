@@ -5,6 +5,9 @@ import { connect } from 'dva';
 import ReactJson from 'react-json-view';
 // JSON格式化显示：https://www.npmjs.com/package/react-json-pretty
 import JSONPretty from 'react-json-pretty';
+//v1.3.0 权限控制
+import Authorized from '@/utils/Authorized';
+
 import {
   Form,
   Row,
@@ -1250,44 +1253,47 @@ class RedisData extends PureComponent {
     ));
 
     return (
-      <Card bordered={false} size="small" hoverable={false}>
-        <div>
-          <Row>
-            <Col span={24}>
-              <SearchForm />
-            </Col>
-          </Row>
-          <Row>
-            <Col span={24}>
-              <Divider dashed style={{ marginTop: 19, marginBottom: -1 }} />
-            </Col>
-          </Row>
-          <Row>
-            <Col span={10} className={styles.treeContainer}>
-              <Spin spinning={this.state.treeLoading} delay={100}>
-                <Card bordered={false}>
-                  <Tree
-                    checkable
-                    showLine
-                    loadData={this.onLoadData}
-                    onSelect={this.onSelect}
-                    onCheck={this.onCheck}
-                  >
-                    {this.renderTreeNodes(this.state.treeData)}
-                  </Tree>
-                </Card>
-              </Spin>
-            </Col>
-            <Col span={14} className={styles.treeContainer}>
-              <Spin spinning={this.state.keyValueLoading} delay={100}>
-                {contentRight}
-              </Spin>
-            </Col>
-          </Row>
-          <RedisDataUpdateForm />
-          <RedisDataAddForm />
-        </div>
-      </Card>
+      /*v1.3.0 权限控制*/
+      <Authorized authority={['admin', 'test', 'develop']}>
+        <Card bordered={false} size="small" hoverable={false}>
+          <div>
+            <Row>
+              <Col span={24}>
+                <SearchForm />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={24}>
+                <Divider dashed style={{ marginTop: 19, marginBottom: -1 }} />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={10} className={styles.treeContainer}>
+                <Spin spinning={this.state.treeLoading} delay={100}>
+                  <Card bordered={false}>
+                    <Tree
+                      checkable
+                      showLine
+                      loadData={this.onLoadData}
+                      onSelect={this.onSelect}
+                      onCheck={this.onCheck}
+                    >
+                      {this.renderTreeNodes(this.state.treeData)}
+                    </Tree>
+                  </Card>
+                </Spin>
+              </Col>
+              <Col span={14} className={styles.treeContainer}>
+                <Spin spinning={this.state.keyValueLoading} delay={100}>
+                  {contentRight}
+                </Spin>
+              </Col>
+            </Row>
+            <RedisDataUpdateForm />
+            <RedisDataAddForm />
+          </div>
+        </Card>
+      </Authorized>
     );
   }
 }

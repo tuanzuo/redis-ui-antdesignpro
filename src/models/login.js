@@ -1,9 +1,11 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { fakeAccountLogin, getFakeCaptcha } from '@/services/api';
+import { fakeAccountLogin, fakeAccountLogout, getFakeCaptcha } from '@/services/api';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
+import { getToken, setToken } from '@/utils/token';
+import { getUserInfo, setUserInfo, clearUserInfo } from '@/utils/user';
 
 export default {
   namespace: 'login',
@@ -13,14 +15,16 @@ export default {
   },
 
   effects: {
-    *login({ payload }, { call, put }) {
+    *login({ payload, callback }, { call, put }) {
       const response = yield call(fakeAccountLogin, payload);
       yield put({
         type: 'changeLoginStatus',
         payload: response,
       });
+      if (callback) callback(response);
+
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.code === '200') {
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -45,12 +49,15 @@ export default {
       yield call(getFakeCaptcha, payload);
     },
 
-    *logout(_, { put }) {
+    *logout({ payload }, { call, put }) {
+      const response = yield call(fakeAccountLogout, payload);
       yield put({
         type: 'changeLoginStatus',
         payload: {
           status: false,
           currentAuthority: 'guest',
+          token: '', //v1.3.0 token
+          user: {}, //v1.3.0 用户信息
         },
       });
       reloadAuthorized();
@@ -67,11 +74,19 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      payload.datas = payload.datas || {};
+      //v1.3.0 设置权限
+      const authRole = payload.currentAuthority || payload.datas.rules;
+      setAuthority(authRole);
+      //v1.3.0 设置token
+      const token = payload.token || payload.datas.token;
+      setToken(token);
+      //v1.3.0 设置用户信息
+      const user = payload.user || payload.datas.user;
+      setUserInfo(user);
       return {
         ...state,
-        status: payload.status,
-        type: payload.type,
+        ...payload,
       };
     },
   },

@@ -5,6 +5,7 @@ import Link from 'umi/link';
 import { Checkbox, Alert, Icon } from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
+import { notification } from 'antd';
 
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 
@@ -49,8 +50,36 @@ class LoginPage extends Component {
           ...values,
           type,
         },
+        callback: response => {
+          debugger;
+          //错误提示信息
+          let flag = this.tipMsg(response);
+          if (!flag) {
+            return;
+          }
+        },
       });
     }
+  };
+
+  tipMsg = response => {
+    let flag = false;
+    let notifyType = 'warning';
+    let msg = '登录失败! ';
+    let showTime = 4.5;
+    if (response && response.code == '200') {
+      flag = true;
+      return flag;
+    } else if (response && response.msg && response.msg != '') {
+      msg = msg + response.msg;
+      showTime = 10;
+    }
+    notification[notifyType]({
+      message: '提示信息',
+      description: msg,
+      duration: showTime,
+    });
+    return flag;
   };
 
   changeAutoLogin = e => {
@@ -82,8 +111,8 @@ class LoginPage extends Component {
               !submitting &&
               this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
             <UserName
-              name="userName"
-              placeholder={`${formatMessage({ id: 'app.login.userName' })}: admin or user`}
+              name="name"
+              placeholder={`${formatMessage({ id: 'app.login.userName' })}`}
               rules={[
                 {
                   required: true,
@@ -92,8 +121,8 @@ class LoginPage extends Component {
               ]}
             />
             <Password
-              name="password"
-              placeholder={`${formatMessage({ id: 'app.login.password' })}: ant.design`}
+              name="pwd"
+              placeholder={`${formatMessage({ id: 'app.login.password' })}`}
               rules={[
                 {
                   required: true,
@@ -106,62 +135,9 @@ class LoginPage extends Component {
               }}
             />
           </Tab>
-          <Tab key="mobile" tab={formatMessage({ id: 'app.login.tab-login-mobile' })}>
-            {login.status === 'error' &&
-              login.type === 'mobile' &&
-              !submitting &&
-              this.renderMessage(
-                formatMessage({ id: 'app.login.message-invalid-verification-code' })
-              )}
-            <Mobile
-              name="mobile"
-              placeholder={formatMessage({ id: 'form.phone-number.placeholder' })}
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({ id: 'validation.phone-number.required' }),
-                },
-                {
-                  pattern: /^1\d{10}$/,
-                  message: formatMessage({ id: 'validation.phone-number.wrong-format' }),
-                },
-              ]}
-            />
-            <Captcha
-              name="captcha"
-              placeholder={formatMessage({ id: 'form.verification-code.placeholder' })}
-              countDown={120}
-              onGetCaptcha={this.onGetCaptcha}
-              getCaptchaButtonText={formatMessage({ id: 'form.get-captcha' })}
-              getCaptchaSecondText={formatMessage({ id: 'form.captcha.second' })}
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({ id: 'validation.verification-code.required' }),
-                },
-              ]}
-            />
-          </Tab>
-          <div>
-            <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
-              <FormattedMessage id="app.login.remember-me" />
-            </Checkbox>
-            <a style={{ float: 'right' }} href="">
-              <FormattedMessage id="app.login.forgot-password" />
-            </a>
-          </div>
           <Submit loading={submitting}>
             <FormattedMessage id="app.login.login" />
           </Submit>
-          <div className={styles.other}>
-            <FormattedMessage id="app.login.sign-in-with" />
-            <Icon type="alipay-circle" className={styles.icon} theme="outlined" />
-            <Icon type="taobao-circle" className={styles.icon} theme="outlined" />
-            <Icon type="weibo-circle" className={styles.icon} theme="outlined" />
-            <Link className={styles.register} to="/user/register">
-              <FormattedMessage id="app.login.signup" />
-            </Link>
-          </div>
         </Login>
       </div>
     );

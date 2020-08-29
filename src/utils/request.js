@@ -3,6 +3,7 @@ import { notification } from 'antd';
 import router from 'umi/router';
 import hash from 'hash.js';
 import { isAntdPro } from './utils';
+import { getToken, setToken } from '@/utils/token';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -82,6 +83,25 @@ export default function request(url, option) {
     credentials: 'include',
   };
   const newOptions = { ...defaultOptions, ...options };
+
+  //得到token设置到header中-v1.3.0
+  const token = getToken();
+  if (token && token != 'undefined' && token != '') {
+    newOptions.headers = {
+      Authorization: token,
+      ...newOptions.headers,
+    };
+  } else {
+    //需要登录才能访问的页面，没有token跳转到登录页面-v1.3.0
+    const authPreUrlArray = ['/redis/'];
+    authPreUrlArray.forEach(preUrl => {
+      if (url.indexOf(preUrl) > -1) {
+        router.push('/user/login');
+        return;
+      }
+    });
+  }
+
   if (
     newOptions.method === 'POST' ||
     newOptions.method === 'PUT' ||

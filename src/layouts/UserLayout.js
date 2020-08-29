@@ -12,25 +12,40 @@ import getPageTitle from '@/utils/getPageTitle';
 
 const links = [
   {
-    key: 'help',
-    title: formatMessage({ id: 'layout.user.link.help' }),
-    href: '',
+    key: 'RedisManger',
+    title: <Icon type="github" />,
+    href: 'https://github.com/tuanzuo/redismanager',
+    blankTarget: true,
   },
   {
-    key: 'privacy',
-    title: formatMessage({ id: 'layout.user.link.privacy' }),
-    href: '',
+    key: 'RedisMangerUI',
+    title: <Icon type="github" />,
+    href: 'https://github.com/tuanzuo/redis-ui-antdesignpro',
+    blankTarget: true,
   },
   {
-    key: 'terms',
-    title: formatMessage({ id: 'layout.user.link.terms' }),
-    href: '',
+    key: 'Ant Design Pro',
+    title: 'Ant Design Pro',
+    href: 'https://pro.ant.design',
+    blankTarget: true,
+  },
+  {
+    key: 'Ant Design Pro',
+    title: <Icon type="github" />,
+    href: 'https://github.com/ant-design/ant-design-pro',
+    blankTarget: true,
+  },
+  {
+    key: 'Ant Design',
+    title: 'Ant Design',
+    href: 'https://ant.design',
+    blankTarget: true,
   },
 ];
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> 2018 蚂蚁金服体验技术部出品
+    Copyright <Icon type="copyright" /> 2019-{new Date().getFullYear()} tuanzuo
   </Fragment>
 );
 
@@ -63,10 +78,12 @@ class UserLayout extends Component {
               <div className={styles.header}>
                 <Link to="/">
                   <img alt="logo" className={styles.logo} src={logo} />
-                  <span className={styles.title}>Ant Design</span>
+                  <span className={styles.title}>Redis Manager</span>
                 </Link>
               </div>
-              <div className={styles.desc}>Ant Design 是西湖区最具影响力的 Web 设计规范</div>
+              <div className={styles.desc}>
+                Redis单机和集群下数据的查询，添加，修改，删除；支持自定义key，value的序列化方式
+              </div>
             </div>
             {children}
           </div>
