@@ -539,7 +539,7 @@ class RedisHome extends PureComponent {
           </p>
           <p className={styles.pStyle}>创建时间：{temp.createTime}</p>
           <p className={styles.pStyle}>
-            操作者：{temp.creater}-{temp.updater}
+            操作者：{temp.creater}--{temp.updater}
           </p>
           <p className={styles.pStyle} title={temp.note}>
             备注：{temp.note ? temp.note : '-'}

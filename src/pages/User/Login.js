@@ -6,6 +6,8 @@ import { Checkbox, Alert, Icon } from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
 import { notification } from 'antd';
+import router from 'umi/router';
+import { getToken, setToken } from '@/utils/token';
 
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 
@@ -18,6 +20,17 @@ class LoginPage extends Component {
     type: 'account',
     autoLogin: true,
   };
+
+  //v1.3.0
+  componentDidMount() {
+    //得到token用于判断是否需要登录-v1.3.0
+    const token = getToken();
+    //有token存在就不在进行登录
+    if (token && token != 'undefined' && token != '') {
+      router.push('/');
+      return;
+    }
+  }
 
   onTabChange = type => {
     this.setState({ type });
@@ -51,7 +64,6 @@ class LoginPage extends Component {
           type,
         },
         callback: response => {
-          debugger;
           //错误提示信息
           let flag = this.tipMsg(response);
           if (!flag) {
@@ -112,7 +124,9 @@ class LoginPage extends Component {
               this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
             <UserName
               name="name"
-              placeholder={`${formatMessage({ id: 'app.login.userName' })}`}
+              placeholder={`${formatMessage({
+                id: 'app.login.userName',
+              })}: admin or test or develop`}
               rules={[
                 {
                   required: true,
@@ -122,7 +136,9 @@ class LoginPage extends Component {
             />
             <Password
               name="pwd"
-              placeholder={`${formatMessage({ id: 'app.login.password' })}`}
+              placeholder={`${formatMessage({
+                id: 'app.login.password',
+              })}: admin or test or develop`}
               rules={[
                 {
                   required: true,
