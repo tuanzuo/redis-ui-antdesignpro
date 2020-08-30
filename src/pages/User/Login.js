@@ -23,13 +23,14 @@ class LoginPage extends Component {
 
   //v1.3.0
   componentDidMount() {
+    /*这里有bug,如果token过期了这里会反复跳转,先注释
     //得到token用于判断是否需要登录-v1.3.0
     const token = getToken();
     //有token存在就不在进行登录
     if (token && token != 'undefined' && token != '') {
       router.push('/');
       return;
-    }
+    }*/
   }
 
   onTabChange = type => {
