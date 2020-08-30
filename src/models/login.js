@@ -76,7 +76,7 @@ export default {
     changeLoginStatus(state, { payload }) {
       payload.datas = payload.datas || {};
       //v1.3.0 设置权限
-      const authRole = payload.currentAuthority || payload.datas.rules;
+      const authRole = payload.currentAuthority || payload.datas.roles;
       setAuthority(authRole);
       //v1.3.0 设置token
       const token = payload.token || payload.datas.token;
