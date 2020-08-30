@@ -127,7 +127,7 @@ class LoginPage extends Component {
               name="name"
               placeholder={`${formatMessage({
                 id: 'app.login.userName',
-              })}: admin or test or develop`}
+              })}`}
               rules={[
                 {
                   required: true,
@@ -139,7 +139,7 @@ class LoginPage extends Component {
               name="pwd"
               placeholder={`${formatMessage({
                 id: 'app.login.password',
-              })}: admin or test or develop`}
+              })}`}
               rules={[
                 {
                   required: true,
