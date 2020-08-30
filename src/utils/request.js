@@ -92,14 +92,25 @@ export default function request(url, option) {
       ...newOptions.headers,
     };
   } else {
-    //需要登录才能访问的页面，没有token跳转到登录页面-v1.3.0
-    const authPreUrlArray = ['/redis/'];
-    authPreUrlArray.forEach(preUrl => {
-      if (url.indexOf(preUrl) > -1) {
-        router.push('/user/login');
-        return;
+    let authFlag = true;
+    //不登录就可以访问的url
+    const noAuthPreUrlArray = ['/auth/user/register'];
+    noAuthPreUrlArray.forEach(preUrl => {
+      if (authFlag && url.indexOf(preUrl) > -1) {
+        authFlag = false;
       }
     });
+
+    if (authFlag) {
+      //需要登录才能访问的url，没有token跳转到登录页面-v1.3.0
+      const authPreUrlArray = ['/redis/', '/auth/'];
+      authPreUrlArray.forEach(preUrl => {
+        if (url.indexOf(preUrl) > -1) {
+          router.push('/user/login');
+          return;
+        }
+      });
+    }
   }
 
   if (

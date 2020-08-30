@@ -7,11 +7,11 @@ import styles from './RegisterResult.less';
 
 const actions = (
   <div className={styles.actions}>
-    <a href="">
+    {/*<a href="">
       <Button size="large" type="primary">
         <FormattedMessage id="app.register-result.view-mailbox" />
       </Button>
-    </a>
+    </a>*/}
     <Link to="/">
       <Button size="large">
         <FormattedMessage id="app.register-result.back-home" />
@@ -32,7 +32,7 @@ const RegisterResult = ({ location }) => (
         />
       </div>
     }
-    description={formatMessage({ id: 'app.register-result.activation-email' })}
+    /*description={formatMessage({ id: 'app.register-result.activation-email' })}*/
     actions={actions}
     style={{ marginTop: 56 }}
   />

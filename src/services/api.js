@@ -103,13 +103,6 @@ export async function updateFakeList(params) {
   });
 }
 
-export async function fakeRegister(params) {
-  return request('/api/register', {
-    method: 'POST',
-    body: params,
-  });
-}
-
 export async function queryNotices(params = {}) {
   return request(`/api/notices?${stringify(params)}`);
 }
@@ -125,6 +118,27 @@ const apiUrl = 'http://127.0.0.1';
 // console.log(window.location.protocol+"//"+window.location.host);
 
 //----------user----------
+
+export async function fakeRegister(params) {
+  return request(`${apiUrl}/auth/user/register`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function updateUserInfo(params) {
+  return request(`${apiUrl}/auth/user/update/info`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function updatePwd(params) {
+  return request(`${apiUrl}/auth/user/update/pwd`, {
+    method: 'POST',
+    body: params,
+  });
+}
 
 export async function fakeAccountLogin(params) {
   return request(`${apiUrl}/login`, {

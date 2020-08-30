@@ -19,13 +19,13 @@ const AvatarView = ({ avatar }) => (
     <div className={styles.avatar}>
       <img src={avatar} alt="avatar" />
     </div>
-    <Upload fileList={[]}>
+    {/*<Upload fileList={[]}>
       <div className={styles.button_view}>
         <Button icon="upload">
           <FormattedMessage id="app.settings.basic.change-avatar" defaultMessage="Change avatar" />
         </Button>
       </div>
-    </Upload>
+    </Upload>*/}
   </Fragment>
 );
 
@@ -82,6 +82,19 @@ class BaseView extends Component {
     this.view = ref;
   };
 
+  handleSubmit = e => {
+    const { dispatch, form } = this.props;
+    e.preventDefault();
+    form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        dispatch({
+          type: 'form/submitRegularForm',
+          payload: values,
+        });
+      }
+    });
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
@@ -90,7 +103,7 @@ class BaseView extends Component {
       <div className={styles.baseView} ref={this.getViewDom}>
         <div className={styles.left}>
           <Form layout="vertical" onSubmit={this.handleSubmit} hideRequiredMark>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.email' })}>
+            {/*<FormItem label={formatMessage({ id: 'app.settings.basic.email' })}>
               {getFieldDecorator('email', {
                 rules: [
                   {
@@ -99,23 +112,25 @@ class BaseView extends Component {
                   },
                 ],
               })(<Input />)}
-            </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.nickname' })}>
+            </FormItem>*/}
+            <FormItem label={'用户名'}>
               {getFieldDecorator('name', {
                 rules: [
                   {
                     required: true,
-                    message: formatMessage({ id: 'app.settings.basic.nickname-message' }, {}),
+                    message: '请输入用户名，最多32个字符',
+                    max: 32,
                   },
                 ],
               })(<Input />)}
             </FormItem>
             <FormItem label={formatMessage({ id: 'app.settings.basic.profile' })}>
-              {getFieldDecorator('profile', {
+              {getFieldDecorator('note', {
                 rules: [
                   {
-                    required: true,
-                    message: formatMessage({ id: 'app.settings.basic.profile-message' }, {}),
+                    required: false,
+                    message: '请输入个人简介，最多200个字符',
+                    max: 200,
                   },
                 ],
               })(
@@ -125,7 +140,7 @@ class BaseView extends Component {
                 />
               )}
             </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.country' })}>
+            {/*<FormItem label={formatMessage({ id: 'app.settings.basic.country' })}>
               {getFieldDecorator('country', {
                 rules: [
                   {
@@ -172,13 +187,14 @@ class BaseView extends Component {
                   { validator: validatorPhone },
                 ],
               })(<PhoneView />)}
-            </FormItem>
-            <Button type="primary">
+            </FormItem>*/}
+            {/*v1.3.0注释*/}
+            {/*<Button type="primary">
               <FormattedMessage
                 id="app.settings.basic.update"
                 defaultMessage="Update Information"
               />
-            </Button>
+            </Button>*/}
           </Form>
         </div>
         <div className={styles.right}>

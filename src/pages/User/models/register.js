@@ -7,25 +7,31 @@ export default {
 
   state: {
     status: undefined,
+    //v1.3.0
+    registerCode: undefined,
   },
 
   effects: {
-    *submit({ payload }, { call, put }) {
+    *submit({ payload, callback }, { call, put }) {
       const response = yield call(fakeRegister, payload);
       yield put({
         type: 'registerHandle',
         payload: response,
       });
+      if (callback) callback(response);
     },
   },
 
   reducers: {
     registerHandle(state, { payload }) {
-      setAuthority('user');
-      reloadAuthorized();
+      //v1.3.0 注释代码
+      /*setAuthority('user');
+      reloadAuthorized();*/
       return {
         ...state,
         status: payload.status,
+        //v1.3.0
+        registerCode: payload.code,
       };
     },
   },

@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
 import Link from 'umi/link';
 import router from 'umi/router';
-import { Form, Input, Button, Select, Row, Col, Popover, Progress } from 'antd';
+import { Form, Input, Button, Select, Row, Col, Popover, Progress, notification } from 'antd';
 import styles from './Register.less';
 
 const FormItem = Form.Item;
@@ -50,8 +50,9 @@ class Register extends Component {
 
   componentDidUpdate() {
     const { form, register } = this.props;
-    const account = form.getFieldValue('mail');
-    if (register.status === 'ok') {
+    const account = form.getFieldValue('name');
+    //v1.3.0
+    if (register.registerCode === '200') {
       router.push({
         pathname: '/user/register-result',
         state: {
@@ -79,7 +80,7 @@ class Register extends Component {
 
   getPasswordStatus = () => {
     const { form } = this.props;
-    const value = form.getFieldValue('password');
+    const value = form.getFieldValue('pwd');
     if (value && value.length > 9) {
       return 'ok';
     }
@@ -101,9 +102,42 @@ class Register extends Component {
             ...values,
             prefix,
           },
+          callback: response => {
+            if (response && response.code === '200') {
+              form.resetFields();
+              //router.push('/user/login');
+              return;
+            }
+            //错误提示信息v1.3.0
+            let flag = this.tipMsg(response);
+            if (!flag) {
+              return;
+            }
+          },
         });
       }
     });
+  };
+
+  tipMsg = response => {
+    let flag = false;
+    let notifyType = 'warning';
+    let msg = '注册失败! ';
+    let showTime = 4.5;
+    if (response && response.code == '200') {
+      flag = true;
+      return flag;
+    } else if (response && response.msg && response.msg != '') {
+      msg = msg + response.msg;
+      showTime = 10;
+    }
+    msg = '注册失败! ' + '来晚啦，用户名已被其他小伙伴注册了';
+    notification[notifyType]({
+      message: '提示信息',
+      description: msg,
+      duration: showTime,
+    });
+    return flag;
   };
 
   handleConfirmBlur = e => {
@@ -114,7 +148,7 @@ class Register extends Component {
 
   checkConfirm = (rule, value, callback) => {
     const { form } = this.props;
-    if (value && value !== form.getFieldValue('password')) {
+    if (value && value !== form.getFieldValue('pwd')) {
       callback(formatMessage({ id: 'validation.password.twice' }));
     } else {
       callback();
@@ -158,7 +192,7 @@ class Register extends Component {
 
   renderPasswordProgress = () => {
     const { form } = this.props;
-    const value = form.getFieldValue('password');
+    const value = form.getFieldValue('pwd');
     const passwordStatus = this.getPasswordStatus();
     return value && value.length ? (
       <div className={styles[`progress-${passwordStatus}`]}>
@@ -183,7 +217,7 @@ class Register extends Component {
           <FormattedMessage id="app.register.register" />
         </h3>
         <Form onSubmit={this.handleSubmit}>
-          <FormItem>
+          {/*<FormItem>
             {getFieldDecorator('mail', {
               rules: [
                 {
@@ -198,6 +232,17 @@ class Register extends Component {
             })(
               <Input size="large" placeholder={formatMessage({ id: 'form.email.placeholder' })} />
             )}
+          </FormItem>*/}
+          <FormItem>
+            {getFieldDecorator('name', {
+              rules: [
+                {
+                  required: true,
+                  message: '请输入用户名，最多32个字符',
+                  max: 32,
+                },
+              ],
+            })(<Input size="large" placeholder="用户名" />)}
           </FormItem>
           <FormItem help={help}>
             <Popover
@@ -215,7 +260,7 @@ class Register extends Component {
               placement="right"
               visible={visible}
             >
-              {getFieldDecorator('password', {
+              {getFieldDecorator('pwd', {
                 rules: [
                   {
                     validator: this.checkPassword,
@@ -249,7 +294,7 @@ class Register extends Component {
               />
             )}
           </FormItem>
-          <FormItem>
+          {/*<FormItem>
             <InputGroup compact>
               <Select
                 size="large"
@@ -310,7 +355,7 @@ class Register extends Component {
                 </Button>
               </Col>
             </Row>
-          </FormItem>
+          </FormItem>*/}
           <FormItem>
             <Button
               size="large"
