@@ -541,7 +541,16 @@ class RedisDataUpdateForm extends React.Component {
       return (
         <Row gutter={16}>
           <Col span={20}>
-            <Form.Item label="value：">
+            <Form.Item
+              label={
+                <span>
+                  value：&nbsp;
+                  <Popover content={addKeyValueExample} title="不同类型的value示例" trigger="hover">
+                    <QuestionCircleOutlined />
+                  </Popover>
+                </span>
+              }
+            >
               {getFieldDecorator('stringValue', {
                 rules: [
                   {
