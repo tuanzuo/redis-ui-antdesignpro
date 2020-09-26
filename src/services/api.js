@@ -126,6 +126,10 @@ export async function fakeRegister(params) {
   });
 }
 
+export async function queryCurrentUser() {
+  return request(`${apiUrl}/auth/user/current`);
+}
+
 export async function updateUserInfo(params) {
   return request(`${apiUrl}/auth/user/update/info`, {
     method: 'POST',
@@ -152,6 +156,12 @@ export async function fakeAccountLogout(params) {
     method: 'POST',
     body: params,
   });
+}
+
+//----------usermanager----------
+
+export async function queryUserList(params) {
+  return request(`${apiUrl}/auth/user/list?${stringify(params)}`);
 }
 
 //----------redis----------

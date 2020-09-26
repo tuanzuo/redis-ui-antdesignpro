@@ -35,10 +35,12 @@ export default [
             icon: 'user',
             path: '/account',
             routes: [
-              /*{
+              {
                 path: '/account/center',
                 name: 'center',
-                component: './Account/Center/Center',
+                //component: './Account/Center/Center',
+                component: '404', //v1.4.0
+                hideInMenu: true, //隐藏菜单 v1.4.0
                 routes: [
                   {
                     path: '/account/center',
@@ -57,12 +59,6 @@ export default [
                     component: './Account/Center/Projects',
                   },
                 ],
-              },*/
-              {
-                path: '/account/center',
-                name: 'center',
-                component: '404',
-                hideInMenu: true, //隐藏菜单
               },
               {
                 path: '/account/settings',
@@ -93,6 +89,23 @@ export default [
               },
             ],
           },
+
+          // usermanager
+          {
+            name: 'usermanager',
+            icon: 'table',
+            path: '/usermanager',
+            // 控制权限 v1.4.0
+            authority: ['superadmin'],
+            routes: [
+              {
+                path: '/usermanager/list',
+                name: 'userlist',
+                component: './UserManager/UserList',
+              },
+            ],
+          },
+
           // redis
           {
             name: 'connectionadmin', //菜单名字
