@@ -20,9 +20,6 @@ export default {
       //v1.4.0 查询当前登录用户信息
       const response = yield call(queryCurrentUser);
       const userInfo = response.datas || {};
-      //图片
-      userInfo.avatar =
-        'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png';
       yield put({
         type: 'saveCurrentUser',
         payload: userInfo,
