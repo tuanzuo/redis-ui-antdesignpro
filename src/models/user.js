@@ -1,5 +1,4 @@
-import { query as queryUsers, queryCurrent } from '@/services/user';
-import { getUserInfo, setUserInfo, clearUserInfo } from '@/utils/user';
+import { queryCurrentUser } from '@/services/api';
 
 export default {
   namespace: 'user',
@@ -10,23 +9,23 @@ export default {
   },
 
   effects: {
-    *fetch(_, { call, put }) {
+    /**fetch(_, { call, put }) {
       const response = yield call(queryUsers);
       yield put({
         type: 'save',
         payload: response,
       });
-    },
+    },*/
     *fetchCurrent(_, { call, put }) {
-      //v1.3.0 设置用户信息
-      const response = yield call(queryCurrent);
-      const userInfo = getUserInfo();
-      if (response && userInfo) {
-        response.name = userInfo.name;
-      }
+      //v1.4.0 查询当前登录用户信息
+      const response = yield call(queryCurrentUser);
+      const userInfo = response.datas || {};
+      //图片
+      userInfo.avatar =
+        'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png';
       yield put({
         type: 'saveCurrentUser',
-        payload: response,
+        payload: userInfo,
       });
     },
   },

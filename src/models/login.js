@@ -5,7 +5,6 @@ import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
 import { getToken, setToken } from '@/utils/token';
-import { getUserInfo, setUserInfo, clearUserInfo } from '@/utils/user';
 
 export default {
   namespace: 'login',
@@ -74,6 +73,7 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
+      payload = payload || {};
       payload.datas = payload.datas || {};
       //v1.3.0 设置权限
       const authRole = payload.currentAuthority || payload.datas.roles;
@@ -81,9 +81,6 @@ export default {
       //v1.3.0 设置token
       const token = payload.token || payload.datas.token;
       setToken(token);
-      //v1.3.0 设置用户信息
-      const user = payload.user || payload.datas.user;
-      setUserInfo(user);
       return {
         ...state,
         ...payload,

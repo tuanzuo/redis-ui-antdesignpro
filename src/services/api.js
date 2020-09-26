@@ -126,6 +126,10 @@ export async function fakeRegister(params) {
   });
 }
 
+export async function queryCurrentUser() {
+  return request(`${apiUrl}/auth/user/current`);
+}
+
 export async function updateUserInfo(params) {
   return request(`${apiUrl}/auth/user/update/info`, {
     method: 'POST',
