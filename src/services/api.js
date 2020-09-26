@@ -154,6 +154,12 @@ export async function fakeAccountLogout(params) {
   });
 }
 
+//----------usermanager----------
+
+export async function queryUserList(params) {
+  return request(`${apiUrl}/auth/user/list?${stringify(params)}`);
+}
+
 //----------redis----------
 
 export async function queryRedisConfigList(params) {

@@ -39,6 +39,8 @@ export default {
   'menu.account.trigger': '触发报错',
   'menu.account.logout': '退出登录',
   //------------------------
+  'menu.usermanager': '用户管理',
+  'menu.usermanager.userlist': '用户列表',
   'menu.connectionadmin': '连接管理',
   'menu.connectionadmin.redishome': 'Redis',
   'menu.connectionadmin.redisdata': 'Redis数据信息',

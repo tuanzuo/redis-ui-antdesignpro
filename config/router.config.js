@@ -93,6 +93,23 @@ export default [
               },
             ],
           },
+
+          // usermanager
+          {
+            name: 'usermanager',
+            icon: 'table',
+            path: '/usermanager',
+            // 控制权限 v1.4.0
+            authority: ['superadmin'],
+            routes: [
+              {
+                path: '/usermanager/list',
+                name: 'userlist',
+                component: './UserManager/UserList',
+              },
+            ],
+          },
+
           // redis
           {
             name: 'connectionadmin', //菜单名字
