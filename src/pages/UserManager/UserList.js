@@ -21,6 +21,7 @@ import {
   Divider,
   Steps,
   Radio,
+  BackTop,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -38,8 +39,8 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['关闭', '运行中', '已上线', '异常'];
+const statusMap = ['0', '1'];
+const status = ['禁用', '启用'];
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ usermanager, loading }) => ({
@@ -63,6 +64,24 @@ class UserList extends PureComponent {
       dataIndex: 'name',
     },
     {
+      title: '状态',
+      dataIndex: 'status',
+      width: 75,
+      filters: [
+        {
+          text: status[0],
+          value: 0,
+        },
+        {
+          text: status[1],
+          value: 1,
+        },
+      ],
+      render(val) {
+        return <Badge status={statusMap[val]} text={status[val]} />;
+      },
+    },
+    {
       title: '描述',
       dataIndex: 'note',
     },
@@ -84,11 +103,12 @@ class UserList extends PureComponent {
     },
     {
       title: '操作',
+      width: 120,
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>启用</a>
+          <a onClick={() => this.handleStatus(1, record)}>启用</a>
           <Divider type="vertical" />
-          <a href="">禁用</a>
+          <a onClick={() => this.handleStatus(0, record)}>禁用</a>
         </Fragment>
       ),
     },
@@ -158,7 +178,13 @@ class UserList extends PureComponent {
 
     if (selectedRows.length === 0) return;
     switch (e.key) {
-      case 'remove':
+      case 'batchEnableStatus':
+        this.handleBatchStatus(1);
+        break;
+      case 'batchDisableStatus':
+        this.handleBatchStatus(0);
+        break;
+      case 'batchDel':
         dispatch({
           type: 'rule/remove',
           payload: {
@@ -183,7 +209,9 @@ class UserList extends PureComponent {
   };
 
   handleSearch = e => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
 
     const { dispatch, form } = this.props;
 
@@ -217,6 +245,52 @@ class UserList extends PureComponent {
       updateModalVisible: !!flag,
       stepFormValues: record || {},
     });
+  };
+
+  //启用、禁用 v1.4.0
+  handleStatus = (status, record) => {
+    const { dispatch } = this.props;
+    const ids = [];
+    ids.push(record.id);
+    dispatch({
+      type: 'usermanager/updateStatus',
+      payload: {
+        ids: ids,
+        status: status,
+      },
+    });
+    if (status == 1) {
+      message.success('启用成功');
+    } else if (status == 0) {
+      message.success('禁用成功');
+    }
+    this.handleSearch();
+  };
+
+  //批量启用、禁用 v1.4.0
+  handleBatchStatus = status => {
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
+
+    if (selectedRows.length === 0) return;
+    dispatch({
+      type: 'usermanager/updateStatus',
+      payload: {
+        ids: selectedRows.map(row => row.id),
+        status: status,
+      },
+      callback: () => {
+        this.setState({
+          selectedRows: [],
+        });
+      },
+    });
+    if (status == 1) {
+      message.success('批量启用成功');
+    } else if (status == 0) {
+      message.success('批量禁用成功');
+    }
+    this.handleSearch();
   };
 
   handleAdd = fields => {
@@ -267,8 +341,8 @@ class UserList extends PureComponent {
             <FormItem label="状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">启用</Option>
-                  <Option value="1">禁用</Option>
+                  <Option value="1">启用</Option>
+                  <Option value="0">禁用</Option>
                 </Select>
               )}
             </FormItem>
@@ -281,9 +355,9 @@ class UserList extends PureComponent {
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
                 重置
               </Button>
-              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+              {/*<a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
                 展开 <Icon type="down" />
-              </a>
+              </a>*/}
             </span>
           </Col>
         </Row>
@@ -307,8 +381,8 @@ class UserList extends PureComponent {
             <FormItem label="使用状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
+                  <Option value="1">启用</Option>
+                  <Option value="0">禁用</Option>
                 </Select>
               )}
             </FormItem>
@@ -344,8 +418,9 @@ class UserList extends PureComponent {
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
+        <Menu.Item key="batchEnableStatus">批量启用</Menu.Item>
+        <Menu.Item key="batchDisableStatus">批量禁用</Menu.Item>
+        {/*<Menu.Item key="batchDel">批量删除</Menu.Item>*/}
       </Menu>
     );
 
@@ -369,7 +444,7 @@ class UserList extends PureComponent {
               </Button>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button>批量操作</Button>
+                  {/*<Button>批量启用</Button>*/}
                   <Dropdown overlay={menu}>
                     <Button>
                       更多操作 <Icon type="down" />
@@ -386,6 +461,8 @@ class UserList extends PureComponent {
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
             />
+            {/*返回顶部*/}
+            <BackTop />
           </div>
         </Card>
       </Authorized>
