@@ -1,4 +1,4 @@
-import { queryUserList, removeRule, addRule, updateStatus } from '@/services/api';
+import { queryUserList, removeRule, addRule, updateStatus, resetPwd } from '@/services/api';
 
 export default {
   namespace: 'usermanager',
@@ -36,6 +36,14 @@ export default {
     },
     *updateStatus({ payload, callback }, { call, put }) {
       const response = yield call(updateStatus, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback();
+    },
+    *resetPwd({ payload, callback }, { call, put }) {
+      const response = yield call(resetPwd, payload);
       yield put({
         type: 'save',
         payload: response,

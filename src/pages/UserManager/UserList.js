@@ -103,16 +103,32 @@ class UserList extends PureComponent {
     },
     {
       title: '操作',
-      width: 120,
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.handleStatus(1, record)}>启用</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleStatus(0, record)}>禁用</a>
-        </Fragment>
-      ),
+      width: 135,
+      render: (text, record) => {
+        return this.getOptHtml(record);
+      },
     },
   ];
+
+  getOptHtml = record => {
+    if (record && record.status == 1) {
+      return (
+        <Fragment>
+          <a onClick={() => this.handleStatusModel(0, record)}>禁用</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.resetPwdModel(record)}>重置密码</a>
+        </Fragment>
+      );
+    } else {
+      return (
+        <Fragment>
+          <a onClick={() => this.handleStatusModel(1, record)}>启用</a>
+          <Divider type="vertical" />
+          <a onClick={() => this.resetPwdModel(record)}>重置密码</a>
+        </Fragment>
+      );
+    }
+  };
 
   componentDidMount() {
     console.log('init');
@@ -179,10 +195,10 @@ class UserList extends PureComponent {
     if (selectedRows.length === 0) return;
     switch (e.key) {
       case 'batchEnableStatus':
-        this.handleBatchStatus(1);
+        this.handleBatchStatusModel(1);
         break;
       case 'batchDisableStatus':
-        this.handleBatchStatus(0);
+        this.handleBatchStatusModel(0);
         break;
       case 'batchDel':
         dispatch({
@@ -247,6 +263,52 @@ class UserList extends PureComponent {
     });
   };
 
+  //重置密码弹窗 v1.4.0
+  resetPwdModel = record => {
+    Modal.confirm({
+      title: '重置密码',
+      content: `确定重置【${
+        record.name
+      }】这个用户的密码吗？备注：重置后的默认密码为123456，请提示用户登录后及时修改默认密码。`,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.resetPwd(record),
+    });
+  };
+
+  //重置密码 v1.4.0
+  resetPwd = record => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'usermanager/resetPwd',
+      payload: {
+        id: record.id,
+      },
+      callback: () => {
+        this.handleSearch();
+        message.success('用户【' + record.name + '】重置密码成功！');
+      },
+    });
+  };
+
+  //启用、禁用弹窗 v1.4.0
+  handleStatusModel = (status, record) => {
+    let statusMsg = '';
+    if (status == 1) {
+      statusMsg = '启用';
+    } else {
+      statusMsg = '禁用';
+    }
+
+    Modal.confirm({
+      title: statusMsg,
+      content: `确定${statusMsg}【${record.name}】这个用户吗？`,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.handleStatus(status, record),
+    });
+  };
+
   //启用、禁用 v1.4.0
   handleStatus = (status, record) => {
     const { dispatch } = this.props;
@@ -258,13 +320,38 @@ class UserList extends PureComponent {
         ids: ids,
         status: status,
       },
+      callback: () => {
+        if (status == 1) {
+          message.success('用户【' + record.name + '】启用成功！');
+        } else if (status == 0) {
+          message.success('用户【' + record.name + '】禁用成功！');
+        }
+        this.handleSearch();
+      },
     });
+  };
+
+  //批量启用、禁用弹窗 v1.4.0
+  handleBatchStatusModel = status => {
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
+
+    if (selectedRows.length === 0) return;
+
+    let statusMsg = '';
     if (status == 1) {
-      message.success('启用成功');
-    } else if (status == 0) {
-      message.success('禁用成功');
+      statusMsg = '启用';
+    } else {
+      statusMsg = '禁用';
     }
-    this.handleSearch();
+
+    Modal.confirm({
+      title: '批量' + statusMsg,
+      content: `确定${statusMsg}这${selectedRows.length}个用户吗？`,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.handleBatchStatus(status),
+    });
   };
 
   //批量启用、禁用 v1.4.0
@@ -283,14 +370,14 @@ class UserList extends PureComponent {
         this.setState({
           selectedRows: [],
         });
+        if (status == 1) {
+          message.success('批量启用成功！');
+        } else if (status == 0) {
+          message.success('批量禁用成功！');
+        }
+        this.handleSearch();
       },
     });
-    if (status == 1) {
-      message.success('批量启用成功');
-    } else if (status == 0) {
-      message.success('批量禁用成功');
-    }
-    this.handleSearch();
   };
 
   handleAdd = fields => {
@@ -439,9 +526,9 @@ class UserList extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              {/*<Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
-              </Button>
+              </Button>*/}
               {selectedRows.length > 0 && (
                 <span>
                   {/*<Button>批量启用</Button>*/}
