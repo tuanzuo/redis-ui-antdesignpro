@@ -21,9 +21,20 @@ const codeMessage = {
   502: '网关错误。',
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
+  //v1.4.0
+  700: 'token验证失败。',
 };
 
 const checkStatus = response => {
+  //V1.4.0 【token验证失败时，后端会往header中写入一条code='700'的数据；所以在这里如果判断到code='700'，
+  // 那么久表示token验证不通过，强制退出系统】
+  if (response.headers.get('code') == '700') {
+    window.g_app._store.dispatch({
+      type: 'login/logout',
+    });
+    return;
+  }
+
   if (response.status >= 200 && response.status < 300) {
     return response;
   }
