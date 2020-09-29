@@ -164,6 +164,26 @@ export async function queryUserList(params) {
   return request(`${apiUrl}/auth/user/list?${stringify(params)}`);
 }
 
+export async function updateStatus(params) {
+  return request(`${apiUrl}/auth/user/update/status`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function resetPwd(params) {
+  return request(`${apiUrl}/auth/user/reset/pwd`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
 //----------redis----------
 
 export async function queryRedisConfigList(params) {
