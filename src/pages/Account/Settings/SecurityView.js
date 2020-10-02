@@ -1,6 +1,7 @@
 import React, { PureComponent, Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import router from 'umi/router';
 import {
   List,
   Form,
@@ -135,6 +136,7 @@ class SecurityView extends PureComponent {
             if (!flag) {
               return;
             }
+            router.push('/user/login');
           },
         });
       }
@@ -149,7 +151,7 @@ class SecurityView extends PureComponent {
     if (response && response.code == '200') {
       flag = true;
       notifyType = 'success';
-      msg = '密码修改成功!';
+      msg = '密码修改成功，请重新登录！';
 
       this.setState({
         done: false,
