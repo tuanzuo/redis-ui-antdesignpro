@@ -28,7 +28,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 //v1.4.0 权限控制
 import Authorized from '@/utils/Authorized';
 
-import styles from './UserList.less';
+import styles from './RoleList.less';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -42,13 +42,82 @@ const getValue = obj =>
 const statusMap = ['0', '1'];
 const status = ['禁用', '启用'];
 
+//添加，修改角色
+const AddUpdateForm = Form.create()(props => {
+  const {
+    modalVisible,
+    form,
+    handleAdd,
+    handleUpdate,
+    handleModalVisible,
+    formVals,
+    addOrUpdateDataFlag,
+  } = props;
+
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+
+      if (addOrUpdateDataFlag == 1) {
+        handleAdd(fieldsValue);
+      } else if (addOrUpdateDataFlag == 2) {
+        const updateValues = {
+          id: formVals.id,
+          ...fieldsValue,
+        };
+        handleUpdate(updateValues);
+      }
+    });
+  };
+  return (
+    <Modal
+      destroyOnClose
+      title={addOrUpdateDataFlag == 1 ? '新建角色' : '修改角色'}
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="角色名称">
+        {form.getFieldDecorator('name', {
+          initialValue: formVals.name,
+          rules: [{ required: true, message: '请输入最多32个字符的角色名称！', max: 32 }],
+        })(<Input placeholder="请输入" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="角色编码">
+        {form.getFieldDecorator('code', {
+          initialValue: formVals.code,
+          rules: [{ required: true, message: '请输入最多100个字符的角色编码！', max: 100 }],
+        })(<Input placeholder="请输入" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="状态">
+        {form.getFieldDecorator('status', {
+          initialValue: formVals.status,
+          rules: [{ required: true, message: '请选择' }],
+        })(
+          <Radio.Group defaultValue={1}>
+            <Radio value={1}>启用</Radio>
+            <Radio value={0}>禁用</Radio>
+          </Radio.Group>
+        )}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="描述">
+        {form.getFieldDecorator('note', {
+          initialValue: formVals.note,
+          rules: [{ required: false, message: '请输入最多200个字符的角色描述！', max: 200 }],
+        })(<TextArea placeholder="描述" rows={2} />)}
+      </FormItem>
+    </Modal>
+  );
+});
+
 /* eslint react/no-multi-comp:0 */
-@connect(({ usermanager, loading }) => ({
-  usermanager,
-  loading: loading.models.usermanager,
+@connect(({ rolemanager, loading }) => ({
+  rolemanager,
+  loading: loading.models.rolemanager,
 }))
 @Form.create()
-class UserList extends PureComponent {
+class RoleList extends PureComponent {
   state = {
     modalVisible: false,
     updateModalVisible: false,
@@ -56,12 +125,20 @@ class UserList extends PureComponent {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
+    //v1.4.0 更新角色的数据
+    updateRoleData: {},
+    //v1.4.0 添加或者修改角色的标识，1：添加，2：修改
+    addOrUpdateDataFlag: null,
   };
 
   columns = [
     {
-      title: '用户名',
+      title: '角色名称',
       dataIndex: 'name',
+    },
+    {
+      title: '角色编码',
+      dataIndex: 'code',
     },
     {
       title: '状态',
@@ -114,17 +191,17 @@ class UserList extends PureComponent {
     if (record && record.status == 1) {
       return (
         <Fragment>
-          <a onClick={() => this.handleStatusModel(0, record)}>禁用</a>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
           <Divider type="vertical" />
-          <a onClick={() => this.resetPwdModel(record)}>重置密码</a>
+          <a onClick={() => this.handleStatusModel(0, record)}>禁用</a>
         </Fragment>
       );
     } else {
       return (
         <Fragment>
-          <a onClick={() => this.handleStatusModel(1, record)}>启用</a>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
           <Divider type="vertical" />
-          <a onClick={() => this.resetPwdModel(record)}>重置密码</a>
+          <a onClick={() => this.handleStatusModel(1, record)}>启用</a>
         </Fragment>
       );
     }
@@ -134,7 +211,7 @@ class UserList extends PureComponent {
     console.log('init');
     const { dispatch } = this.props;
     dispatch({
-      type: 'usermanager/fetch',
+      type: 'rolemanager/fetch',
     });
   }
 
@@ -160,7 +237,7 @@ class UserList extends PureComponent {
     }
 
     dispatch({
-      type: 'usermanager/fetch',
+      type: 'rolemanager/fetch',
       payload: params,
     });
   };
@@ -176,7 +253,7 @@ class UserList extends PureComponent {
       formValues: {},
     });
     dispatch({
-      type: 'usermanager/fetch',
+      type: 'rolemanager/fetch',
       payload: {},
     });
   };
@@ -244,52 +321,32 @@ class UserList extends PureComponent {
       });
 
       dispatch({
-        type: 'usermanager/fetch',
+        type: 'rolemanager/fetch',
         payload: values,
       });
     });
   };
 
+  //v1.4.0 ‘新建’按钮显示弹窗
   handleModalVisible = flag => {
     this.setState({
+      //v1.4.0 控制是否展示添加修改角色的弹窗
       modalVisible: !!flag,
+      //v1.4.0 重置角色数据
+      updateRoleData: {},
+      addOrUpdateDataFlag: 1,
     });
   };
 
+  //v1.4.0 ‘修改’按钮显示弹窗
   handleUpdateModalVisible = (flag, record) => {
     this.setState({
       updateModalVisible: !!flag,
-      stepFormValues: record || {},
-    });
-  };
-
-  //重置密码弹窗 v1.4.0
-  resetPwdModel = record => {
-    Modal.confirm({
-      title: '重置密码',
-      content: `确定重置【${
-        record.name
-      }】这个用户的密码吗？备注：重置后的默认密码为123456，请提示用户登录后及时修改默认密码。`,
-      okText: '确认',
-      cancelText: '取消',
-      onOk: () => this.resetPwd(record),
-    });
-  };
-
-  //重置密码 v1.4.0
-  resetPwd = record => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'usermanager/resetPwd',
-      payload: {
-        id: record.id,
-      },
-      callback: response => {
-        //错误提示信息
-        let flag = this.tipMsg(response);
-        this.handleSearch();
-        message.success('用户【' + record.name + '】重置密码成功！');
-      },
+      //v1.4.0 控制是否展示添加修改角色的弹窗
+      modalVisible: !!flag,
+      //v1.4.0 修改的角色数据
+      updateRoleData: record || {},
+      addOrUpdateDataFlag: 2,
     });
   };
 
@@ -304,7 +361,7 @@ class UserList extends PureComponent {
 
     Modal.confirm({
       title: statusMsg,
-      content: `确定${statusMsg}【${record.name}】这个用户吗？`,
+      content: `确定${statusMsg}【${record.name}】这个角色吗？`,
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleStatus(status, record),
@@ -317,7 +374,7 @@ class UserList extends PureComponent {
     const ids = [];
     ids.push(record.id);
     dispatch({
-      type: 'usermanager/updateStatus',
+      type: 'rolemanager/updateStatus',
       payload: {
         ids: ids,
         status: status,
@@ -325,10 +382,13 @@ class UserList extends PureComponent {
       callback: response => {
         //错误提示信息
         let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         if (status == 1) {
-          message.success('用户【' + record.name + '】启用成功！');
+          message.success('角色【' + record.name + '】启用成功！');
         } else if (status == 0) {
-          message.success('用户【' + record.name + '】禁用成功！');
+          message.success('角色【' + record.name + '】禁用成功！');
         }
         this.handleSearch();
       },
@@ -351,7 +411,7 @@ class UserList extends PureComponent {
 
     Modal.confirm({
       title: '批量' + statusMsg,
-      content: `确定${statusMsg}这${selectedRows.length}个用户吗？`,
+      content: `确定${statusMsg}这${selectedRows.length}个角色吗？`,
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleBatchStatus(status),
@@ -365,7 +425,7 @@ class UserList extends PureComponent {
 
     if (selectedRows.length === 0) return;
     dispatch({
-      type: 'usermanager/updateStatus',
+      type: 'rolemanager/updateStatus',
       payload: {
         ids: selectedRows.map(row => row.id),
         status: status,
@@ -373,6 +433,9 @@ class UserList extends PureComponent {
       callback: response => {
         //错误提示信息
         let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         this.setState({
           selectedRows: [],
         });
@@ -386,36 +449,46 @@ class UserList extends PureComponent {
     });
   };
 
+  //v1.4.0 添加角色
   handleAdd = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'rule/add',
+      type: 'rolemanager/add',
       payload: {
-        desc: fields.desc,
+        ...fields,
+      },
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+        this.handleModalVisible();
+        this.handleSearch();
+        message.success('角色【' + record.name + '】添加成功！');
       },
     });
-
-    message.success('添加成功');
-    this.handleModalVisible();
   };
 
+  //v1.4.0 修改角色
   handleUpdate = fields => {
     const { dispatch } = this.props;
-    const { formValues } = this.state;
     dispatch({
-      type: 'rule/update',
+      type: 'rolemanager/update',
       payload: {
-        query: formValues,
-        body: {
-          name: fields.name,
-          desc: fields.desc,
-          key: fields.key,
-        },
+        ...fields,
+      },
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+        this.handleUpdateModalVisible();
+        this.handleSearch();
+        message.success('角色【' + record.name + '】修改成功！');
       },
     });
-
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
   };
 
   //v1.4.0 消息提示
@@ -446,12 +519,17 @@ class UserList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="用户名">
+          <Col md={6} sm={24}>
+            <FormItem label="角色名称">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
+            <FormItem label="角色编码">
+              {getFieldDecorator('code')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
             <FormItem label="状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -461,7 +539,7 @@ class UserList extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
                 查询
@@ -487,7 +565,7 @@ class UserList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="用户名">
+            <FormItem label="角色名称">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
@@ -526,10 +604,17 @@ class UserList extends PureComponent {
 
   render() {
     const {
-      usermanager: { data },
+      rolemanager: { data },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
+    const {
+      selectedRows,
+      modalVisible,
+      updateModalVisible,
+      stepFormValues,
+      updateRoleData,
+      addOrUpdateDataFlag,
+    } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="batchEnableStatus">批量启用</Menu.Item>
@@ -540,6 +625,7 @@ class UserList extends PureComponent {
 
     const parentMethods = {
       handleAdd: this.handleAdd,
+      handleUpdate: this.handleUpdate,
       handleModalVisible: this.handleModalVisible,
     };
     const updateMethods = {
@@ -553,9 +639,9 @@ class UserList extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              {/*<Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
-              </Button>*/}
+              </Button>
               {selectedRows.length > 0 && (
                 <span>
                   {/*<Button>批量启用</Button>*/}
@@ -579,9 +665,16 @@ class UserList extends PureComponent {
             <BackTop />
           </div>
         </Card>
+
+        <AddUpdateForm
+          {...parentMethods}
+          modalVisible={modalVisible}
+          formVals={updateRoleData}
+          addOrUpdateDataFlag={addOrUpdateDataFlag}
+        />
       </Authorized>
     );
   }
 }
 
-export default UserList;
+export default RoleList;

@@ -106,6 +106,22 @@ export default [
             ],
           },
 
+          // rolemanager
+          {
+            name: 'rolemanager',
+            icon: 'table',
+            path: '/rolemanager',
+            // 控制权限 v1.4.0
+            authority: ['superadmin'],
+            routes: [
+              {
+                path: '/rolemanager/list',
+                name: 'rolelist',
+                component: './RoleManager/RoleList',
+              },
+            ],
+          },
+
           // redis
           {
             name: 'connectionadmin', //菜单名字

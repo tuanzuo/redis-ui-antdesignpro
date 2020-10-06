@@ -1,7 +1,7 @@
-import { queryUserList, removeRule, addRule, updateStatus, resetPwd } from '@/services/api';
+import { queryRoleList, addRole, updateRole, removeRole, updateRoleStatus } from '@/services/api';
 
 export default {
-  namespace: 'usermanager',
+  namespace: 'rolemanager',
 
   state: {
     data: {
@@ -12,7 +12,7 @@ export default {
 
   effects: {
     *fetch({ payload, callback }, { call, put }) {
-      const response = yield call(queryUserList, payload);
+      const response = yield call(queryRoleList, payload);
       yield put({
         type: 'save',
         payload: response,
@@ -20,15 +20,15 @@ export default {
       if (callback) callback(response);
     },
     *add({ payload, callback }, { call, put }) {
-      const response = yield call(addRule, payload);
+      const response = yield call(addRole, payload);
       yield put({
         type: 'save',
         payload: response,
       });
       if (callback) callback(response);
     },
-    *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeRule, payload);
+    *update({ payload, callback }, { call, put }) {
+      const response = yield call(updateRole, payload);
       yield put({
         type: 'save',
         payload: response,
@@ -36,15 +36,15 @@ export default {
       if (callback) callback(response);
     },
     *updateStatus({ payload, callback }, { call, put }) {
-      const response = yield call(updateStatus, payload);
+      const response = yield call(updateRoleStatus, payload);
       yield put({
         type: 'save',
         payload: response,
       });
       if (callback) callback(response);
     },
-    *resetPwd({ payload, callback }, { call, put }) {
-      const response = yield call(resetPwd, payload);
+    *remove({ payload, callback }, { call, put }) {
+      const response = yield call(removeRole, payload);
       yield put({
         type: 'save',
         payload: response,
