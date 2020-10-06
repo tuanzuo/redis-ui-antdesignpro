@@ -131,7 +131,7 @@ export async function queryCurrentUser() {
 }
 
 export async function updateUserInfo(params) {
-  return request(`${apiUrl}/auth/user/update/info`, {
+  return request(`${apiUrl}/auth/user/update`, {
     method: 'POST',
     body: params,
   });
@@ -176,6 +176,52 @@ export async function updateStatus(params) {
 
 export async function resetPwd(params) {
   return request(`${apiUrl}/auth/user/reset/pwd`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+//----------rolemanager----------
+
+export async function queryRoleList(params) {
+  return request(`${apiUrl}/auth/role/list?${stringify(params)}`);
+}
+
+export async function addRole(params) {
+  return request(`${apiUrl}/auth/role/add`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function updateRole(params) {
+  return request(`${apiUrl}/auth/role/update`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function updateRoleStatus(params) {
+  return request(`${apiUrl}/auth/role/update/status`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function removeRole(params) {
+  return request(`${apiUrl}/auth/role/del`, {
     method: 'POST',
     body: {
       ...params,
