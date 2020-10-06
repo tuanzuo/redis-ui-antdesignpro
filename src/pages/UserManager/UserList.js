@@ -284,7 +284,9 @@ class UserList extends PureComponent {
       payload: {
         id: record.id,
       },
-      callback: () => {
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
         this.handleSearch();
         message.success('用户【' + record.name + '】重置密码成功！');
       },
@@ -320,7 +322,9 @@ class UserList extends PureComponent {
         ids: ids,
         status: status,
       },
-      callback: () => {
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
         if (status == 1) {
           message.success('用户【' + record.name + '】启用成功！');
         } else if (status == 0) {
@@ -366,7 +370,9 @@ class UserList extends PureComponent {
         ids: selectedRows.map(row => row.id),
         status: status,
       },
-      callback: () => {
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
         this.setState({
           selectedRows: [],
         });
@@ -410,6 +416,27 @@ class UserList extends PureComponent {
 
     message.success('配置成功');
     this.handleUpdateModalVisible();
+  };
+
+  //v1.4.0 消息提示
+  tipMsg = response => {
+    let flag = false;
+    let notifyType = 'warning';
+    let msg = '操作失败! ';
+    let showTime = 4.5;
+    if (response && response.code == '200') {
+      flag = true;
+      return flag;
+    } else if (response && response.msg && response.msg != '') {
+      msg = msg + response.msg;
+      showTime = 10;
+    }
+    notification[notifyType]({
+      message: '提示信息',
+      description: msg,
+      duration: showTime,
+    });
+    return flag;
   };
 
   renderSimpleForm() {

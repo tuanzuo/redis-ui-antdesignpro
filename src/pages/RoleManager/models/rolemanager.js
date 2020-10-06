@@ -11,12 +11,13 @@ export default {
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, callback }, { call, put }) {
       const response = yield call(queryRoleList, payload);
       yield put({
         type: 'save',
         payload: response,
       });
+      if (callback) callback(response);
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addRole, payload);
@@ -24,7 +25,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(updateRole, payload);
@@ -32,7 +33,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *updateStatus({ payload, callback }, { call, put }) {
       const response = yield call(updateRoleStatus, payload);
@@ -40,7 +41,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(removeRole, payload);
@@ -48,7 +49,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
   },
 

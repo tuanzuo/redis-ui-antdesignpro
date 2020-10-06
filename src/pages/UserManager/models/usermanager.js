@@ -11,12 +11,13 @@ export default {
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, callback }, { call, put }) {
       const response = yield call(queryUserList, payload);
       yield put({
         type: 'save',
         payload: response,
       });
+      if (callback) callback(response);
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addRule, payload);
@@ -24,7 +25,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(removeRule, payload);
@@ -32,7 +33,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *updateStatus({ payload, callback }, { call, put }) {
       const response = yield call(updateStatus, payload);
@@ -40,7 +41,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *resetPwd({ payload, callback }, { call, put }) {
       const response = yield call(resetPwd, payload);
@@ -48,7 +49,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
   },
 
