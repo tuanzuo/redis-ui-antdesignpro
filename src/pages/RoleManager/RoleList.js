@@ -165,22 +165,27 @@ class RoleList extends PureComponent {
     {
       title: '描述',
       dataIndex: 'note',
+      ellipsis: true,
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
+      ellipsis: true,
     },
     {
       title: '创建人',
       dataIndex: 'creater',
+      ellipsis: true,
     },
     {
       title: '修改时间',
       dataIndex: 'updateTime',
+      ellipsis: true,
     },
     {
       title: '修改人',
       dataIndex: 'updater',
+      ellipsis: true,
     },
     {
       title: '操作',

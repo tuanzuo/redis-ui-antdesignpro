@@ -28,6 +28,7 @@ import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 //v1.4.0 权限控制
 import Authorized from '@/utils/Authorized';
+import { DownOutlined } from '@ant-design/icons';
 
 import styles from './UserList.less';
 
@@ -43,7 +44,67 @@ const getValue = obj =>
 const statusMap = ['0', '1'];
 const status = ['禁用', '启用'];
 
-/* eslint react/no-multi-comp:0 */
+//v1.4.0 设置用户角色Form
+const SetUserRoleForm = Form.create()(props => {
+  const {
+    modalVisible,
+    form,
+    handleAdd,
+    handleUpdate,
+    handleModalVisible,
+    formVals,
+    roles,
+    addOrUpdateDataFlag,
+  } = props;
+
+  const roleChildrenOption = [];
+  roles.map(role => {
+    roleChildrenOption.push(<Option value={role.id}>{role.name + '(' + role.code + ')'}</Option>);
+  });
+
+  const handleChange = value => {
+    console.log(`selected ${value}`);
+  };
+
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+
+      const updateValues = {
+        id: formVals.id,
+        ...fieldsValue,
+      };
+      console.log(updateValues);
+    });
+  };
+  return (
+    <Modal
+      destroyOnClose
+      title={'给用户' + formVals.name + '分配角色'}
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="角色列表">
+        {form.getFieldDecorator('roleIds', {
+          initialValue: formVals.roleIds,
+          rules: [{ required: true, message: '请选择' }],
+        })(
+          <Select
+            mode="tags"
+            style={{ width: '100%' }}
+            onChange={handleChange}
+            tokenSeparators={[',']}
+          >
+            {roleChildrenOption}
+          </Select>
+        )}
+      </FormItem>
+    </Modal>
+  );
+});
+
 @connect(({ usermanager, loading }) => ({
   usermanager,
   loading: loading.models.usermanager,
@@ -57,6 +118,8 @@ class UserList extends PureComponent {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
+    //v1.4.0 当前点击行数据
+    currentClickRecordData: {},
   };
 
   columns = [
@@ -85,39 +148,67 @@ class UserList extends PureComponent {
     {
       title: '描述',
       dataIndex: 'note',
+      ellipsis: true,
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
+      ellipsis: true,
     },
     {
       title: '创建人',
       dataIndex: 'creater',
+      ellipsis: true,
     },
     {
       title: '修改时间',
       dataIndex: 'updateTime',
+      ellipsis: true,
     },
     {
       title: '修改人',
       dataIndex: 'updater',
+      ellipsis: true,
     },
     {
       title: '操作',
-      width: 135,
+      width: 150,
       render: (text, record) => {
         return this.getOptHtml(record);
       },
     },
   ];
 
+  //v1.4.0 更多
+  moreOptMenu = (
+    <Menu>
+      <Menu.Item>
+        <a onClick={() => this.handleModalVisible(true)}>分配角色</a>
+      </Menu.Item>
+      <Menu.Item>
+        <a onClick={() => this.resetPwdModel()}>重置密码</a>
+      </Menu.Item>
+    </Menu>
+  );
+
+  //v1.4.0 操作
   getOptHtml = record => {
     if (record && record.status == 1) {
       return (
         <Fragment>
           <a onClick={() => this.handleStatusModel(0, record)}>禁用</a>
           <Divider type="vertical" />
-          <a onClick={() => this.resetPwdModel(record)}>重置密码</a>
+          <Dropdown overlay={this.moreOptMenu} trigger={['click']}>
+            <a
+              className="ant-dropdown-link"
+              onClick={e => {
+                e.preventDefault();
+                this.clickMoreActions(record);
+              }}
+            >
+              更多 <DownOutlined />
+            </a>
+          </Dropdown>
         </Fragment>
       );
     } else {
@@ -125,7 +216,17 @@ class UserList extends PureComponent {
         <Fragment>
           <a onClick={() => this.handleStatusModel(1, record)}>启用</a>
           <Divider type="vertical" />
-          <a onClick={() => this.resetPwdModel(record)}>重置密码</a>
+          <Dropdown overlay={this.moreOptMenu} trigger={['click']}>
+            <a
+              className="ant-dropdown-link"
+              onClick={e => {
+                e.preventDefault();
+                this.clickMoreActions(record);
+              }}
+            >
+              更多 <DownOutlined />
+            </a>
+          </Dropdown>
         </Fragment>
       );
     }
@@ -145,6 +246,13 @@ class UserList extends PureComponent {
       },
     });
   }
+
+  //v1.4.0点击更多
+  clickMoreActions = record => {
+    this.setState({
+      currentClickRecordData: record,
+    });
+  };
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     console.log('change');
@@ -294,6 +402,11 @@ class UserList extends PureComponent {
 
   //重置密码弹窗 v1.4.0
   resetPwdModel = record => {
+    const { currentClickRecordData } = this.state;
+    record = record || currentClickRecordData;
+
+    console.log(record);
+
     Modal.confirm({
       title: '重置密码',
       content: `确定重置【${
@@ -324,6 +437,11 @@ class UserList extends PureComponent {
 
   //启用、禁用弹窗 v1.4.0
   handleStatusModel = (status, record) => {
+    const { currentClickRecordData } = this.state;
+    record = record || currentClickRecordData;
+
+    console.log(record);
+
     let statusMsg = '';
     if (status == 1) {
       statusMsg = '启用';
@@ -558,7 +676,7 @@ class UserList extends PureComponent {
       usermanager: { data },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, currentClickRecordData } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="batchEnableStatus">批量启用</Menu.Item>
@@ -608,6 +726,13 @@ class UserList extends PureComponent {
             <BackTop />
           </div>
         </Card>
+
+        <SetUserRoleForm
+          {...parentMethods}
+          modalVisible={modalVisible}
+          formVals={currentClickRecordData}
+          roles={data.roles || []}
+        />
       </Authorized>
     );
   }
