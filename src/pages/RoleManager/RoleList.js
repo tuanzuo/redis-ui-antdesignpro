@@ -42,7 +42,7 @@ const getValue = obj =>
 const statusMap = ['0', '1'];
 const status = ['禁用', '启用'];
 
-//添加，修改角色
+//添加，修改角色Form
 const AddUpdateForm = Form.create()(props => {
   const {
     modalVisible,
@@ -59,9 +59,12 @@ const AddUpdateForm = Form.create()(props => {
       if (err) return;
       form.resetFields();
 
+      //添加
       if (addOrUpdateDataFlag == 1) {
         handleAdd(fieldsValue);
-      } else if (addOrUpdateDataFlag == 2) {
+      }
+      //修改
+      else if (addOrUpdateDataFlag == 2) {
         const updateValues = {
           id: formVals.id,
           ...fieldsValue,
@@ -95,7 +98,7 @@ const AddUpdateForm = Form.create()(props => {
           initialValue: formVals.status,
           rules: [{ required: true, message: '请选择' }],
         })(
-          <Radio.Group defaultValue={1}>
+          <Radio.Group>
             <Radio value={1}>启用</Radio>
             <Radio value={0}>禁用</Radio>
           </Radio.Group>
@@ -212,6 +215,13 @@ class RoleList extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'rolemanager/fetch',
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   }
 
@@ -239,6 +249,13 @@ class RoleList extends PureComponent {
     dispatch({
       type: 'rolemanager/fetch',
       payload: params,
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   };
 
@@ -255,6 +272,13 @@ class RoleList extends PureComponent {
     dispatch({
       type: 'rolemanager/fetch',
       payload: {},
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   };
 
@@ -323,6 +347,13 @@ class RoleList extends PureComponent {
       dispatch({
         type: 'rolemanager/fetch',
         payload: values,
+        callback: response => {
+          //错误提示信息
+          let flag = this.tipMsg(response);
+          if (!flag) {
+            return;
+          }
+        },
       });
     });
   };
@@ -333,7 +364,10 @@ class RoleList extends PureComponent {
       //v1.4.0 控制是否展示添加修改角色的弹窗
       modalVisible: !!flag,
       //v1.4.0 重置角色数据
-      updateRoleData: {},
+      updateRoleData: {
+        //v1.4.0 初始化状态数据，默认选中启用
+        status: 1,
+      },
       addOrUpdateDataFlag: 1,
     });
   };

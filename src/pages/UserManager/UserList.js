@@ -135,6 +135,13 @@ class UserList extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'usermanager/fetch',
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   }
 
@@ -162,6 +169,13 @@ class UserList extends PureComponent {
     dispatch({
       type: 'usermanager/fetch',
       payload: params,
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   };
 
@@ -178,6 +192,13 @@ class UserList extends PureComponent {
     dispatch({
       type: 'usermanager/fetch',
       payload: {},
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   };
 
@@ -246,6 +267,13 @@ class UserList extends PureComponent {
       dispatch({
         type: 'usermanager/fetch',
         payload: values,
+        callback: response => {
+          //错误提示信息
+          let flag = this.tipMsg(response);
+          if (!flag) {
+            return;
+          }
+        },
       });
     });
   };

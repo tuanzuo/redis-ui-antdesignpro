@@ -109,7 +109,7 @@ export default [
           // rolemanager
           {
             name: 'rolemanager',
-            icon: 'table',
+            icon: 'profile',
             path: '/rolemanager',
             // 控制权限 v1.4.0
             authority: ['superadmin'],
