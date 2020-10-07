@@ -14,7 +14,7 @@ export default {
     *fetch({ payload, callback }, { call, put }) {
       const response = yield call(queryRoleList, payload);
       yield put({
-        type: 'save',
+        type: 'saveList',
         payload: response,
       });
       if (callback) callback(response);
@@ -54,6 +54,14 @@ export default {
   },
 
   reducers: {
+    //v1.4.0 保存列表数据
+    saveList(state, action) {
+      return {
+        ...state,
+        //v1.4.0 得到返回值中的datas赋值个data
+        data: action.payload.datas || {},
+      };
+    },
     save(state, action) {
       return {
         ...state,
