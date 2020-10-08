@@ -93,7 +93,7 @@ export default [
           // usermanager
           {
             name: 'usermanager',
-            icon: 'table',
+            icon: 'UsergroupAddOutlined', //v1.4.0 见src\components\SiderMenu\BaseMenu.js
             path: '/usermanager',
             // 控制权限 v1.4.0
             authority: ['superadmin'],
@@ -109,7 +109,7 @@ export default [
           // rolemanager
           {
             name: 'rolemanager',
-            icon: 'profile',
+            icon: 'SolutionOutlined', //v1.4.0 见src\components\SiderMenu\BaseMenu.js
             path: '/rolemanager',
             // 控制权限 v1.4.0
             authority: ['superadmin'],

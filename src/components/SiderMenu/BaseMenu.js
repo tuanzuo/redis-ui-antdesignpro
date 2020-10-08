@@ -7,6 +7,8 @@ import { getMenuMatches } from './SiderMenuUtils';
 import { isUrl } from '@/utils/utils';
 import styles from './index.less';
 import IconFont from '@/components/IconFont';
+//v1.4.0
+import { UserSwitchOutlined, UsergroupAddOutlined, SolutionOutlined } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
 
@@ -23,6 +25,18 @@ const getIcon = icon => {
     if (icon.startsWith('icon-')) {
       return <IconFont type={icon} />;
     }
+
+    //v1.4.0 增加icon
+    if (icon === 'UserSwitchOutlined') {
+      return <UserSwitchOutlined />;
+    }
+    if (icon === 'UsergroupAddOutlined') {
+      return <UsergroupAddOutlined />;
+    }
+    if (icon === 'SolutionOutlined') {
+      return <SolutionOutlined />;
+    }
+
     return <Icon type={icon} />;
   }
   return icon;
