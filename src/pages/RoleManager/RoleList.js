@@ -58,11 +58,10 @@ const AddUpdateForm = Form.create()(props => {
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      form.resetFields();
 
       //添加
       if (addOrUpdateDataFlag == 1) {
-        handleAdd(fieldsValue);
+        handleAdd(fieldsValue, form);
       }
       //修改
       else if (addOrUpdateDataFlag == 2) {
@@ -70,7 +69,7 @@ const AddUpdateForm = Form.create()(props => {
           id: formVals.id,
           ...fieldsValue,
         };
-        handleUpdate(updateValues);
+        handleUpdate(updateValues, form);
       }
     });
   };
@@ -490,7 +489,7 @@ class RoleList extends PureComponent {
   };
 
   //v1.4.0 添加角色
-  handleAdd = fields => {
+  handleAdd = (fields, form) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'rolemanager/add',
@@ -503,7 +502,11 @@ class RoleList extends PureComponent {
         if (!flag) {
           return;
         }
+        //重置表单
+        form.resetFields();
+        //关闭弹窗
         this.handleModalVisible();
+        //查询数据
         this.handleSearch();
         message.success('角色【' + record.name + '】添加成功！');
       },
@@ -511,7 +514,7 @@ class RoleList extends PureComponent {
   };
 
   //v1.4.0 修改角色
-  handleUpdate = fields => {
+  handleUpdate = (fields, form) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'rolemanager/update',
@@ -524,7 +527,11 @@ class RoleList extends PureComponent {
         if (!flag) {
           return;
         }
+        //重置表单
+        form.resetFields();
+        //关闭弹窗
         this.handleUpdateModalVisible();
+        //查询数据
         this.handleSearch();
         message.success('角色【' + record.name + '】修改成功！');
       },

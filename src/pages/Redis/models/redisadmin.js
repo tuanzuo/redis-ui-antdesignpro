@@ -52,7 +52,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *removeConfig({ payload, callback }, { call, put }) {
       const response = yield call(removeRedisConfig, payload);
@@ -60,7 +60,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *updateConfig({ payload, callback }, { call, put }) {
       const response = yield call(updateRedisConfig, payload);
@@ -68,7 +68,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
 
     *initContext({ payload, callback }, { call, put }) {
@@ -77,7 +77,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *clearCache({ payload, callback }, { call, put }) {
       const response = yield call(clearRedisTemplateCache, payload);
@@ -85,7 +85,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *testConnection({ payload, callback }, { call, put }) {
       const response = yield call(testRedisConnection, payload);
@@ -117,7 +117,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *setKeyTTL({ payload, callback }, { call, put }) {
       const response = yield call(setRedisKeyTTL, payload);
@@ -125,7 +125,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *reNameKey({ payload, callback }, { call, put }) {
       const response = yield call(reNameRedisKey, payload);
@@ -133,7 +133,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *updateKeyValue({ payload, callback }, { call, put }) {
       const response = yield call(updateKeyValue, payload);
@@ -141,7 +141,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *addKeyValue({ payload, callback }, { call, put }) {
       const response = yield call(addKeyValue, payload);

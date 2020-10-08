@@ -51,6 +51,7 @@ const SetUserRoleForm = Form.create()(props => {
     form,
     handleAdd,
     handleUpdate,
+    grantRole,
     handleModalVisible,
     formVals,
     roles,
@@ -69,13 +70,15 @@ const SetUserRoleForm = Form.create()(props => {
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      form.resetFields();
+      //v1.4.0 重置表单
+      //form.resetFields();
 
       const updateValues = {
         id: formVals.id,
         ...fieldsValue,
       };
-      console.log(updateValues);
+      //v1.4.0 授权
+      grantRole(updateValues, form);
     });
   };
   return (
@@ -89,10 +92,10 @@ const SetUserRoleForm = Form.create()(props => {
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="角色列表">
         {form.getFieldDecorator('roleIds', {
           initialValue: formVals.roleIds,
-          rules: [{ required: true, message: '请选择' }],
+          rules: [{ required: false, message: '请选择' }],
         })(
           <Select
-            mode="tags"
+            mode="multiple"
             style={{ width: '100%' }}
             onChange={handleChange}
             tokenSeparators={[',']}
@@ -429,6 +432,9 @@ class UserList extends PureComponent {
       callback: response => {
         //错误提示信息
         let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         this.handleSearch();
         message.success('用户【' + record.name + '】重置密码成功！');
       },
@@ -472,6 +478,9 @@ class UserList extends PureComponent {
       callback: response => {
         //错误提示信息
         let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         if (status == 1) {
           message.success('用户【' + record.name + '】启用成功！');
         } else if (status == 0) {
@@ -520,6 +529,9 @@ class UserList extends PureComponent {
       callback: response => {
         //错误提示信息
         let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         this.setState({
           selectedRows: [],
         });
@@ -529,6 +541,31 @@ class UserList extends PureComponent {
           message.success('批量禁用成功！');
         }
         this.handleSearch();
+      },
+    });
+  };
+
+  //v1.4.0 给用户分配角色
+  grantRole = (fields, form) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'usermanager/grantRole',
+      payload: {
+        ...fields,
+      },
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+        //重置表单
+        form.resetFields();
+        //关闭弹窗
+        this.handleModalVisible();
+        //查询数据
+        this.handleSearch();
+        message.success('用户【' + record.name + '】分配角色成功！');
       },
     });
   };
@@ -686,6 +723,8 @@ class UserList extends PureComponent {
     );
 
     const parentMethods = {
+      //v1.4.0
+      grantRole: this.grantRole,
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
     };
