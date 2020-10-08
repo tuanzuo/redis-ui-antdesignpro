@@ -28,7 +28,13 @@ import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 //v1.4.0 权限控制
 import Authorized from '@/utils/Authorized';
-import { DownOutlined } from '@ant-design/icons';
+import {
+  DownOutlined,
+  SmileTwoTone,
+  HeartTwoTone,
+  CheckCircleTwoTone,
+  StopTwoTone,
+} from '@ant-design/icons';
 
 import styles from './UserList.less';
 
@@ -60,7 +66,20 @@ const SetUserRoleForm = Form.create()(props => {
 
   const roleChildrenOption = [];
   roles.map(role => {
-    roleChildrenOption.push(<Option value={role.id}>{role.name + '(' + role.code + ')'}</Option>);
+    //启用
+    if (role.status === 1) {
+      roleChildrenOption.push(
+        <Option value={role.id}>
+          <CheckCircleTwoTone twoToneColor="#52c41a" /> {role.name + '(' + role.code + ')'}
+        </Option>
+      );
+    } else {
+      roleChildrenOption.push(
+        <Option value={role.id}>
+          <StopTwoTone /> {role.name + '(' + role.code + ')'}
+        </Option>
+      );
+    }
   });
 
   const handleChange = value => {
@@ -236,7 +255,6 @@ class UserList extends PureComponent {
   };
 
   componentDidMount() {
-    console.log('init');
     const { dispatch } = this.props;
     dispatch({
       type: 'usermanager/fetch',
