@@ -22,6 +22,7 @@ import {
   Steps,
   Radio,
   BackTop,
+  notification,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -42,7 +43,7 @@ const getValue = obj =>
 const statusMap = ['0', '1'];
 const status = ['禁用', '启用'];
 
-//添加，修改角色
+//添加，修改角色Form
 const AddUpdateForm = Form.create()(props => {
   const {
     modalVisible,
@@ -57,16 +58,18 @@ const AddUpdateForm = Form.create()(props => {
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      form.resetFields();
 
+      //添加
       if (addOrUpdateDataFlag == 1) {
-        handleAdd(fieldsValue);
-      } else if (addOrUpdateDataFlag == 2) {
+        handleAdd(fieldsValue, form);
+      }
+      //修改
+      else if (addOrUpdateDataFlag == 2) {
         const updateValues = {
           id: formVals.id,
           ...fieldsValue,
         };
-        handleUpdate(updateValues);
+        handleUpdate(updateValues, form);
       }
     });
   };
@@ -95,7 +98,7 @@ const AddUpdateForm = Form.create()(props => {
           initialValue: formVals.status,
           rules: [{ required: true, message: '请选择' }],
         })(
-          <Radio.Group defaultValue={1}>
+          <Radio.Group>
             <Radio value={1}>启用</Radio>
             <Radio value={0}>禁用</Radio>
           </Radio.Group>
@@ -161,22 +164,27 @@ class RoleList extends PureComponent {
     {
       title: '描述',
       dataIndex: 'note',
+      ellipsis: true,
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
+      ellipsis: true,
     },
     {
       title: '创建人',
       dataIndex: 'creater',
+      ellipsis: true,
     },
     {
       title: '修改时间',
       dataIndex: 'updateTime',
+      ellipsis: true,
     },
     {
       title: '修改人',
       dataIndex: 'updater',
+      ellipsis: true,
     },
     {
       title: '操作',
@@ -212,6 +220,13 @@ class RoleList extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'rolemanager/fetch',
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   }
 
@@ -239,6 +254,13 @@ class RoleList extends PureComponent {
     dispatch({
       type: 'rolemanager/fetch',
       payload: params,
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   };
 
@@ -255,6 +277,13 @@ class RoleList extends PureComponent {
     dispatch({
       type: 'rolemanager/fetch',
       payload: {},
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   };
 
@@ -323,6 +352,13 @@ class RoleList extends PureComponent {
       dispatch({
         type: 'rolemanager/fetch',
         payload: values,
+        callback: response => {
+          //错误提示信息
+          let flag = this.tipMsg(response);
+          if (!flag) {
+            return;
+          }
+        },
       });
     });
   };
@@ -333,7 +369,10 @@ class RoleList extends PureComponent {
       //v1.4.0 控制是否展示添加修改角色的弹窗
       modalVisible: !!flag,
       //v1.4.0 重置角色数据
-      updateRoleData: {},
+      updateRoleData: {
+        //v1.4.0 初始化状态数据，默认选中启用
+        status: 1,
+      },
       addOrUpdateDataFlag: 1,
     });
   };
@@ -450,7 +489,7 @@ class RoleList extends PureComponent {
   };
 
   //v1.4.0 添加角色
-  handleAdd = fields => {
+  handleAdd = (fields, form) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'rolemanager/add',
@@ -463,7 +502,11 @@ class RoleList extends PureComponent {
         if (!flag) {
           return;
         }
+        //重置表单
+        form.resetFields();
+        //关闭弹窗
         this.handleModalVisible();
+        //查询数据
         this.handleSearch();
         message.success('角色【' + record.name + '】添加成功！');
       },
@@ -471,7 +514,7 @@ class RoleList extends PureComponent {
   };
 
   //v1.4.0 修改角色
-  handleUpdate = fields => {
+  handleUpdate = (fields, form) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'rolemanager/update',
@@ -484,7 +527,11 @@ class RoleList extends PureComponent {
         if (!flag) {
           return;
         }
+        //重置表单
+        form.resetFields();
+        //关闭弹窗
         this.handleUpdateModalVisible();
+        //查询数据
         this.handleSearch();
         message.success('角色【' + record.name + '】修改成功！');
       },

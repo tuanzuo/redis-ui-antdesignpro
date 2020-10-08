@@ -1,4 +1,11 @@
-import { queryUserList, removeRule, addRule, updateStatus, resetPwd } from '@/services/api';
+import {
+  queryUserList,
+  removeRule,
+  addRule,
+  updateStatus,
+  resetPwd,
+  grantRole,
+} from '@/services/api';
 
 export default {
   namespace: 'usermanager',
@@ -7,6 +14,7 @@ export default {
     data: {
       list: [],
       pagination: {},
+      roles: [],
     },
   },
 
@@ -14,7 +22,7 @@ export default {
     *fetch({ payload, callback }, { call, put }) {
       const response = yield call(queryUserList, payload);
       yield put({
-        type: 'save',
+        type: 'saveList',
         payload: response,
       });
       if (callback) callback(response);
@@ -22,7 +30,7 @@ export default {
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addRule, payload);
       yield put({
-        type: 'save',
+        type: 'onlySave',
         payload: response,
       });
       if (callback) callback(response);
@@ -30,7 +38,7 @@ export default {
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(removeRule, payload);
       yield put({
-        type: 'save',
+        type: 'onlySave',
         payload: response,
       });
       if (callback) callback(response);
@@ -38,7 +46,7 @@ export default {
     *updateStatus({ payload, callback }, { call, put }) {
       const response = yield call(updateStatus, payload);
       yield put({
-        type: 'save',
+        type: 'onlySave',
         payload: response,
       });
       if (callback) callback(response);
@@ -46,7 +54,15 @@ export default {
     *resetPwd({ payload, callback }, { call, put }) {
       const response = yield call(resetPwd, payload);
       yield put({
-        type: 'save',
+        type: 'onlySave',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *grantRole({ payload, callback }, { call, put }) {
+      const response = yield call(grantRole, payload);
+      yield put({
+        type: 'onlySave',
         payload: response,
       });
       if (callback) callback(response);
@@ -54,6 +70,22 @@ export default {
   },
 
   reducers: {
+    //v1.4.0 保存列表数据
+    saveList(state, action) {
+      return {
+        ...state,
+        //v1.4.0 得到返回值中的datas赋值个data
+        data: action.payload.datas || {},
+      };
+    },
+    //v1.4.0
+    onlySave(state, action) {
+      return {
+        ...state,
+        //v1.4.0 去掉对data数据的更新，防止修改，添加等操作失败时列表更新为空
+        //data: action.payload,
+      };
+    },
     save(state, action) {
       return {
         ...state,

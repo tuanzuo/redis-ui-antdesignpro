@@ -184,6 +184,16 @@ export async function resetPwd(params) {
   });
 }
 
+export async function grantRole(params) {
+  return request(`${apiUrl}/auth/user/grant/role`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
 //----------rolemanager----------
 
 export async function queryRoleList(params) {

@@ -22,11 +22,19 @@ import {
   Steps,
   Radio,
   BackTop,
+  notification,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 //v1.4.0 权限控制
 import Authorized from '@/utils/Authorized';
+import {
+  DownOutlined,
+  SmileTwoTone,
+  HeartTwoTone,
+  CheckCircleTwoTone,
+  StopTwoTone,
+} from '@ant-design/icons';
 
 import styles from './UserList.less';
 
@@ -42,7 +50,83 @@ const getValue = obj =>
 const statusMap = ['0', '1'];
 const status = ['禁用', '启用'];
 
-/* eslint react/no-multi-comp:0 */
+//v1.4.0 设置用户角色Form
+const SetUserRoleForm = Form.create()(props => {
+  const {
+    modalVisible,
+    form,
+    handleAdd,
+    handleUpdate,
+    grantRole,
+    handleModalVisible,
+    formVals,
+    roles,
+    addOrUpdateDataFlag,
+  } = props;
+
+  const roleChildrenOption = [];
+  roles.map(role => {
+    //启用
+    if (role.status === 1) {
+      roleChildrenOption.push(
+        <Option value={role.id}>
+          <CheckCircleTwoTone twoToneColor="#52c41a" /> {role.name + '(' + role.code + ')'}
+        </Option>
+      );
+    } else {
+      roleChildrenOption.push(
+        <Option value={role.id}>
+          <StopTwoTone /> {role.name + '(' + role.code + ')'}
+        </Option>
+      );
+    }
+  });
+
+  const handleChange = value => {
+    console.log(`selected ${value}`);
+  };
+
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      //v1.4.0 重置表单
+      //form.resetFields();
+
+      const updateValues = {
+        id: formVals.id,
+        ...fieldsValue,
+      };
+      //v1.4.0 授权
+      grantRole(updateValues, form);
+    });
+  };
+  return (
+    <Modal
+      destroyOnClose
+      title={'给用户' + formVals.name + '分配角色'}
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="角色列表">
+        {form.getFieldDecorator('roleIds', {
+          initialValue: formVals.roleIds,
+          rules: [{ required: false, message: '请选择' }],
+        })(
+          <Select
+            mode="multiple"
+            style={{ width: '100%' }}
+            onChange={handleChange}
+            tokenSeparators={[',']}
+          >
+            {roleChildrenOption}
+          </Select>
+        )}
+      </FormItem>
+    </Modal>
+  );
+});
+
 @connect(({ usermanager, loading }) => ({
   usermanager,
   loading: loading.models.usermanager,
@@ -56,6 +140,8 @@ class UserList extends PureComponent {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
+    //v1.4.0 当前点击行数据
+    currentClickRecordData: {},
   };
 
   columns = [
@@ -84,39 +170,67 @@ class UserList extends PureComponent {
     {
       title: '描述',
       dataIndex: 'note',
+      ellipsis: true,
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
+      ellipsis: true,
     },
     {
       title: '创建人',
       dataIndex: 'creater',
+      ellipsis: true,
     },
     {
       title: '修改时间',
       dataIndex: 'updateTime',
+      ellipsis: true,
     },
     {
       title: '修改人',
       dataIndex: 'updater',
+      ellipsis: true,
     },
     {
       title: '操作',
-      width: 135,
+      width: 150,
       render: (text, record) => {
         return this.getOptHtml(record);
       },
     },
   ];
 
+  //v1.4.0 更多
+  moreOptMenu = (
+    <Menu>
+      <Menu.Item>
+        <a onClick={() => this.handleModalVisible(true)}>分配角色</a>
+      </Menu.Item>
+      <Menu.Item>
+        <a onClick={() => this.resetPwdModel()}>重置密码</a>
+      </Menu.Item>
+    </Menu>
+  );
+
+  //v1.4.0 操作
   getOptHtml = record => {
     if (record && record.status == 1) {
       return (
         <Fragment>
           <a onClick={() => this.handleStatusModel(0, record)}>禁用</a>
           <Divider type="vertical" />
-          <a onClick={() => this.resetPwdModel(record)}>重置密码</a>
+          <Dropdown overlay={this.moreOptMenu} trigger={['click']}>
+            <a
+              className="ant-dropdown-link"
+              onClick={e => {
+                e.preventDefault();
+                this.clickMoreActions(record);
+              }}
+            >
+              更多 <DownOutlined />
+            </a>
+          </Dropdown>
         </Fragment>
       );
     } else {
@@ -124,19 +238,42 @@ class UserList extends PureComponent {
         <Fragment>
           <a onClick={() => this.handleStatusModel(1, record)}>启用</a>
           <Divider type="vertical" />
-          <a onClick={() => this.resetPwdModel(record)}>重置密码</a>
+          <Dropdown overlay={this.moreOptMenu} trigger={['click']}>
+            <a
+              className="ant-dropdown-link"
+              onClick={e => {
+                e.preventDefault();
+                this.clickMoreActions(record);
+              }}
+            >
+              更多 <DownOutlined />
+            </a>
+          </Dropdown>
         </Fragment>
       );
     }
   };
 
   componentDidMount() {
-    console.log('init');
     const { dispatch } = this.props;
     dispatch({
       type: 'usermanager/fetch',
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   }
+
+  //v1.4.0点击更多
+  clickMoreActions = record => {
+    this.setState({
+      currentClickRecordData: record,
+    });
+  };
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     console.log('change');
@@ -162,6 +299,13 @@ class UserList extends PureComponent {
     dispatch({
       type: 'usermanager/fetch',
       payload: params,
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   };
 
@@ -178,6 +322,13 @@ class UserList extends PureComponent {
     dispatch({
       type: 'usermanager/fetch',
       payload: {},
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+      },
     });
   };
 
@@ -246,6 +397,13 @@ class UserList extends PureComponent {
       dispatch({
         type: 'usermanager/fetch',
         payload: values,
+        callback: response => {
+          //错误提示信息
+          let flag = this.tipMsg(response);
+          if (!flag) {
+            return;
+          }
+        },
       });
     });
   };
@@ -265,6 +423,11 @@ class UserList extends PureComponent {
 
   //重置密码弹窗 v1.4.0
   resetPwdModel = record => {
+    const { currentClickRecordData } = this.state;
+    record = record || currentClickRecordData;
+
+    console.log(record);
+
     Modal.confirm({
       title: '重置密码',
       content: `确定重置【${
@@ -287,6 +450,9 @@ class UserList extends PureComponent {
       callback: response => {
         //错误提示信息
         let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         this.handleSearch();
         message.success('用户【' + record.name + '】重置密码成功！');
       },
@@ -295,6 +461,11 @@ class UserList extends PureComponent {
 
   //启用、禁用弹窗 v1.4.0
   handleStatusModel = (status, record) => {
+    const { currentClickRecordData } = this.state;
+    record = record || currentClickRecordData;
+
+    console.log(record);
+
     let statusMsg = '';
     if (status == 1) {
       statusMsg = '启用';
@@ -325,6 +496,9 @@ class UserList extends PureComponent {
       callback: response => {
         //错误提示信息
         let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         if (status == 1) {
           message.success('用户【' + record.name + '】启用成功！');
         } else if (status == 0) {
@@ -373,6 +547,9 @@ class UserList extends PureComponent {
       callback: response => {
         //错误提示信息
         let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         this.setState({
           selectedRows: [],
         });
@@ -382,6 +559,31 @@ class UserList extends PureComponent {
           message.success('批量禁用成功！');
         }
         this.handleSearch();
+      },
+    });
+  };
+
+  //v1.4.0 给用户分配角色
+  grantRole = (fields, form) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'usermanager/grantRole',
+      payload: {
+        ...fields,
+      },
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+        //重置表单
+        form.resetFields();
+        //关闭弹窗
+        this.handleModalVisible();
+        //查询数据
+        this.handleSearch();
+        message.success('用户【' + record.name + '】分配角色成功！');
       },
     });
   };
@@ -529,7 +731,7 @@ class UserList extends PureComponent {
       usermanager: { data },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, currentClickRecordData } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="batchEnableStatus">批量启用</Menu.Item>
@@ -539,6 +741,8 @@ class UserList extends PureComponent {
     );
 
     const parentMethods = {
+      //v1.4.0
+      grantRole: this.grantRole,
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
     };
@@ -579,6 +783,13 @@ class UserList extends PureComponent {
             <BackTop />
           </div>
         </Card>
+
+        <SetUserRoleForm
+          {...parentMethods}
+          modalVisible={modalVisible}
+          formVals={currentClickRecordData}
+          roles={data.roles || []}
+        />
       </Authorized>
     );
   }
