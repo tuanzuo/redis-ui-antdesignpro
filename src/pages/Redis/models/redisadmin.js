@@ -171,10 +171,10 @@ export default {
       };
     },
     saveKeyValue(state, action) {
-      state.keyValue = action.payload.keyValue;
+      //state.keyValue = action.payload.keyValue;
       return {
         ...state,
-        ...action.payload,
+        keyValue: action.payload.keyValue,
       };
     },
     appendConfigList(state, action) {
