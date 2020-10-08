@@ -4,6 +4,7 @@ import Link from 'umi/link';
 import Debounce from 'lodash-decorators/debounce';
 import styles from './index.less';
 import RightContent from './RightContent';
+import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 export default class GlobalHeader extends PureComponent {
   componentWillUnmount() {
@@ -34,6 +35,11 @@ export default class GlobalHeader extends PureComponent {
         <span className={styles.trigger} onClick={this.toggle}>
           <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
         </span>
+        {/*v1.4.0顶部导航-面包屑导航*/}
+        <span className={styles.MyPageHeaderWrapper}>
+          <PageHeaderWrapper />
+        </span>
+        {/*v1.4.0顶部右边内容*/}
         <RightContent {...this.props} />
       </div>
     );
