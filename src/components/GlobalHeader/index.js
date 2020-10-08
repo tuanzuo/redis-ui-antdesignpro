@@ -35,7 +35,7 @@ export default class GlobalHeader extends PureComponent {
         <span className={styles.trigger} onClick={this.toggle}>
           <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
         </span>
-        {/*v1.4.0顶部导航*/}
+        {/*v1.4.0顶部导航-面包屑导航*/}
         <span className={styles.MyPageHeaderWrapper}>
           <PageHeaderWrapper />
         </span>
