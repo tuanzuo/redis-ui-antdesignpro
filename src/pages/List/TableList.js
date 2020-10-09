@@ -352,7 +352,6 @@ class TableList extends PureComponent {
   ];
 
   componentDidMount() {
-    console.log("init")
     const { dispatch } = this.props;
     dispatch({
       type: 'rule/fetch',
@@ -360,7 +359,7 @@ class TableList extends PureComponent {
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    console.log("change");
+    console.log('change');
     const { dispatch } = this.props;
     const { formValues } = this.state;
 

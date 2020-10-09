@@ -86,12 +86,12 @@ class LoginPage extends Component {
     } else if (response && response.msg && response.msg != '') {
       msg = msg + response.msg;
       showTime = 10;
+      notification[notifyType]({
+        message: '提示信息',
+        description: msg,
+        duration: showTime,
+      });
     }
-    notification[notifyType]({
-      message: '提示信息',
-      description: msg,
-      duration: showTime,
-    });
     return flag;
   };
 
