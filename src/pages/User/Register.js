@@ -130,13 +130,12 @@ class Register extends Component {
     } else if (response && response.msg && response.msg != '') {
       msg = msg + response.msg;
       showTime = 10;
+      notification[notifyType]({
+        message: '提示信息',
+        description: msg,
+        duration: showTime,
+      });
     }
-    msg = '注册失败! ' + '来晚啦，用户名已被其他小伙伴注册了';
-    notification[notifyType]({
-      message: '提示信息',
-      description: msg,
-      duration: showTime,
-    });
     return flag;
   };
 

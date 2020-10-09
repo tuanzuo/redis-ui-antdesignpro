@@ -17,3 +17,8 @@ src/services/api.js，在api.js中我们可以找到queryRule这个方法，它�
 当然如果要请求真实后端的数据我们只需要修改一下‘return request(`/api/rule?${stringify(params)}`);’这个
 代码，在前面加上后端服务的ip和端口地址就可以了，
 即‘return request(`http://192.168.1.30:8009/api/rule?${stringify(params)}`);’
+
+
+-------
+1、安装base64
+cnpm install --save js-base64
