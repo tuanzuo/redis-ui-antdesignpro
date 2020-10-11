@@ -453,11 +453,37 @@ class RedisHome extends PureComponent {
     dispatch({
       type: 'redisadmin/removeConfig',
       payload: id,
-      callback: () => {
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         this.refeshList(searchKeyConst);
         message.success('删除成功!');
       },
     });
+  };
+
+  //v1.4.0 消息提示
+  tipMsg = response => {
+    let flag = false;
+    let notifyType = 'warning';
+    let msg = '操作失败! ';
+    let showTime = 4.5;
+    if (response && response.code == '200') {
+      flag = true;
+      return flag;
+    } else if (response && response.msg && response.msg != '') {
+      msg = msg + response.msg;
+      showTime = 10;
+      notification[notifyType]({
+        message: '提示信息',
+        description: msg,
+        duration: showTime,
+      });
+    }
+    return flag;
   };
 
   render() {

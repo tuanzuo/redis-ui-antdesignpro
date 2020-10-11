@@ -71,6 +71,8 @@ export default {
       if (callback) callback(response);
     },
 
+    //-------------------------------------------
+
     *initContext({ payload, callback }, { call, put }) {
       const response = yield call(initRedisContext, payload);
       yield put({
