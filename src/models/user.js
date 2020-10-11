@@ -1,4 +1,5 @@
 import { queryCurrentUser } from '@/services/api';
+import { getCurrentUser, setCurrentUser } from '@/utils/token';
 
 export default {
   namespace: 'user',
@@ -19,7 +20,14 @@ export default {
     *fetchCurrent(_, { call, put }) {
       //v1.4.0 查询当前登录用户信息
       const response = yield call(queryCurrentUser);
-      const userInfo = response.datas || {};
+      let userInfo = null;
+      //获取不到新的用户数据，就使用之前的数据
+      if (response && response.code === '200') {
+        userInfo = response.datas || {};
+        setCurrentUser(userInfo);
+      } else {
+        userInfo = getCurrentUser();
+      }
       yield put({
         type: 'saveCurrentUser',
         payload: userInfo,

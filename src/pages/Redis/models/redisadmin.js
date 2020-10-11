@@ -33,7 +33,7 @@ export default {
     *fetchConfigList({ payload, callback }, { call, put }) {
       const response = yield call(queryRedisConfigList, payload);
       yield put({
-        type: 'save',
+        type: 'saveConfigList',
         payload: response,
       });
       if (callback) callback(response);
@@ -100,7 +100,7 @@ export default {
     *fetchKeyList({ payload, callback }, { call, put }) {
       const response = yield call(queryRedisKeyList, payload);
       yield put({
-        type: 'save',
+        type: 'saveKeyList',
         payload: response,
       });
       if (callback) callback(response);
@@ -172,17 +172,28 @@ export default {
         ...payload,
       };
     },
-    saveKeyValue(state, action) {
-      //state.keyValue = action.payload.keyValue;
+    saveConfigList(state, action) {
       return {
         ...state,
-        keyValue: action.payload.keyValue,
+        configList: action.payload.datas.configList || [],
       };
     },
     appendConfigList(state, action) {
       return {
         ...state,
-        configList: state.configList.concat(action.payload.configList),
+        configList: state.configList.concat(action.payload.datas.configList || []),
+      };
+    },
+    saveKeyList(state, action) {
+      return {
+        ...state,
+        keyList: action.payload.datas.keyList || [],
+      };
+    },
+    saveKeyValue(state, action) {
+      return {
+        ...state,
+        keyValue: action.payload.datas.keyValue || {},
       };
     },
   },

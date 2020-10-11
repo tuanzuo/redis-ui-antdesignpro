@@ -388,7 +388,13 @@ class RedisDataUpdateForm extends React.Component {
       dispatch({
         type: 'redisadmin/reNameKey',
         payload: { ...values },
-        callback: () => {
+        callback: response => {
+          //错误提示信息
+          let flag = this.tipMsgCommon(response);
+          if (!flag) {
+            return;
+          }
+
           this.updateKeyButtonContent(tempKey);
           this.onClose();
           // 重新执行查询操作
@@ -499,7 +505,13 @@ class RedisDataUpdateForm extends React.Component {
       dispatch({
         type: 'redisadmin/setKeyTTL',
         payload: { ...values },
-        callback: () => {
+        callback: response => {
+          //错误提示信息
+          let flag = this.tipMsgCommon(response);
+          if (!flag) {
+            return;
+          }
+
           this.updateTTLButtonContent(tempKey);
           this.onClose();
           // 重新执行选中操作
@@ -589,7 +601,13 @@ class RedisDataUpdateForm extends React.Component {
       dispatch({
         type: 'redisadmin/updateKeyValue',
         payload: { ...values },
-        callback: () => {
+        callback: response => {
+          //错误提示信息
+          let flag = this.tipMsgCommon(response);
+          if (!flag) {
+            return;
+          }
+
           //清空数据
           this.setState({
             data: {},
@@ -616,6 +634,27 @@ class RedisDataUpdateForm extends React.Component {
         </Popconfirm>
       </Form.Item>
     );
+  };
+
+  //v1.4.0 消息提示
+  tipMsgCommon = response => {
+    let flag = false;
+    let notifyType = 'warning';
+    let msg = '操作失败! ';
+    let showTime = 4.5;
+    if (response && response.code == '200') {
+      flag = true;
+      return flag;
+    } else if (response && response.msg && response.msg != '') {
+      msg = msg + response.msg;
+      showTime = 10;
+      notification[notifyType]({
+        message: '提示信息',
+        description: msg,
+        duration: showTime,
+      });
+    }
+    return flag;
   };
 
   render() {
@@ -739,7 +778,7 @@ class RedisDataAddForm extends React.Component {
     let notifyType = 'warning';
     let msg = '添加失败! ';
     let showTime = 4.5;
-    if (response && response.code == 200) {
+    if (response && response.code == '200') {
       notifyType = 'success';
       msg = '添加成功!';
       flag = true;
@@ -909,7 +948,7 @@ class RedisData extends PureComponent {
     dispatch({
       type: 'redisadmin/initContext',
       payload: id,
-      callback: () => {
+      callback: response => {
         const searchParam = { id, searchKey: '*' };
         this.searchKeyList(searchParam);
         // 初始化后把当前对象保存到RedisDataObject变量中去
@@ -940,7 +979,7 @@ class RedisData extends PureComponent {
         this.initCurrentCheckedKeys();
 
         //错误提示信息
-        let flag = this.tipMsg(response);
+        let flag = this.tipMsgCommon(response);
         if (!flag) {
           return;
         }
@@ -963,7 +1002,7 @@ class RedisData extends PureComponent {
           keyValueLoading: false, // 关闭加载中
         });
         //错误提示信息
-        let flag = this.tipMsg(response);
+        let flag = this.tipMsgCommon(response);
         if (!flag) {
           return;
         }
@@ -1011,23 +1050,6 @@ class RedisData extends PureComponent {
         });
       },
     });
-  };
-
-  tipMsg = response => {
-    let flag = true;
-    if (response && response.code == 500) {
-      let notifyType = 'warning';
-      let msg = '查询失败! ';
-      let showTime = 4.5;
-      msg = msg + (response.msg && response.msg != '') ? response.msg : '';
-      notification[notifyType]({
-        message: '提示信息',
-        description: msg,
-        duration: showTime,
-      });
-      flag = false;
-    }
-    return flag;
   };
 
   // 判断是否是json
@@ -1080,10 +1102,36 @@ class RedisData extends PureComponent {
     dispatch({
       type: 'redisadmin/delKeys',
       payload: params,
-      callback: () => {
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsgCommon(response);
+        if (!flag) {
+          return;
+        }
         this.searchKeyList(searchKeyConst);
       },
     });
+  };
+
+  //v1.4.0 消息提示
+  tipMsgCommon = response => {
+    let flag = false;
+    let notifyType = 'warning';
+    let msg = '操作失败! ';
+    let showTime = 4.5;
+    if (response && response.code == '200') {
+      flag = true;
+      return flag;
+    } else if (response && response.msg && response.msg != '') {
+      msg = msg + response.msg;
+      showTime = 10;
+      notification[notifyType]({
+        message: '提示信息',
+        description: msg,
+        duration: showTime,
+      });
+    }
+    return flag;
   };
 
   // 还原currentKey为空

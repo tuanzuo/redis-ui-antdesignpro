@@ -4,7 +4,7 @@ import { fakeAccountLogin, fakeAccountLogout, getFakeCaptcha } from '@/services/
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
-import { getToken, setToken } from '@/utils/token';
+import { getToken, setToken, loginOutCallback } from '@/utils/token';
 
 export default {
   namespace: 'login',
@@ -81,6 +81,8 @@ export default {
       //v1.3.0 设置token
       const token = payload.token || payload.datas.token;
       setToken(token);
+      //v1.4.0 登录or退出回调
+      loginOutCallback();
       return {
         ...state,
         ...payload,

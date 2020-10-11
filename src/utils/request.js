@@ -1,9 +1,9 @@
 import fetch from 'dva/fetch';
-import { notification } from 'antd';
+import { notification, Modal } from 'antd';
 import router from 'umi/router';
 import hash from 'hash.js';
 import { isAntdPro } from './utils';
-import { getToken, setToken } from '@/utils/token';
+import { getToken, setToken, getReloginFlag, setReloginFlag } from '@/utils/token';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -29,25 +29,41 @@ const checkStatus = response => {
   //V1.4.0 【token验证失败时，后端会往header中写入一条code='700'的数据；所以在这里如果判断到code='700'，
   // 那么久表示token验证不通过，强制退出系统】
   if (response.headers.get('code') == '700') {
-    let msg = 'token过期，请重新登录';
-    let notifyType = 'warning';
-    let showTime = 10;
-    notification[notifyType]({
-      message: '提示信息',
-      description: msg,
-      duration: showTime,
-    });
-
-    //v1.4.0 强制退出系统
-    window.g_app._store.dispatch({
-      type: 'login/logout',
-    });
-
-    //v1.4.0 这里token验证不通过，直接返回空
-    return;
-    //return response;
+    //重新登录弹窗flag
+    let reloginFlag = getReloginFlag();
+    if (reloginFlag && reloginFlag == 'false') {
+      return response;
+    } else {
+      Modal.confirm({
+        title: '提示信息',
+        content: 'Token过期，需要重新登录吗？',
+        okText: '重新登录',
+        cancelText: '取消',
+        onCancel: () => handleCancle(response),
+        onOk: () => handleOk(response),
+      });
+    }
+  } else {
+    return checkStatusNew(response);
   }
+};
 
+//v1.4.0
+const handleCancle = response => {
+  setReloginFlag('false');
+};
+const handleOk = response => {
+  //v1.4.0 强制退出系统
+  window.g_app._store.dispatch({
+    type: 'login/logout',
+  });
+
+  //v1.4.0 这里token验证不通过，直接返回空
+  return;
+  //return response;
+};
+
+const checkStatusNew = response => {
   if (response.status >= 200 && response.status < 300) {
     return response;
   }

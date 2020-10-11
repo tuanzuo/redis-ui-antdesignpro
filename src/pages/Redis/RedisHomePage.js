@@ -288,12 +288,18 @@ class RedisHome extends PureComponent {
     dispatch({
       type: 'redisadmin/fetchConfigList',
       payload: searchKey,
-      callback: () => {
+      callback: response => {
         currentPageNum = 1;
         this.setState({
           dataLoading: false, // 关闭加载中
           fetchMoreButtonDisabled: false,
         });
+
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
       },
     });
   };
@@ -318,6 +324,12 @@ class RedisHome extends PureComponent {
         this.setState({
           dataLoading: false, // 关闭加载中
         });
+
+        //错误提示信息
+        let flag = this.tipMsg(resp);
+        if (!flag) {
+          return;
+        }
       },
     });
   };
@@ -331,7 +343,12 @@ class RedisHome extends PureComponent {
     dispatch({
       type: 'redisadmin/clearCache',
       payload: temp.id,
-      callback: () => {
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
         message.success('[' + temp.name + ']清理redis连接信息缓存成功!');
       },
     });
@@ -391,7 +408,7 @@ class RedisHome extends PureComponent {
           let notifyType = 'warning';
           let msg = '连接失败! ';
           let showTime = 4.5;
-          if (response && response.code == 200) {
+          if (response && response.code == '200') {
             notifyType = 'success';
             msg = '连接成功!';
           } else if (response && response.msg && response.msg != '') {
@@ -440,7 +457,12 @@ class RedisHome extends PureComponent {
       dispatch({
         type: id ? 'redisadmin/updateConfig' : 'redisadmin/addConfig',
         payload: { id, ...values },
-        callback: () => {
+        callback: response => {
+          //错误提示信息
+          let flag = this.tipMsg(response);
+          if (!flag) {
+            return;
+          }
           this.refeshList(searchKeyConst);
           message.success(id ? '修改成功!' : '添加成功!');
         },
