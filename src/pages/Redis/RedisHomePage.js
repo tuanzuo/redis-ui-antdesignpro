@@ -314,7 +314,7 @@ class RedisHome extends PureComponent {
       type: 'redisadmin/appendFetchConfigList',
       payload: { ...searchKeyConst, pageNum },
       callback: resp => {
-        if (resp && resp.configList && resp.configList.length > 0) {
+        if (resp && resp.datas && resp.datas.configList && resp.datas.configList.length > 0) {
           currentPageNum++;
         } else {
           this.setState({
