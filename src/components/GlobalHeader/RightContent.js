@@ -104,6 +104,7 @@ export default class GlobalHeaderRight extends PureComponent {
           <FormattedMessage id="menu.account.trigger" defaultMessage="Trigger Error" />
         </Menu.Item>
         <Menu.Divider />
+        {/*v1.4.0退出登录*/}
         <Menu.Item key="logout">
           <Icon type="logout" />
           <FormattedMessage id="menu.account.logout" defaultMessage="logout" />
@@ -150,6 +151,7 @@ export default class GlobalHeaderRight extends PureComponent {
         </Tooltip>
         <NoticeIcon
           className={styles.action}
+          /*未读消息条数-在线人数 v1.4.0*/
           count={currentUser.unreadCount}
           onItemClick={(item, tabProps) => {
             console.log(item, tabProps); // eslint-disable-line
