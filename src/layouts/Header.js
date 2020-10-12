@@ -68,6 +68,7 @@ class HeaderView extends Component {
       router.push('/account/settings/base');
       return;
     }
+    //v1.4.0退出登录
     if (key === 'logout') {
       dispatch({
         type: 'login/logout',
