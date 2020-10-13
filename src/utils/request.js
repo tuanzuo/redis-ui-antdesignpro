@@ -34,6 +34,8 @@ const checkStatus = response => {
     if (reloginFlag && reloginFlag == 'false') {
       return response;
     } else {
+      //设置不弹出登录提示框
+      handleCancle(response);
       Modal.confirm({
         title: '提示信息',
         content: 'Token过期，需要重新登录吗？',
