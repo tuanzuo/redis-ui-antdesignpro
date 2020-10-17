@@ -26,9 +26,33 @@ export default [
         // 控制权限 v1.3.0
         authority: ['admin', 'test', 'develop'],
         routes: [
+          //home
+          { path: '/', redirect: '/dashboard/analysis' },
+          /*{ path: '/', redirect: '/redis/home' }, //跳转到redis主页*/
           // dashboard
-          /*{ path: '/', redirect: '/dashboard/analysis' },*/
-          { path: '/', redirect: '/redis/home' }, //跳转到redis主页
+          {
+            path: '/dashboard',
+            name: 'dashboard',
+            icon: 'dashboard',
+            routes: [
+              {
+                path: '/dashboard/analysis',
+                name: 'analysis',
+                component: './Dashboard/Analysis',
+              },
+              {
+                path: '/dashboard/monitor',
+                name: 'monitor',
+                component: './Dashboard/Monitor',
+              },
+              {
+                path: '/dashboard/workplace',
+                name: 'workplace',
+                component: './Dashboard/Workplace',
+              },
+            ],
+          },
+
           //account
           {
             name: 'account',

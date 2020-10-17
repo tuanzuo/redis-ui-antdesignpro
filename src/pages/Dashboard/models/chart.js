@@ -4,7 +4,10 @@ export default {
   namespace: 'chart',
 
   state: {
-    visitData: [],
+    userData: {},
+    visitData: {},
+    redisConfigData: {},
+    //visitData: [],
     visitData2: [],
     salesData: [],
     searchData: [],
@@ -22,7 +25,7 @@ export default {
       const response = yield call(fakeChartData);
       yield put({
         type: 'save',
-        payload: response,
+        payload: response.datas || {},
       });
     },
     *fetchSalesData(_, { call, put }) {
@@ -30,7 +33,7 @@ export default {
       yield put({
         type: 'save',
         payload: {
-          salesData: response.salesData,
+          salesData: response.datas.salesData,
         },
       });
     },
@@ -45,7 +48,10 @@ export default {
     },
     clear() {
       return {
-        visitData: [],
+        userData: {},
+        visitData: {},
+        redisConfigData: {},
+
         visitData2: [],
         salesData: [],
         searchData: [],

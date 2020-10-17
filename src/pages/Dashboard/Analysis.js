@@ -95,7 +95,10 @@ class Analysis extends Component {
     const { rangePickerValue, salesType, currentTabKey } = this.state;
     const { chart, loading } = this.props;
     const {
+      userData,
       visitData,
+      redisConfigData,
+
       visitData2,
       salesData,
       searchData,
@@ -131,12 +134,18 @@ class Analysis extends Component {
     return (
       <GridContent>
         <Suspense fallback={<PageLoading />}>
-          <IntroduceRow loading={loading} visitData={visitData} />
+          <IntroduceRow
+            loading={loading}
+            visitData={visitData}
+            userData={userData}
+            redisConfigData={redisConfigData}
+          />
         </Suspense>
         <Suspense fallback={null}>
           <SalesCard
             rangePickerValue={rangePickerValue}
             salesData={salesData}
+            visitData={visitData}
             isActive={this.isActive}
             handleRangePickerChange={this.handleRangePickerChange}
             loading={loading}
