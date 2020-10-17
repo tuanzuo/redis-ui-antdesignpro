@@ -119,8 +119,11 @@ const apiUrl = 'http://127.0.0.1';
 
 //----------dashboard----------
 
-export async function fakeChartData() {
-  return request(`${apiUrl}/auth/dashboard/analysis`);
+export async function fakeChartData(params) {
+  return request(`${apiUrl}/auth/dashboard/analysis`, {
+    method: 'POST',
+    body: params,
+  });
 }
 
 //----------user----------

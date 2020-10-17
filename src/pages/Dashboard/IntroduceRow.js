@@ -16,32 +16,8 @@ const topColResponsiveProps = {
   style: { marginBottom: 24 },
 };
 
-const IntroduceRow = memo(({ loading, visitData, userData, redisConfigData }) => (
+const IntroduceRow = memo(({ loading, visitData, userData, roleData, redisConfigData }) => (
   <Row gutter={24}>
-    <Col {...topColResponsiveProps}>
-      <ChartCard
-        bordered={false}
-        loading={loading}
-        title={<FormattedMessage id="app.analysis.userData" defaultMessage="注册人数" />}
-        action={
-          <Tooltip
-            title={<FormattedMessage id="app.analysis.introduce" defaultMessage="注册人数" />}
-          >
-            <Icon type="info-circle-o" />
-          </Tooltip>
-        }
-        total={numeral(userData.total).format('0,0')}
-        footer={
-          <Field
-            label={<FormattedMessage id="app.analysis.day-users" defaultMessage="日注册人数" />}
-            value={numeral(userData.dayTotal).format('0,0')}
-          />
-        }
-        contentHeight={46}
-      >
-        <MiniArea color="#13C2C2" data={userData.dayDatas} />
-      </ChartCard>
-    </Col>
     <Col {...topColResponsiveProps}>
       <ChartCard
         bordered={false}
@@ -54,16 +30,62 @@ const IntroduceRow = memo(({ loading, visitData, userData, redisConfigData }) =>
             <Icon type="info-circle-o" />
           </Tooltip>
         }
-        total={numeral(visitData.total).format('0,0')}
+        total={numeral(visitData ? visitData.total : 0).format('0,0')}
         footer={
           <Field
             label={<FormattedMessage id="app.analysis.day-visits" defaultMessage="Daily Visits" />}
-            value={numeral(visitData.totalDatas).format('0,0')}
+            value={numeral(visitData ? visitData.dayTotal : 0).format('0,0')}
           />
         }
         contentHeight={46}
       >
-        <MiniArea data={visitData.dayDatas} />
+        <MiniArea color="#975FE4" data={visitData ? visitData.totalDatas : []} />
+      </ChartCard>
+    </Col>
+    <Col {...topColResponsiveProps}>
+      <ChartCard
+        bordered={false}
+        loading={loading}
+        title={<FormattedMessage id="app.analysis.userData" defaultMessage="注册人数" />}
+        action={
+          <Tooltip
+            title={<FormattedMessage id="app.analysis.introduce" defaultMessage="注册人数" />}
+          >
+            <Icon type="info-circle-o" />
+          </Tooltip>
+        }
+        total={numeral(userData ? userData.total : 0).format('0,0')}
+        footer={
+          <Field
+            label={<FormattedMessage id="app.analysis.day-users" defaultMessage="日注册人数" />}
+            value={numeral(userData ? userData.dayTotal : 0).format('0,0')}
+          />
+        }
+        contentHeight={46}
+      >
+        <MiniArea color="#13C2C2" data={userData ? userData.dayDatas : []} />
+      </ChartCard>
+    </Col>
+    <Col {...topColResponsiveProps}>
+      <ChartCard
+        bordered={false}
+        loading={loading}
+        title={<FormattedMessage id="app.analysis.roles" defaultMessage="角色数" />}
+        action={
+          <Tooltip title={<FormattedMessage id="app.analysis.introduce" defaultMessage="角色数" />}>
+            <Icon type="info-circle-o" />
+          </Tooltip>
+        }
+        total={numeral(roleData ? roleData.total : 0).format('0,0')}
+        footer={
+          <Field
+            label={<FormattedMessage id="app.analysis.day-roles" defaultMessage="日角色数" />}
+            value={numeral(roleData ? roleData.dayTotal : 0).format('0,0')}
+          />
+        }
+        contentHeight={46}
+      >
+        <MiniArea color="#3CB371" data={roleData ? roleData.dayDatas : []} />
       </ChartCard>
     </Col>
     <Col {...topColResponsiveProps}>
@@ -80,7 +102,7 @@ const IntroduceRow = memo(({ loading, visitData, userData, redisConfigData }) =>
             <Icon type="info-circle-o" />
           </Tooltip>
         }
-        total={numeral(redisConfigData.total).format('0,0')}
+        total={numeral(redisConfigData ? redisConfigData.total : 0).format('0,0')}
         footer={
           <Field
             label={
@@ -89,47 +111,12 @@ const IntroduceRow = memo(({ loading, visitData, userData, redisConfigData }) =>
                 defaultMessage="日Redis连接配置数"
               />
             }
-            value={numeral(redisConfigData.dayTotal).format('0,0')}
+            value={numeral(redisConfigData ? redisConfigData.dayTotal : 0).format('0,0')}
           />
         }
         contentHeight={46}
       >
-        <MiniArea color="#975FE4" data={redisConfigData.dayDatas} />
-      </ChartCard>
-    </Col>
-    <Col {...topColResponsiveProps}>
-      <ChartCard
-        loading={loading}
-        bordered={false}
-        title={
-          <FormattedMessage
-            id="app.analysis.operational-effect"
-            defaultMessage="Operational Effect"
-          />
-        }
-        action={
-          <Tooltip
-            title={<FormattedMessage id="app.analysis.introduce" defaultMessage="Introduce" />}
-          >
-            <Icon type="info-circle-o" />
-          </Tooltip>
-        }
-        total="78%"
-        footer={
-          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
-            <Trend flag="up" style={{ marginRight: 16 }}>
-              <FormattedMessage id="app.analysis.week" defaultMessage="Weekly Changes" />
-              <span className={styles.trendText}>12%</span>
-            </Trend>
-            <Trend flag="down">
-              <FormattedMessage id="app.analysis.day" defaultMessage="Weekly Changes" />
-              <span className={styles.trendText}>11%</span>
-            </Trend>
-          </div>
-        }
-        contentHeight={46}
-      >
-        <MiniProgress percent={78} strokeWidth={8} target={80} color="#13C2C2" />
+        <MiniArea data={redisConfigData ? redisConfigData.dayDatas : []} />
       </ChartCard>
     </Col>
   </Row>

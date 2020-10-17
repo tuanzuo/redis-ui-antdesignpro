@@ -19,8 +19,8 @@ for (let i = 0; i < 7; i += 1) {
 const SalesCard = memo(
   ({
     rangePickerValue,
-    salesData,
     visitData,
+    userData,
     isActive,
     handleRangePickerChange,
     loading,
@@ -55,9 +55,58 @@ const SalesCard = memo(
           size="large"
           tabBarStyle={{ marginBottom: 24 }}
         >
+          {/*v1.5.0访问量*/}
           <TabPane
-            tab={<FormattedMessage id="app.analysis.sales" defaultMessage="Sales" />}
-            key="sales"
+            tab={<FormattedMessage id="app.analysis.visits" defaultMessage="Visits" />}
+            key="visits"
+          >
+            <Row>
+              <Col xl={16} lg={12} md={12} sm={24} xs={24}>
+                <div className={styles.salesBar}>
+                  <Bar
+                    color="#975FE4"
+                    height={292}
+                    title={
+                      <FormattedMessage
+                        id="app.analysis.visits-trend"
+                        defaultMessage="Visits Trend"
+                      />
+                    }
+                    data={visitData.currentDatas}
+                  />
+                </div>
+              </Col>
+              {/*<Col xl={8} lg={12} md={12} sm={24} xs={24}>
+                <div className={styles.salesRank}>
+                  <h4 className={styles.rankingTitle}>
+                    <FormattedMessage
+                      id="app.analysis.visits-ranking"
+                      defaultMessage="Visits Ranking"
+                    />
+                  </h4>
+                  <ul className={styles.rankingList}>
+                    {rankingListData.map((item, i) => (
+                      <li key={item.title}>
+                        <span
+                          className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
+                        >
+                          {i + 1}
+                        </span>
+                        <span className={styles.rankingItemTitle} title={item.title}>
+                          {item.title}
+                        </span>
+                        <span>{numeral(item.total).format('0,0')}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Col>*/}
+            </Row>
+          </TabPane>
+          {/*v1.5.0注册人数*/}
+          <TabPane
+            tab={<FormattedMessage id="app.analysis.users" defaultMessage="注册人数" />}
+            key="users"
           >
             <Row>
               <Col xl={16} lg={12} md={12} sm={24} xs={24}>
@@ -65,16 +114,13 @@ const SalesCard = memo(
                   <Bar
                     height={295}
                     title={
-                      <FormattedMessage
-                        id="app.analysis.sales-trend"
-                        defaultMessage="Sales Trend"
-                      />
+                      <FormattedMessage id="app.analysis.user-trend" defaultMessage="注册人数" />
                     }
-                    data={visitData}
+                    data={userData.dayDatas}
                   />
                 </div>
               </Col>
-              <Col xl={8} lg={12} md={12} sm={24} xs={24}>
+              {/*<Col xl={8} lg={12} md={12} sm={24} xs={24}>
                 <div className={styles.salesRank}>
                   <h4 className={styles.rankingTitle}>
                     <FormattedMessage
@@ -100,34 +146,35 @@ const SalesCard = memo(
                     ))}
                   </ul>
                 </div>
-              </Col>
+              </Col>*/}
             </Row>
           </TabPane>
+          {/*v1.5.0登录用户排行榜*/}
           <TabPane
-            tab={<FormattedMessage id="app.analysis.visits" defaultMessage="Visits" />}
-            key="views"
+            tab={<FormattedMessage id="app.analysis.userslogin" defaultMessage="用户排行榜" />}
+            key="userslogin"
           >
             <Row>
               <Col xl={16} lg={12} md={12} sm={24} xs={24}>
                 <div className={styles.salesBar}>
                   <Bar
-                    height={292}
+                    height={295}
                     title={
                       <FormattedMessage
-                        id="app.analysis.visits-trend"
-                        defaultMessage="Visits Trend"
+                        id="app.analysis.userlogin-trend"
+                        defaultMessage="登录次数"
                       />
                     }
-                    data={visitData}
+                    data={userData.dayDatas}
                   />
                 </div>
               </Col>
-              <Col xl={8} lg={12} md={12} sm={24} xs={24}>
+              {/*<Col xl={8} lg={12} md={12} sm={24} xs={24}>
                 <div className={styles.salesRank}>
                   <h4 className={styles.rankingTitle}>
                     <FormattedMessage
-                      id="app.analysis.visits-ranking"
-                      defaultMessage="Visits Ranking"
+                      id="app.analysis.sales-ranking"
+                      defaultMessage="Sales Ranking"
                     />
                   </h4>
                   <ul className={styles.rankingList}>
@@ -141,12 +188,65 @@ const SalesCard = memo(
                         <span className={styles.rankingItemTitle} title={item.title}>
                           {item.title}
                         </span>
-                        <span>{numeral(item.total).format('0,0')}</span>
+                        <span className={styles.rankingItemValue}>
+                          {numeral(item.total).format('0,0')}
+                        </span>
                       </li>
                     ))}
                   </ul>
                 </div>
+              </Col>*/}
+            </Row>
+          </TabPane>
+          {/*v1.5.0Redis连接配置使用排行榜*/}
+          <TabPane
+            tab={
+              <FormattedMessage id="app.analysis.redisuses" defaultMessage="Redis连接配置排行榜" />
+            }
+            key="redisuses"
+          >
+            <Row>
+              <Col xl={16} lg={12} md={12} sm={24} xs={24}>
+                <div className={styles.salesBar}>
+                  <Bar
+                    height={295}
+                    title={
+                      <FormattedMessage
+                        id="app.analysis.redisuses-trend"
+                        defaultMessage="使用次数"
+                      />
+                    }
+                    data={userData.dayDatas}
+                  />
+                </div>
               </Col>
+              {/*<Col xl={8} lg={12} md={12} sm={24} xs={24}>
+                <div className={styles.salesRank}>
+                  <h4 className={styles.rankingTitle}>
+                    <FormattedMessage
+                      id="app.analysis.sales-ranking"
+                      defaultMessage="Sales Ranking"
+                    />
+                  </h4>
+                  <ul className={styles.rankingList}>
+                    {rankingListData.map((item, i) => (
+                      <li key={item.title}>
+                        <span
+                          className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
+                        >
+                          {i + 1}
+                        </span>
+                        <span className={styles.rankingItemTitle} title={item.title}>
+                          {item.title}
+                        </span>
+                        <span className={styles.rankingItemValue}>
+                          {numeral(item.total).format('0,0')}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Col>*/}
             </Row>
           </TabPane>
         </Tabs>

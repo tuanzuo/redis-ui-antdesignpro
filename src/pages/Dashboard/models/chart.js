@@ -4,8 +4,10 @@ export default {
   namespace: 'chart',
 
   state: {
-    userData: {},
+    //v1.5.0
     visitData: {},
+    userData: {},
+    roleData: {},
     redisConfigData: {},
     //visitData: [],
     visitData2: [],
@@ -21,21 +23,24 @@ export default {
   },
 
   effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(fakeChartData);
+    *fetch({ payload, callback }, { call, put }) {
+      const response = yield call(fakeChartData, payload);
       yield put({
         type: 'save',
         payload: response.datas || {},
       });
+      if (callback) callback(response);
     },
-    *fetchSalesData(_, { call, put }) {
-      const response = yield call(fakeChartData);
+    *fetchVisitData({ payload, callback }, { call, put }) {
+      const response = yield call(fakeChartData, payload);
       yield put({
         type: 'save',
         payload: {
-          salesData: response.datas.salesData,
+          visitData: response.datas.visitData || {},
+          userData: response.datas.userData || {},
         },
       });
+      if (callback) callback(response);
     },
   },
 
