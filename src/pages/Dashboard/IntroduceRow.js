@@ -22,18 +22,16 @@ const IntroduceRow = memo(({ loading, visitData, userData, roleData, redisConfig
       <ChartCard
         bordered={false}
         loading={loading}
-        title={<FormattedMessage id="app.analysis.visits" defaultMessage="Visits" />}
+        title={<FormattedMessage id="app.analysis.qqvisits" defaultMessage="请求量" />}
         action={
-          <Tooltip
-            title={<FormattedMessage id="app.analysis.introduce" defaultMessage="Introduce" />}
-          >
+          <Tooltip title={<FormattedMessage id="app.analysis.introduce" defaultMessage="请求量" />}>
             <Icon type="info-circle-o" />
           </Tooltip>
         }
         total={numeral(visitData ? visitData.total : 0).format('0,0')}
         footer={
           <Field
-            label={<FormattedMessage id="app.analysis.day-visits" defaultMessage="Daily Visits" />}
+            label={<FormattedMessage id="app.analysis.day-qqvisits" defaultMessage="日请求量" />}
             value={numeral(visitData ? visitData.dayTotal : 0).format('0,0')}
           />
         }
@@ -79,7 +77,7 @@ const IntroduceRow = memo(({ loading, visitData, userData, roleData, redisConfig
         total={numeral(roleData ? roleData.total : 0).format('0,0')}
         footer={
           <Field
-            label={<FormattedMessage id="app.analysis.day-roles" defaultMessage="日角色数" />}
+            label={<FormattedMessage id="app.analysis.day-roles" defaultMessage="日新增角色数" />}
             value={numeral(roleData ? roleData.dayTotal : 0).format('0,0')}
           />
         }
@@ -108,7 +106,7 @@ const IntroduceRow = memo(({ loading, visitData, userData, roleData, redisConfig
             label={
               <FormattedMessage
                 id="app.analysis.day-redisconfigs"
-                defaultMessage="日Redis连接配置数"
+                defaultMessage="日新增Redis连接配置数"
               />
             }
             value={numeral(redisConfigData ? redisConfigData.dayTotal : 0).format('0,0')}

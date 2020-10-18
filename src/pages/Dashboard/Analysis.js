@@ -140,6 +140,7 @@ class Analysis extends Component {
     const { chart, loading } = this.props;
     const {
       visitData,
+      userVisitData,
       userData,
       roleData,
       redisConfigData,
@@ -191,6 +192,7 @@ class Analysis extends Component {
           <SalesCard
             rangePickerValue={rangePickerValue}
             visitData={visitData}
+            userVisitData={userVisitData}
             userData={userData}
             isActive={this.isActive}
             handleRangePickerChange={this.handleRangePickerChange}

@@ -6,6 +6,7 @@ export default {
   state: {
     //v1.5.0
     visitData: {},
+    userVisitData: {},
     userData: {},
     roleData: {},
     redisConfigData: {},
@@ -37,6 +38,7 @@ export default {
         type: 'save',
         payload: {
           visitData: response.datas.visitData || {},
+          userVisitData: response.datas.userVisitData || {},
           userData: response.datas.userData || {},
         },
       });
@@ -53,8 +55,10 @@ export default {
     },
     clear() {
       return {
-        userData: {},
         visitData: {},
+        userVisitData: {},
+        userData: {},
+        roleData: {},
         redisConfigData: {},
 
         visitData2: [],

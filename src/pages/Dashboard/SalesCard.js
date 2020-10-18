@@ -20,6 +20,7 @@ const SalesCard = memo(
   ({
     rangePickerValue,
     visitData,
+    userVisitData,
     userData,
     isActive,
     handleRangePickerChange,
@@ -57,7 +58,7 @@ const SalesCard = memo(
         >
           {/*v1.5.0访问量*/}
           <TabPane
-            tab={<FormattedMessage id="app.analysis.visits" defaultMessage="Visits" />}
+            tab={<FormattedMessage id="app.analysis.qqvisits" defaultMessage="请求量" />}
             key="visits"
           >
             <Row>
@@ -68,8 +69,8 @@ const SalesCard = memo(
                     height={292}
                     title={
                       <FormattedMessage
-                        id="app.analysis.visits-trend"
-                        defaultMessage="Visits Trend"
+                        id="app.analysis.qqvisitscount-trend"
+                        defaultMessage="请求次数"
                       />
                     }
                     data={visitData.currentDatas}
@@ -103,69 +104,20 @@ const SalesCard = memo(
               </Col>*/}
             </Row>
           </TabPane>
-          {/*v1.5.0注册人数*/}
+          {/*v1.5.0用户访问量*/}
           <TabPane
-            tab={<FormattedMessage id="app.analysis.users" defaultMessage="注册人数" />}
-            key="users"
-          >
-            <Row>
-              <Col xl={16} lg={12} md={12} sm={24} xs={24}>
-                <div className={styles.salesBar}>
-                  <Bar
-                    height={295}
-                    title={
-                      <FormattedMessage id="app.analysis.user-trend" defaultMessage="注册人数" />
-                    }
-                    data={userData.dayDatas}
-                  />
-                </div>
-              </Col>
-              {/*<Col xl={8} lg={12} md={12} sm={24} xs={24}>
-                <div className={styles.salesRank}>
-                  <h4 className={styles.rankingTitle}>
-                    <FormattedMessage
-                      id="app.analysis.sales-ranking"
-                      defaultMessage="Sales Ranking"
-                    />
-                  </h4>
-                  <ul className={styles.rankingList}>
-                    {rankingListData.map((item, i) => (
-                      <li key={item.title}>
-                        <span
-                          className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
-                        >
-                          {i + 1}
-                        </span>
-                        <span className={styles.rankingItemTitle} title={item.title}>
-                          {item.title}
-                        </span>
-                        <span className={styles.rankingItemValue}>
-                          {numeral(item.total).format('0,0')}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Col>*/}
-            </Row>
-          </TabPane>
-          {/*v1.5.0登录用户排行榜*/}
-          <TabPane
-            tab={<FormattedMessage id="app.analysis.userslogin" defaultMessage="用户排行榜" />}
+            tab={<FormattedMessage id="app.analysis.userslogin" defaultMessage="用户访问量" />}
             key="userslogin"
           >
             <Row>
               <Col xl={16} lg={12} md={12} sm={24} xs={24}>
                 <div className={styles.salesBar}>
                   <Bar
-                    height={295}
+                    height={292}
                     title={
-                      <FormattedMessage
-                        id="app.analysis.userlogin-trend"
-                        defaultMessage="登录次数"
-                      />
+                      <FormattedMessage id="app.analysis.userlogin-trend" defaultMessage="用户数" />
                     }
-                    data={userData.dayDatas}
+                    data={userVisitData.currentDatas}
                   />
                 </div>
               </Col>
@@ -209,7 +161,7 @@ const SalesCard = memo(
               <Col xl={16} lg={12} md={12} sm={24} xs={24}>
                 <div className={styles.salesBar}>
                   <Bar
-                    height={295}
+                    height={292}
                     title={
                       <FormattedMessage
                         id="app.analysis.redisuses-trend"

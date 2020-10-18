@@ -40,7 +40,7 @@ export default [
                 name: 'analysis',
                 component: './Dashboard/Analysis',
               },
-              {
+              /*{
                 path: '/dashboard/monitor',
                 name: 'monitor',
                 component: './Dashboard/Monitor',
@@ -49,7 +49,7 @@ export default [
                 path: '/dashboard/workplace',
                 name: 'workplace',
                 component: './Dashboard/Workplace',
-              },
+              },*/
             ],
           },
 
