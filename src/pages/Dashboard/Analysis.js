@@ -141,6 +141,7 @@ class Analysis extends Component {
     const {
       visitData,
       userVisitData,
+      redisConfigVisitData,
       userData,
       roleData,
       redisConfigData,
@@ -191,8 +192,10 @@ class Analysis extends Component {
         <Suspense fallback={null}>
           <SalesCard
             rangePickerValue={rangePickerValue}
-            visitData={visitData}
-            userVisitData={userVisitData}
+            visitData={visitData || {}}
+            userVisitData={userVisitData || {}}
+            userVisitRangeData={userVisitData.rangeDatas || []}
+            redisConfigVisitData={redisConfigVisitData || {}}
             userData={userData}
             isActive={this.isActive}
             handleRangePickerChange={this.handleRangePickerChange}

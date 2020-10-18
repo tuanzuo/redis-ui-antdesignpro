@@ -21,6 +21,8 @@ const SalesCard = memo(
     rangePickerValue,
     visitData,
     userVisitData,
+    userVisitRangeData,
+    redisConfigVisitData,
     userData,
     isActive,
     handleRangePickerChange,
@@ -62,7 +64,10 @@ const SalesCard = memo(
             key="visits"
           >
             <Row>
-              <Col xl={16} lg={12} md={12} sm={24} xs={24}>
+              {/*占据一整行的3/4*/}
+              {/*<Col xl={16} lg={12} md={12} sm={24} xs={24}>*/}
+              {/*占据一整行*/}
+              <Col xl={24} lg={24} md={24} sm={24} xs={24}>
                 <div className={styles.salesBar}>
                   <Bar
                     color="#975FE4"
@@ -121,33 +126,34 @@ const SalesCard = memo(
                   />
                 </div>
               </Col>
-              {/*<Col xl={8} lg={12} md={12} sm={24} xs={24}>
-                <div className={styles.salesRank}>
+              <Col xl={8} lg={12} md={12} sm={24} xs={24}>
+                <div className={styles.salesRank} style={{ height: 292, overflow: 'auto' }}>
                   <h4 className={styles.rankingTitle}>
                     <FormattedMessage
-                      id="app.analysis.sales-ranking"
-                      defaultMessage="Sales Ranking"
+                      id="app.analysis.userranges-ranking"
+                      defaultMessage="用户请求量排名"
                     />
                   </h4>
                   <ul className={styles.rankingList}>
-                    {rankingListData.map((item, i) => (
-                      <li key={item.title}>
+                    {userVisitRangeData.map((item, i) => (
+                      <li key={item.x}>
                         <span
                           className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
                         >
                           {i + 1}
                         </span>
-                        <span className={styles.rankingItemTitle} title={item.title}>
-                          {item.title}
+                        <span
+                          className={styles.rankingItemTitle}
+                          title={formatMessage({ id: item.x }, { no: i })}
+                        >
+                          {formatMessage({ id: item.x }, { no: i })}
                         </span>
-                        <span className={styles.rankingItemValue}>
-                          {numeral(item.total).format('0,0')}
-                        </span>
+                        <span>{numeral(item.y).format('0,0')}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-              </Col>*/}
+              </Col>
             </Row>
           </TabPane>
           {/*v1.5.0Redis连接配置使用排行榜*/}
@@ -158,9 +164,11 @@ const SalesCard = memo(
             key="redisuses"
           >
             <Row>
-              <Col xl={16} lg={12} md={12} sm={24} xs={24}>
+              {/*<Col xl={16} lg={12} md={12} sm={24} xs={24}>*/}
+              <Col xl={24} lg={24} md={24} sm={24} xs={24}>
                 <div className={styles.salesBar}>
                   <Bar
+                    color="#3CB371"
                     height={292}
                     title={
                       <FormattedMessage
@@ -168,7 +176,7 @@ const SalesCard = memo(
                         defaultMessage="使用次数"
                       />
                     }
-                    data={userData.dayDatas}
+                    data={redisConfigVisitData.currentDatas}
                   />
                 </div>
               </Col>

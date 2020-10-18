@@ -7,9 +7,11 @@ export default {
     //v1.5.0
     visitData: {},
     userVisitData: {},
+    redisConfigVisitData: {},
     userData: {},
     roleData: {},
     redisConfigData: {},
+
     //visitData: [],
     visitData2: [],
     salesData: [],
@@ -39,6 +41,7 @@ export default {
         payload: {
           visitData: response.datas.visitData || {},
           userVisitData: response.datas.userVisitData || {},
+          redisConfigVisitData: response.datas.redisConfigVisitData || {},
           userData: response.datas.userData || {},
         },
       });
@@ -57,6 +60,7 @@ export default {
       return {
         visitData: {},
         userVisitData: {},
+        redisConfigVisitData: {},
         userData: {},
         roleData: {},
         redisConfigData: {},
