@@ -16,7 +16,111 @@ const topColResponsiveProps = {
   style: { marginBottom: 24 },
 };
 
-const IntroduceRow = memo(({ loading, visitData }) => (
+const IntroduceRow = memo(({ loading, visitData, userData, roleData, redisConfigData }) => (
+  <Row gutter={24}>
+    <Col {...topColResponsiveProps}>
+      <ChartCard
+        bordered={false}
+        loading={loading}
+        title={<FormattedMessage id="app.analysis.qqvisits" defaultMessage="请求量" />}
+        action={
+          <Tooltip title={<FormattedMessage id="app.analysis.introduce" defaultMessage="请求量" />}>
+            <Icon type="info-circle-o" />
+          </Tooltip>
+        }
+        total={numeral(visitData ? visitData.total : 0).format('0,0')}
+        footer={
+          <Field
+            label={<FormattedMessage id="app.analysis.day-qqvisits" defaultMessage="日请求量" />}
+            value={numeral(visitData ? visitData.dayTotal : 0).format('0,0')}
+          />
+        }
+        contentHeight={46}
+      >
+        <MiniArea color="#975FE4" data={visitData ? visitData.totalDatas : []} />
+      </ChartCard>
+    </Col>
+    <Col {...topColResponsiveProps}>
+      <ChartCard
+        bordered={false}
+        loading={loading}
+        title={<FormattedMessage id="app.analysis.userData" defaultMessage="注册人数" />}
+        action={
+          <Tooltip
+            title={<FormattedMessage id="app.analysis.introduce" defaultMessage="注册人数" />}
+          >
+            <Icon type="info-circle-o" />
+          </Tooltip>
+        }
+        total={numeral(userData ? userData.total : 0).format('0,0')}
+        footer={
+          <Field
+            label={<FormattedMessage id="app.analysis.day-users" defaultMessage="日注册人数" />}
+            value={numeral(userData ? userData.dayTotal : 0).format('0,0')}
+          />
+        }
+        contentHeight={46}
+      >
+        <MiniArea color="#13C2C2" data={userData ? userData.dayDatas : []} />
+      </ChartCard>
+    </Col>
+    <Col {...topColResponsiveProps}>
+      <ChartCard
+        bordered={false}
+        loading={loading}
+        title={<FormattedMessage id="app.analysis.roles" defaultMessage="角色数" />}
+        action={
+          <Tooltip title={<FormattedMessage id="app.analysis.introduce" defaultMessage="角色数" />}>
+            <Icon type="info-circle-o" />
+          </Tooltip>
+        }
+        total={numeral(roleData ? roleData.total : 0).format('0,0')}
+        footer={
+          <Field
+            label={<FormattedMessage id="app.analysis.day-roles" defaultMessage="日新增角色数" />}
+            value={numeral(roleData ? roleData.dayTotal : 0).format('0,0')}
+          />
+        }
+        contentHeight={46}
+      >
+        <MiniArea color="#3CB371" data={roleData ? roleData.dayDatas : []} />
+      </ChartCard>
+    </Col>
+    <Col {...topColResponsiveProps}>
+      <ChartCard
+        bordered={false}
+        loading={loading}
+        title={<FormattedMessage id="app.analysis.redisconfigs" defaultMessage="Redis连接配置数" />}
+        action={
+          <Tooltip
+            title={
+              <FormattedMessage id="app.analysis.introduce" defaultMessage="Redis连接配置数" />
+            }
+          >
+            <Icon type="info-circle-o" />
+          </Tooltip>
+        }
+        total={numeral(redisConfigData ? redisConfigData.total : 0).format('0,0')}
+        footer={
+          <Field
+            label={
+              <FormattedMessage
+                id="app.analysis.day-redisconfigs"
+                defaultMessage="日新增Redis连接配置数"
+              />
+            }
+            value={numeral(redisConfigData ? redisConfigData.dayTotal : 0).format('0,0')}
+          />
+        }
+        contentHeight={46}
+      >
+        <MiniArea data={redisConfigData ? redisConfigData.dayDatas : []} />
+      </ChartCard>
+    </Col>
+  </Row>
+));
+
+/*const IntroduceRow = memo(({ loading, visitData }) => (
   <Row gutter={24}>
     <Col {...topColResponsiveProps}>
       <ChartCard
@@ -139,6 +243,6 @@ const IntroduceRow = memo(({ loading, visitData }) => (
       </ChartCard>
     </Col>
   </Row>
-));
+));*/
 
 export default IntroduceRow;

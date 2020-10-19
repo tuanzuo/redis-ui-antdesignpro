@@ -4,7 +4,15 @@ export default {
   namespace: 'chart',
 
   state: {
-    visitData: [],
+    //v1.5.0
+    visitData: {},
+    userVisitData: {},
+    redisConfigVisitData: {},
+    userData: {},
+    roleData: {},
+    redisConfigData: {},
+
+    //visitData: [],
     visitData2: [],
     salesData: [],
     searchData: [],
@@ -18,21 +26,26 @@ export default {
   },
 
   effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(fakeChartData);
+    *fetch({ payload, callback }, { call, put }) {
+      const response = yield call(fakeChartData, payload);
       yield put({
         type: 'save',
-        payload: response,
+        payload: response.datas || {},
       });
+      if (callback) callback(response);
     },
-    *fetchSalesData(_, { call, put }) {
-      const response = yield call(fakeChartData);
+    *fetchVisitData({ payload, callback }, { call, put }) {
+      const response = yield call(fakeChartData, payload);
       yield put({
         type: 'save',
         payload: {
-          salesData: response.salesData,
+          visitData: response.datas.visitData || {},
+          userVisitData: response.datas.userVisitData || {},
+          redisConfigVisitData: response.datas.redisConfigVisitData || {},
+          userData: response.datas.userData || {},
         },
       });
+      if (callback) callback(response);
     },
   },
 
@@ -45,7 +58,13 @@ export default {
     },
     clear() {
       return {
-        visitData: [],
+        visitData: {},
+        userVisitData: {},
+        redisConfigVisitData: {},
+        userData: {},
+        roleData: {},
+        redisConfigData: {},
+
         visitData2: [],
         salesData: [],
         searchData: [],

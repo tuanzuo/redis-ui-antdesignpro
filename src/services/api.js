@@ -50,9 +50,9 @@ export async function fakeSubmitForm(params) {
   });
 }
 
-export async function fakeChartData() {
+/*export async function fakeChartData() {
   return request('/api/fake_chart_data');
-}
+}*/
 
 export async function queryTags() {
   return request('/api/tags');
@@ -116,6 +116,15 @@ const apiUrl = 'http://127.0.0.1';
 // const apiUrl = window.location.protocol + "//" + window.location.host;
 // const apiUrl="";
 // console.log(window.location.protocol+"//"+window.location.host);
+
+//----------dashboard----------
+
+export async function fakeChartData(params) {
+  return request(`${apiUrl}/auth/dashboard/analysis`, {
+    method: 'POST',
+    body: params,
+  });
+}
 
 //----------user----------
 
