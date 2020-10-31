@@ -578,7 +578,9 @@ class RedisHome extends PureComponent {
             </a>,
           ]}
         >
-          <p className={styles.pStyle}>名称：{temp.name}</p>
+          <p className={styles.pStyle} title={temp.name}>
+            名称：{temp.name}
+          </p>
           <p className={styles.pStyle}>
             类型：{temp.type === 1 ? '单机' : temp.type === 2 ? '集群' : '未知'}
           </p>
@@ -586,8 +588,8 @@ class RedisHome extends PureComponent {
             地址：{temp.address}
           </p>
           <p className={styles.pStyle}>创建时间：{temp.createTime}</p>
-          <p className={styles.pStyle}>
-            操作者：{temp.creater}--{temp.updater}
+          <p className={styles.pStyle} title={temp.creater + '-' + temp.updater}>
+            操作者：{temp.creater}-{temp.updater}
           </p>
           <p className={styles.pStyle} title={temp.note}>
             备注：{temp.note ? temp.note : '-'}
@@ -605,7 +607,7 @@ class RedisHome extends PureComponent {
         <Button
           key="testCon"
           type="primary"
-          style={{ backgroundColor: '#52c41a', border: '1px solid #d9d9d9' }}
+          style={{ backgroundColor: 'rgb(33, 143, 133)', border: '1px solid #d9d9d9' }}
           loading={loading}
           onClick={this.handleTestConnection}
         >
@@ -728,7 +730,7 @@ class RedisHome extends PureComponent {
                   <p>
                     <Button
                       type="dashed"
-                      style={{ width: '80%', margin: 20 }}
+                      style={{ width: '80%', margin: 33 }}
                       icon="plus"
                       onClick={this.showModal}
                       ref={component => {

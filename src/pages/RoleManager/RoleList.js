@@ -85,13 +85,13 @@ const AddUpdateForm = Form.create()(props => {
         {form.getFieldDecorator('name', {
           initialValue: formVals.name,
           rules: [{ required: true, message: '请输入最多32个字符的角色名称！', max: 32 }],
-        })(<Input placeholder="请输入" />)}
+        })(<Input placeholder="" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="角色编码">
         {form.getFieldDecorator('code', {
           initialValue: formVals.code,
           rules: [{ required: true, message: '请输入最多100个字符的角色编码！', max: 100 }],
-        })(<Input placeholder="请输入" />)}
+        })(<Input placeholder="" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="状态">
         {form.getFieldDecorator('status', {
@@ -566,27 +566,27 @@ class RoleList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
+          <Col xxl={4} xl={6} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '24px' }}>
             <FormItem label="角色名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('name')(<Input placeholder="" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col xxl={4} xl={6} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '0px' }}>
             <FormItem label="角色编码">
-              {getFieldDecorator('code')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('code')(<Input placeholder="" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col xxl={3} xl={4} lg={5} md={5} sm={7} xs={7} style={{ paddingLeft: '0px' }}>
             <FormItem label="状态">
               {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
+                <Select placeholder="" style={{ width: '100%' }}>
                   <Option value="1">启用</Option>
                   <Option value="0">禁用</Option>
                 </Select>
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col xxl={3} xl={4} lg={5} md={5} sm={7} xs={7} style={{ paddingLeft: '0px' }}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
                 查询
