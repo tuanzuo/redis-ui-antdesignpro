@@ -607,7 +607,7 @@ class RedisHome extends PureComponent {
         <Button
           key="testCon"
           type="primary"
-          style={{ backgroundColor: '#52c41a', border: '1px solid #d9d9d9' }}
+          style={{ backgroundColor: 'rgb(33, 143, 133)', border: '1px solid #d9d9d9' }}
           loading={loading}
           onClick={this.handleTestConnection}
         >
