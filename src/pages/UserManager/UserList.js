@@ -103,7 +103,7 @@ const SetUserRoleForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title={'给用户' + formVals.name + '分配角色'}
+      title={'给用户' + '[' + formVals.name + ']' + '分配角色'}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
