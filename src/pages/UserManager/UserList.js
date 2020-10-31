@@ -648,22 +648,22 @@ class UserList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
+          <Col xxl={4} xl={6} lg={6} md={7} sm={10} xs={10} style={{ paddingLeft: '24px' }}>
             <FormItem label="用户名">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('name')(<Input placeholder="" />)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col xxl={3} xl={4} lg={5} md={6} sm={6} xs={6} style={{ paddingLeft: '0px' }}>
             <FormItem label="状态">
               {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
+                <Select placeholder="" style={{ width: '100%' }}>
                   <Option value="1">启用</Option>
                   <Option value="0">禁用</Option>
                 </Select>
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col xxl={3} xl={4} lg={5} md={6} sm={6} xs={6} style={{ paddingLeft: '0px' }}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
                 查询
