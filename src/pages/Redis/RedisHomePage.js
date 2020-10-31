@@ -730,7 +730,7 @@ class RedisHome extends PureComponent {
                   <p>
                     <Button
                       type="dashed"
-                      style={{ width: '80%', margin: 20 }}
+                      style={{ width: '80%', margin: 33 }}
                       icon="plus"
                       onClick={this.showModal}
                       ref={component => {
