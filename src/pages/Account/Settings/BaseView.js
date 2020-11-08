@@ -74,7 +74,10 @@ class BaseView extends Component {
     if (currentUser.avatar) {
       return currentUser.avatar;
     }
-    const url = 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png';
+    //const url = 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png';
+    //v1.5.0 用户头像修改我本地图片
+    const hostUrl = window.location.protocol + '//' + window.location.host;
+    const url = hostUrl + '/img/BiazfanxmamNRoxxVxka.png';
     return url;
   }
 
