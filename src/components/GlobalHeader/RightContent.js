@@ -142,7 +142,7 @@ export default class GlobalHeaderRight extends PureComponent {
         <Tooltip title={formatMessage({ id: 'component.globalHeader.help' })}>
           <a
             target="_blank"
-            href="https://pro.ant.design/docs/getting-started"
+            href="https://github.com/tuanzuo/redis-ui-antdesignpro/wiki"
             rel="noopener noreferrer"
             className={styles.action}
           >
