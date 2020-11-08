@@ -91,14 +91,17 @@ export default class GlobalHeaderRight extends PureComponent {
     } = this.props;
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
+        {/*v1.5.0个人中心*/}
         <Menu.Item key="userCenter">
           <Icon type="user" />
           <FormattedMessage id="menu.account.center" defaultMessage="account center" />
         </Menu.Item>
+        {/*v1.5.0个人设置*/}
         <Menu.Item key="userinfo">
           <Icon type="setting" />
           <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
         </Menu.Item>
+        {/*v1.5.0出发报警*/}
         <Menu.Item key="triggerError">
           <Icon type="close-circle" />
           <FormattedMessage id="menu.account.trigger" defaultMessage="Trigger Error" />
@@ -124,6 +127,7 @@ export default class GlobalHeaderRight extends PureComponent {
     }
     return (
       <div className={className}>
+        {/*v1.5.0右上角搜索*/}
         <HeaderSearch
           className={`${styles.action} ${styles.search}`}
           placeholder={formatMessage({ id: 'component.globalHeader.search' })}
@@ -139,16 +143,18 @@ export default class GlobalHeaderRight extends PureComponent {
             console.log('enter', value); // eslint-disable-line
           }}
         />
+        {/*v1.5.0右上角使用文档*/}
         <Tooltip title={formatMessage({ id: 'component.globalHeader.help' })}>
           <a
             target="_blank"
-            href="https://pro.ant.design/docs/getting-started"
+            href="https://github.com/tuanzuo/redis-ui-antdesignpro/wiki"
             rel="noopener noreferrer"
             className={styles.action}
           >
             <Icon type="question-circle-o" />
           </a>
         </Tooltip>
+        {/*v1.5.0右上角通知消息*/}
         <NoticeIcon
           className={styles.action}
           /*未读消息条数-在线人数 v1.4.0*/
@@ -197,6 +203,7 @@ export default class GlobalHeaderRight extends PureComponent {
             {...loadMoreProps}
           />
         </NoticeIcon>
+        {/*v1.5.0右上角用户操作*/}
         {currentUser.name ? (
           <HeaderDropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>
