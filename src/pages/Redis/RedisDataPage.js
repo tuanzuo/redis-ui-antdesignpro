@@ -571,7 +571,7 @@ class RedisDataUpdateForm extends React.Component {
                   },
                 ],
                 initialValue: data.stringValue,
-              })(<Input.TextArea rows={10} placeholder="please keyValue" />)}
+              })(<Input.TextArea rows={15} placeholder="please keyValue" />)}
             </Form.Item>
           </Col>
           <Col span={4}>{this.getValueButtonContent()}</Col>
@@ -665,7 +665,7 @@ class RedisDataUpdateForm extends React.Component {
       <div>
         <Drawer
           title={this.state.drawerTitle}
-          width={730}
+          width="calc(100vw - 40%)"
           onClose={this.onClose}
           visible={this.state.visible}
         >
@@ -808,19 +808,19 @@ class RedisDataAddForm extends React.Component {
       <div>
         <Drawer
           title={this.state.drawerTitle}
-          width={730}
+          width="calc(100vw - 40%)"
           onClose={this.onClose}
           visible={this.state.visible}
         >
           <Form layout="vertical" hideRequiredMark>
             <Row gutter={16}>
-              <Col span={5}>
+              <Col span={4}>
                 <Form.Item label="type：">
                   {getFieldDecorator('keyType', {
                     rules: [{ required: true, message: 'Please select key type' }],
                     initialValue: 'string',
                   })(
-                    <Select style={{ width: 120 }}>
+                    <Select style={{/*{ width: 120 }*/}}>
                       <Option value="string">string</Option>
                       <Option value="list">list</Option>
                       <Option value="hash">hash</Option>
@@ -830,7 +830,7 @@ class RedisDataAddForm extends React.Component {
                   )}
                 </Form.Item>
               </Col>
-              <Col span={10}>
+              <Col span={10} style={{/*{paddingRight:18}*/}}>
                 <Form.Item label="key：">
                   {getFieldDecorator('key', {
                     rules: [{ required: true, message: 'Please enter key name' }],
@@ -838,7 +838,7 @@ class RedisDataAddForm extends React.Component {
                   })(<Input placeholder="Please enter key name" />)}
                 </Form.Item>
               </Col>
-              <Col span={7}>
+              <Col span={8}>
                 <Form.Item
                   label={
                     <span>
@@ -863,7 +863,7 @@ class RedisDataAddForm extends React.Component {
               </Col>
             </Row>
             <Row gutter={16}>
-              <Col span={20}>
+              <Col span={22}>
                 <Form.Item
                   label={
                     <span>
@@ -886,7 +886,7 @@ class RedisDataAddForm extends React.Component {
                       },
                     ],
                     initialValue: data.stringValue,
-                  })(<Input.TextArea rows={10} placeholder="Please enter key value" />)}
+                  })(<Input.TextArea rows={15} placeholder="Please enter key value" />)}
                 </Form.Item>
               </Col>
             </Row>
