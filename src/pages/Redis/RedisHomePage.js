@@ -27,6 +27,8 @@ import {
   notification,
   Popover,
   BackTop,
+  Select,
+  Badge,
 } from 'antd';
 
 //需要执行cnpm install --save @ant-design/icons命令进行安装
@@ -141,17 +143,27 @@ class SearchForm extends PureComponent {
           <Panel header="搜索" key="10" extra={genExtra()}>
             <Form onSubmit={this.handleSearch} layout="inline">
               <StandardFormRow title="查询条件" grid last>
-                <Row gutter={16}>
-                  <Col xxl={3} xl={4} lg={6} md={7} sm={10} xs={10} style={{}}>
-                    <FormItem {...formItemLayout} label="">
+                <Row gutter={24}>
+                  <Col xxl={3} xl={4} lg={6} md={7} sm={8} xs={10} style={{}}>
+                    <FormItem label="">
                       {getFieldDecorator('searchKey', {
                         rules: [{ required: false, message: '名称不能为空' }],
                       })(
-                        <Input autoComplete="off" onPressEnter={this.handleSearch} placeholder="" />
+                        <Input autoComplete="off" onPressEnter={this.handleSearch} placeholder="名称或者地址查询" />
                       )}
                     </FormItem>
                   </Col>
-                  <Col xxl={21} xl={20} lg={18} md={17} sm={12} xs={12}>
+                  <Col xxl={4} xl={6} lg={7} md={9} sm={11} xs={10} style={{ paddingLeft: '0px' }}>
+                    <FormItem label="是否公开">
+                      {getFieldDecorator('isPublic')(
+                        <Select placeholder="" style={{ width: '100px' }}>
+                          <Option value="1">公开</Option>
+                          <Option value="0">私有</Option>
+                        </Select>
+                      )}
+                    </FormItem>
+                  </Col>
+                  <Col xxl={17} xl={14} lg={11} md={8} sm={5} xs={4} style={{ paddingLeft: '0px' }}>
                     <Button type="primary" htmlType="submit">
                       查询
                     </Button>
@@ -251,6 +263,16 @@ const redisTypeExampleContent = (
     <br />
     <strong>集群地址：</strong>
     192.168.1.32:7000,192.168.1.32:7001,192.168.1.32:7002,192.168.1.32:7003,192.168.1.32:7004,192.168.1.32:7005
+  </div>
+);
+
+//v1.5.0
+const isOpenContent = (
+  <div style={{ width: '170px', wordBreak: 'break-all' }}>
+    <strong>公开：</strong>表示所有人可见
+    <br />
+    <strong>私有：</strong>
+    表示只有自己可见
   </div>
 );
 
@@ -582,6 +604,9 @@ class RedisHome extends PureComponent {
             名称：{temp.name}
           </p>
           <p className={styles.pStyle}>
+            是否公开：{temp.isPublic === 1 ? (<Badge status="success" text={'公开'}/>) : temp.isPublic === 0 ? (<Badge status="processing" text={'私有'}/>) : (<Badge status="error" text={'未知'}/>)}
+          </p>
+          <p className={styles.pStyle}>
             类型：{temp.type === 1 ? '单机' : temp.type === 2 ? '集群' : '未知'}
           </p>
           <p className={styles.pStyle} title={temp.address}>
@@ -630,6 +655,29 @@ class RedisHome extends PureComponent {
               rules: [{ required: true, message: '名称不能为空' }],
               initialValue: current.name,
             })(<Input autoComplete="off" placeholder="给redis连接取个名称吧" />)}
+          </FormItem>
+          <FormItem
+            {...this.formLayout}
+            label={
+              <span>
+                是否公开&nbsp;
+                <em className={styles.optional}>
+                  <Popover content={isOpenContent} title="" trigger="hover">
+                    <QuestionCircleOutlined />
+                  </Popover>
+                </em>
+              </span>
+            }
+          >
+            {getFieldDecorator('isPublic', {
+              rules: [{ required: true, message: '是否公开不能为空' }],
+              initialValue: current.isPublic == 0 || current.isPublic == 1 ? current.isPublic : 1,
+            })(
+              <Radio.Group>
+                <Radio value={1}>公开</Radio>
+                <Radio value={0}>私有</Radio>
+              </Radio.Group>
+            )}
           </FormItem>
           <FormItem label="类型" {...this.formLayout}>
             {getFieldDecorator('type', {
