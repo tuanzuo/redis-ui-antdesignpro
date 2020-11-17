@@ -28,6 +28,7 @@ import {
   Popover,
   BackTop,
   Select,
+  Badge,
 } from 'antd';
 
 //需要执行cnpm install --save @ant-design/icons命令进行安装
@@ -148,7 +149,7 @@ class SearchForm extends PureComponent {
                       {getFieldDecorator('searchKey', {
                         rules: [{ required: false, message: '名称不能为空' }],
                       })(
-                        <Input autoComplete="off" onPressEnter={this.handleSearch} placeholder="" />
+                        <Input autoComplete="off" onPressEnter={this.handleSearch} placeholder="名称或者地址查询" />
                       )}
                     </FormItem>
                   </Col>
@@ -603,7 +604,7 @@ class RedisHome extends PureComponent {
             名称：{temp.name}
           </p>
           <p className={styles.pStyle}>
-            是否公开：{temp.isPublic === 1 ? '公开' : temp.isPublic === 0 ? '私有' : '未知'}
+            是否公开：{temp.isPublic === 1 ? (<Badge status="success" text={'公开'}/>) : temp.isPublic === 0 ? (<Badge status="processing" text={'私有'}/>) : (<Badge status="error" text={'未知'}/>)}
           </p>
           <p className={styles.pStyle}>
             类型：{temp.type === 1 ? '单机' : temp.type === 2 ? '集群' : '未知'}
