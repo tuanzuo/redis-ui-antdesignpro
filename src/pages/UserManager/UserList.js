@@ -2,6 +2,8 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
+//v1.5.0 uuid
+import uuid from 'react-uuid'
 import {
   Row,
   Col,
@@ -427,25 +429,30 @@ class UserList extends PureComponent {
     record = record || currentClickRecordData;
 
     console.log(record);
+    //v1.5.0重置密码
+    const pwduuid = uuid();
+    var pwdArray = pwduuid.toString().split("-");
+    var restPwd = pwdArray[0];
 
     Modal.confirm({
       title: '重置密码',
       content: `确定重置【${
         record.name
-      }】这个用户的密码吗？备注：重置后的默认密码为123456，请提示用户登录后及时修改默认密码。`,
+      }】这个用户的密码吗？重置后的默认密码为${restPwd}，请提示用户登录后及时修改默认密码。`,
       okText: '确认',
       cancelText: '取消',
-      onOk: () => this.resetPwd(record),
+      onOk: () => this.resetPwd(record, restPwd),
     });
   };
 
   //重置密码 v1.4.0
-  resetPwd = record => {
+  resetPwd = (record, restPwd) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'usermanager/resetPwd',
       payload: {
         id: record.id,
+        pwd: restPwd,
       },
       callback: response => {
         //错误提示信息

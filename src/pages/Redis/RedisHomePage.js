@@ -142,19 +142,17 @@ class SearchForm extends PureComponent {
         <Collapse defaultActiveKey={['10']}>
           <Panel header="搜索" key="10" extra={genExtra()}>
             <Form onSubmit={this.handleSearch} layout="inline">
-              <StandardFormRow title="查询条件" grid last>
+              <StandardFormRow title="" grid last>
                 <Row gutter={24}>
-                  <Col xxl={3} xl={4} lg={6} md={7} sm={8} xs={10} style={{}}>
-                    <FormItem label="">
+                  <Col xxl={24} xl={24} lg={24} md={24} sm={24} xs={24} style={{ paddingLeft: '12px' }}>
+                    <FormItem label="查询条件" style={{"display":"inline-block"}}>
                       {getFieldDecorator('searchKey', {
                         rules: [{ required: false, message: '名称不能为空' }],
                       })(
-                        <Input autoComplete="off" onPressEnter={this.handleSearch} placeholder="名称或者地址查询" />
+                        <Input autoComplete="off" onPressEnter={this.handleSearch} placeholder="支持名称或地址模糊查询" style={{ width: '180px' }}/>
                       )}
                     </FormItem>
-                  </Col>
-                  <Col xxl={4} xl={6} lg={7} md={9} sm={11} xs={10} style={{ paddingLeft: '0px' }}>
-                    <FormItem label="是否公开">
+                    <FormItem label="是否公开" style={{"display":"inline-block"}}>
                       {getFieldDecorator('isPublic')(
                         <Select placeholder="" style={{ width: '100px' }}>
                           <Option value="1">公开</Option>
@@ -162,8 +160,6 @@ class SearchForm extends PureComponent {
                         </Select>
                       )}
                     </FormItem>
-                  </Col>
-                  <Col xxl={17} xl={14} lg={11} md={8} sm={5} xs={4} style={{ paddingLeft: '0px' }}>
                     <Button type="primary" htmlType="submit">
                       查询
                     </Button>
