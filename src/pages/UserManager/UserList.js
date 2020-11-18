@@ -438,7 +438,7 @@ class UserList extends PureComponent {
       title: '重置密码',
       content: `确定重置【${
         record.name
-      }】这个用户的密码吗？备注：重置后的默认密码为${restPwd}，请提示用户登录后及时修改默认密码。`,
+      }】这个用户的密码吗？重置后的默认密码为${restPwd}，请提示用户登录后及时修改默认密码。`,
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.resetPwd(record, restPwd),
