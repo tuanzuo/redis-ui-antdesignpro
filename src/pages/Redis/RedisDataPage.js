@@ -221,39 +221,19 @@ class SearchForm extends PureComponent {
 
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <StandardFormRow title="查询条件" grid last>
+        <StandardFormRow title="" grid last>
           <Row gutter={24}>
-            <Col xxl={3} xl={5} lg={6} md={8} sm={8} xs={6}>
-              <FormItem label="">
+            <Col xxl={24} xl={24} lg={24} md={24} sm={24} xs={24} style={{ paddingLeft: '12px' }}>
+              <FormItem label="查询条件" style={{"display":"inline-block"}}>
                 {getFieldDecorator('searchKey', {
                   rules: [{ required: false, message: '查询条件不能为空' }],
                 })(<Input autoComplete="off" placeholder="不支持直接输入*查询" />)}
               </FormItem>
-            </Col>
-            <Col xxl={21} xl={19} lg={18} md={16} sm={16} xs={18}>
-              <Row gutter={24} style={{ width: '350px' }}>
-                <Col {...searchColButton}>
-                  <Button type="primary" htmlType="submit">
-                    查询
-                  </Button>
-                </Col>
-                <Col {...searchColButton}>
-                  <Button onClick={this.handleFormReset}>重置</Button>
-                </Col>
-                <Col {...searchColButton}>
-                  <Button type="ghost" onClick={this.showAddDrawer}>
-                    添加
-                  </Button>
-                </Col>
-                <Col {...searchColButton}>
-                  <Button onClick={this.showEditDrawer}>修改</Button>
-                </Col>
-                <Col {...searchColButtonToLast}>
-                  <Button type="danger" onClick={this.delCheckedNodes}>
-                    删除
-                  </Button>
-                </Col>
-              </Row>
+              <Button type="primary" htmlType="submit">查询</Button>
+              <Button style={{ marginLeft: '10px' }} onClick={this.handleFormReset}>重置</Button>
+              <Button style={{ marginLeft: '10px' }} type="ghost" onClick={this.showAddDrawer}>添加</Button>
+              <Button style={{ marginLeft: '10px' }} onClick={this.showEditDrawer}>修改</Button>
+              <Button style={{ marginLeft: '10px' }} type="danger" onClick={this.delCheckedNodes}>删除</Button>
             </Col>
           </Row>
         </StandardFormRow>
