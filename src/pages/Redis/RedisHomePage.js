@@ -575,7 +575,7 @@ class RedisHome extends PureComponent {
               &nbsp; 连接信息
             </a>,
             <a
-              title={'操作redis数据信息'}
+              title={'操作redis数据'}
               onClick={e => {
                 e.preventDefault();
                 this.toRedisDataPage(temp.id);
