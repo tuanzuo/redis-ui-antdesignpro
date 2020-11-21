@@ -158,7 +158,14 @@ class RoleList extends PureComponent {
         },
       ],
       render(val) {
-        return <Badge status={statusMap[val]} text={status[val]} />;
+        if (val == 0) {
+          return <Badge status={statusMap[val]} text={status[val]} style={{color: "red"}}/>;
+
+        } else if (val == 1) {
+          return <Badge status={statusMap[val]} text={status[val]} style={{color: "#00a87e"}}/>;
+        } else {
+          return <Badge status={statusMap[val]} text='未知' style={{color: "red"}}/>;
+        }
       },
     },
     {
@@ -201,7 +208,7 @@ class RoleList extends PureComponent {
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
           <Divider type="vertical" />
-          <a onClick={() => this.handleStatusModel(0, record)}>禁用</a>
+          <a onClick={() => this.handleStatusModel(0, record)} style={{color:"red"}}>禁用</a>
         </Fragment>
       );
     } else {

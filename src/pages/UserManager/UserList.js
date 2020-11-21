@@ -105,7 +105,7 @@ const SetUserRoleForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title={'给用户' + '[' + formVals.name + ']' + '分配角色'}
+      title={'给用户' + '【' + formVals.name + '】' + '分配角色'}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
@@ -166,7 +166,14 @@ class UserList extends PureComponent {
         },
       ],
       render(val) {
-        return <Badge status={statusMap[val]} text={status[val]} />;
+        if (val == 0) {
+          return <Badge status={statusMap[val]} text={status[val]} style={{color: "red"}}/>;
+
+        } else if (val == 1) {
+          return <Badge status={statusMap[val]} text={status[val]} style={{color: "#00a87e"}}/>;
+        } else {
+          return <Badge status={statusMap[val]} text='未知' style={{color: "red"}}/>;
+        }
       },
     },
     {
@@ -220,7 +227,7 @@ class UserList extends PureComponent {
     if (record && record.status == 1) {
       return (
         <Fragment>
-          <a onClick={() => this.handleStatusModel(0, record)}>禁用</a>
+          <a onClick={() => this.handleStatusModel(0, record)} style={{color:"red"}}>禁用</a>
           <Divider type="vertical" />
           <Dropdown overlay={this.moreOptMenu} trigger={['click']}>
             <a

@@ -241,10 +241,10 @@ const serCodeExample =
   '}';
 
 const serCodeExampleContent = (
-  <div style={{ width: '800px', height: '100%' }}>
+  <div style={{ width: '650px', height: '350px' }}>
     <MonacoEditor
       width="100%"
-      height="500"
+      height="100%"
       language="JavaScript"
       theme="vs-dark"
       value={serCodeExample}
