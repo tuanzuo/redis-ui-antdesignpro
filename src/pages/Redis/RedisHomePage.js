@@ -29,6 +29,7 @@ import {
   BackTop,
   Select,
   Badge,
+  Tag
 } from 'antd';
 
 //需要执行cnpm install --save @ant-design/icons命令进行安装
@@ -603,7 +604,7 @@ class RedisHome extends PureComponent {
             是否公开：{temp.isPublic === 1 ? (<Badge status="success" text={'公开'}/>) : temp.isPublic === 0 ? (<Badge status="processing" text={'私有'}/>) : (<Badge status="error" text={'未知'}/>)}
           </p>
           <p className={styles.pStyle}>
-            类型：{temp.type === 1 ? '单机' : temp.type === 2 ? '集群' : '未知'}
+            类型：{temp.type === 1 ? <span style={{color:"#2db7f5"}}>单机</span> : temp.type === 2 ? <span style={{color:"#1890ff"}}>集群</span> : <span style={{color:"#f50"}}>未知</span>}
           </p>
           <p className={styles.pStyle} title={temp.address}>
             地址：{temp.address}
