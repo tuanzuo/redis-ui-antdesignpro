@@ -678,7 +678,7 @@ class RedisHome extends PureComponent {
           </FormItem>
           <FormItem label="类型" {...this.formLayout}>
             {getFieldDecorator('type', {
-              rules: [{ required: true, message: '类型不能为空' }],
+              rules: [{ required: true, message: '请选择类型' }],
               initialValue: current.type,
             })(
               <Radio.Group>

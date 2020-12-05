@@ -202,6 +202,14 @@ class SearchForm extends PureComponent {
     RedisDataObject.deleteModel(params);
   };
 
+  // key对应的value分页查询
+  keyValuePageQueryToPre = () => {
+    RedisDataObject.searchKeyValueToValuePage("pre");
+  };
+  keyValuePageQueryToNext = () => {
+    RedisDataObject.searchKeyValueToValuePage("next");
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
@@ -234,6 +242,8 @@ class SearchForm extends PureComponent {
               <Button style={{ marginLeft: '10px' }} type="ghost" onClick={this.showAddDrawer}>添加</Button>
               <Button style={{ marginLeft: '10px' }} onClick={this.showEditDrawer}>修改</Button>
               <Button style={{ marginLeft: '10px' }} type="danger" onClick={this.delCheckedNodes}>删除</Button>
+              {/*<Button style={{ marginLeft: '10px' }} type="dashed" onClick={this.keyValuePageQueryToPre}>上一页</Button>
+              <Button style={{ marginLeft: '10px' }} type="dashed" onClick={this.keyValuePageQueryToNext}>下一页</Button>*/}
             </Col>
           </Row>
         </StandardFormRow>
@@ -309,6 +319,8 @@ class RedisDataUpdateForm extends React.Component {
           expireTime: currentKeyValue.expireTime,
           keyValue: currentKeyValue.value,
           stringValue: stringValueTemp,
+          start: currentKeyValue.start,
+          end: currentKeyValue.end,
         },
       });
     }
@@ -536,7 +548,9 @@ class RedisDataUpdateForm extends React.Component {
             <Form.Item
               label={
                 <span>
-                  value：&nbsp;
+                  <Tooltip title={"index："+data.start+"-"+data.end} color="green">
+                    value：&nbsp;
+                  </Tooltip>
                   <Popover content={addKeyValueExample} title="不同类型的value示例" trigger="hover">
                     <QuestionCircleOutlined />
                   </Popover>
@@ -570,11 +584,15 @@ class RedisDataUpdateForm extends React.Component {
       const key = data.key;
       const keyType = data.keyType;
       const oldStringValue = JSON.stringify(data.keyValue);
+      const start = data.start;
+      const end = data.end;
       const values = {
         id,
         key,
         keyType,
         oldStringValue,
+        start,
+        end,
         ...fieldsValue,
       };
       // 保存数据到后台
@@ -913,6 +931,10 @@ class RedisData extends PureComponent {
     keyValueIsJson: false,
     keyValueType: null,
     visible: false,
+    //上一页--true:不可用,false:可用
+    preDisabled: true,
+    //下一页--true:不可用,false:可用
+    nextDisabled: true,
     done: false,
     treeLoading: true, // 开启tree加载中
     keyValueLoading: false, // 关闭keyValue加载中
@@ -937,7 +959,7 @@ class RedisData extends PureComponent {
     });
   }
 
-  // 查询
+  // 查询key列表
   searchKeyList = searchParam => {
     // 初始化treeData
     this.initTreeData();
@@ -968,7 +990,8 @@ class RedisData extends PureComponent {
   };
 
   // 查询key对应的value
-  searchKeyValue = (params, node) => {
+  // pageType='pre'表示上一页，pageType='next'表示下一页
+  searchKeyValue = (params, node, pageType) => {
     this.setState({
       keyValueLoading: true, // 开启加载中
     });
@@ -1021,15 +1044,45 @@ class RedisData extends PureComponent {
             break;
         }
 
-        currentKey[0] = node.props;
-
+        if (node && null != node) {
+          currentKey[0] = node.props;
+        }
         this.setState({
           keyValueIsJson: isJsonKeyValue,
           keyValueType: currentKeyValueType,
           currentKeyData: currentKey,
+          preDisabled: currentKeyValue.pageNum <= 1 ? true : false,
+          nextDisabled: currentKeyValueType && currentKeyValueType == 'object' && currentKeyValue.value && currentKeyValue.value.length<=0 ? true : false,
         });
       },
     });
+  };
+
+  searchKeyValueToValuePagePre = ()=>{
+    this.searchKeyValueToValuePage("pre");
+  };
+  searchKeyValueToValuePageNext = ()=>{
+    this.searchKeyValueToValuePage("next");
+  };
+  searchKeyValueToValuePage = (pageType) => {
+    if(currentKey && currentKey[0]){
+      //v1.5.0 设置页数
+      let optPageNum = 1;
+      if (pageType && null != pageType) {
+        if (pageType == "pre") {
+          optPageNum = currentKeyValue.pageNum - 1;
+        } else if (pageType == "next") {
+          optPageNum = currentKeyValue.pageNum + 1;
+        }
+      }
+
+      const params = {
+        id,
+        searchKey: currentKey[0].eventKey,
+        pageNum: optPageNum,
+      };
+      this.searchKeyValue(params, null ,pageType);
+    }
   };
 
   // 判断是否是json
@@ -1146,7 +1199,7 @@ class RedisData extends PureComponent {
         id,
         searchKey: info.node.props.eventKey,
       };
-      this.searchKeyValue(params, info.node);
+      this.searchKeyValue(params, info.node ,null);
     } else {
       this.initCurrentKeyForNull();
     }
@@ -1256,6 +1309,20 @@ class RedisData extends PureComponent {
     return keyValue;
   };
 
+  getPreNextHtml = currentKeyValue => {
+    if (currentKeyValue && (currentKeyValue.keyType=='list' || currentKeyValue.keyType=='zset')) {
+      return (
+        <div>
+          index：{currentKeyValue.start}-{currentKeyValue.end}&nbsp;&nbsp;
+          <Button disabled={this.state.preDisabled} size="small" type="dashed" onClick={this.searchKeyValueToValuePagePre}>上一页</Button>
+          <Button disabled={this.state.nextDisabled} size="small" style={{ marginLeft: '10px' }} type="dashed" onClick={this.searchKeyValueToValuePageNext}>下一页</Button>
+        </div>
+      );
+    }else{
+      return;
+    }
+  };
+
   getReactJsonHtml = keyValueIsJson => {
     if (keyValueIsJson) {
       return (
@@ -1274,7 +1341,7 @@ class RedisData extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { visible, done, current, currentKeyData, keyValueIsJson, keyValueType } = this.state;
+    const { visible,preDisabled,nextDisabled, done, current, currentKeyData, keyValueIsJson, keyValueType } = this.state;
 
     // 右边的内容(key对应的value数据)
     const contentRight = currentKeyData.map((k, index) => (
@@ -1290,6 +1357,9 @@ class RedisData extends PureComponent {
           {this.getValueTipHtml(currentKeyValue.keyType)}
           {this.getJSONPrettyHtml(keyValueIsJson, currentKeyValue, keyValueType)}
         </Paragraph>
+        <p key={k.eventKey + 2}>
+          {this.getPreNextHtml(currentKeyValue)}
+        </p>
         {this.getReactJsonHtml(keyValueIsJson)}
       </Card>
     ));
@@ -1301,6 +1371,7 @@ class RedisData extends PureComponent {
           <div>
             <Row>
               <Col span={24}>
+                {/*查询*/}
                 <SearchForm />
               </Col>
             </Row>
@@ -1310,6 +1381,7 @@ class RedisData extends PureComponent {
               </Col>
             </Row>
             <Row>
+              {/*key的树形列表*/}
               <Col span={10} className={styles.treeContainer}>
                 <Spin spinning={this.state.treeLoading} delay={100}>
                   <Card bordered={false}>
@@ -1325,13 +1397,16 @@ class RedisData extends PureComponent {
                   </Card>
                 </Spin>
               </Col>
+              {/*key对应的value*/}
               <Col span={14} className={styles.treeContainer}>
                 <Spin spinning={this.state.keyValueLoading} delay={100}>
                   {contentRight}
                 </Spin>
               </Col>
             </Row>
+            {/*修改页面*/}
             <RedisDataUpdateForm />
+            {/*添加页面*/}
             <RedisDataAddForm />
           </div>
         </Card>
