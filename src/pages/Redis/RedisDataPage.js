@@ -1276,7 +1276,8 @@ class RedisData extends PureComponent {
     });
 
   getValueTipHtml = keyType => {
-    if (keyType == 'list' || keyType == 'hash' || keyType == 'set' || keyType == 'zset') {
+    //v1.5.0 list和zset已经支持分页查询数据
+    if (keyType == 'hash' || keyType == 'set') {
       return (
         <Tooltip title="注意：只返回了1000条数据" color="lime">
           <Badge count={<Icon type="question-circle" style={{ color: 'rgb(38, 38, 38)' }} />}>
@@ -1310,7 +1311,8 @@ class RedisData extends PureComponent {
   };
 
   getPreNextHtml = currentKeyValue => {
-    if (currentKeyValue && (currentKeyValue.keyType=='list' || currentKeyValue.keyType=='zset')) {
+    if (currentKeyValue && (currentKeyValue.keyType == 'list' || currentKeyValue.keyType == 'zset') &&
+      currentKeyValue.totalSize && currentKeyValue.pageSize && currentKeyValue.totalSize > currentKeyValue.pageSize) {
       return (
         <div>
           index：{currentKeyValue.start}-{currentKeyValue.end}&nbsp;&nbsp;
