@@ -90,6 +90,10 @@ const addKeyValueExample = (
     <br />
     <strong>zset：</strong>
     {zsetValueExample}
+    <br />
+    <strong>注意：</strong>
+    在修改list类型的数据时如果是在新的index上添加的元素都会放到队列的右边(尾部)
+    <br />
   </div>
 );
 
@@ -565,7 +569,7 @@ class RedisDataUpdateForm extends React.Component {
                   },
                 ],
                 initialValue: data.stringValue,
-              })(<Input.TextArea rows={15} placeholder="please keyValue" />)}
+              })(<Input.TextArea rows={15} placeholder="please keyValue。注意：在修改list类型的数据时如果是在新的index上添加的元素都会放到队列的右边(尾部)" />)}
             </Form.Item>
           </Col>
           <Col span={4}>{this.getValueButtonContent()}</Col>
