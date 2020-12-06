@@ -90,6 +90,10 @@ const addKeyValueExample = (
     <br />
     <strong>zset：</strong>
     {zsetValueExample}
+    <br />
+    <strong>注意：</strong>
+    在修改list类型的数据时如果是在新的index上添加的元素都会放到队列的右边(尾部)
+    <br />
   </div>
 );
 
@@ -565,7 +569,7 @@ class RedisDataUpdateForm extends React.Component {
                   },
                 ],
                 initialValue: data.stringValue,
-              })(<Input.TextArea rows={15} placeholder="please keyValue" />)}
+              })(<Input.TextArea rows={15} placeholder="please keyValue。注意：在修改list类型的数据时如果是在新的index上添加的元素都会放到队列的右边(尾部)" />)}
             </Form.Item>
           </Col>
           <Col span={4}>{this.getValueButtonContent()}</Col>
@@ -1276,7 +1280,8 @@ class RedisData extends PureComponent {
     });
 
   getValueTipHtml = keyType => {
-    if (keyType == 'list' || keyType == 'hash' || keyType == 'set' || keyType == 'zset') {
+    //v1.5.0 list和zset已经支持分页查询数据
+    if (keyType == 'hash' || keyType == 'set') {
       return (
         <Tooltip title="注意：只返回了1000条数据" color="lime">
           <Badge count={<Icon type="question-circle" style={{ color: 'rgb(38, 38, 38)' }} />}>
@@ -1310,7 +1315,8 @@ class RedisData extends PureComponent {
   };
 
   getPreNextHtml = currentKeyValue => {
-    if (currentKeyValue && (currentKeyValue.keyType=='list' || currentKeyValue.keyType=='zset')) {
+    if (currentKeyValue && (currentKeyValue.keyType == 'list' || currentKeyValue.keyType == 'zset') &&
+      currentKeyValue.totalSize && currentKeyValue.pageSize && currentKeyValue.totalSize > currentKeyValue.pageSize) {
       return (
         <div>
           index：{currentKeyValue.start}-{currentKeyValue.end}&nbsp;&nbsp;
