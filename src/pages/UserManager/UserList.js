@@ -144,6 +144,10 @@ class UserList extends PureComponent {
     stepFormValues: {},
     //v1.4.0 当前点击行数据
     currentClickRecordData: {},
+    //角色列表 v1.5.0
+    roles: [],
+    //角色Map--key:角色id,value:角色名称
+    roleMap: {},
   };
 
   columns = [
@@ -174,6 +178,21 @@ class UserList extends PureComponent {
         } else {
           return <Badge status={statusMap[val]} text='未知' style={{color: "red"}}/>;
         }
+      },
+    },
+    //v1.5.0
+    {
+      title: '拥有角色',
+      ellipsis: true,
+      render: (text, record) => {
+        const {roleMap} = this.state;
+        let roleNames = [];
+        if (record && record.roleIds && record.roleIds.length > 0) {
+          record.roleIds.map(roleId => {
+            roleNames.push(roleMap[roleId]);
+          });
+        }
+        return roleNames.join(",");
       },
     },
     {
@@ -273,6 +292,16 @@ class UserList extends PureComponent {
         if (!flag) {
           return;
         }
+        //设置角色 v1.5.0
+        let roles = response.datas.roles;
+        let roleMap = {};
+        roles.map(role => {
+          roleMap[role.id] = role.name;
+        });
+        this.setState({
+          roles: roles,
+          roleMap: roleMap,
+        });
       },
     });
   }
