@@ -36,6 +36,10 @@ const getIcon = icon => {
     if (icon === 'SolutionOutlined') {
       return <SolutionOutlined />;
     }
+    //v1.6.0 增加icon图标
+    if (icon === 'SafetyCertificateOutlined') {
+      return <SafetyCertificateOutlined />;
+    }
 
     return <Icon type={icon} />;
   }

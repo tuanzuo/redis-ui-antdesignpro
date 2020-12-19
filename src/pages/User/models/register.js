@@ -12,6 +12,7 @@ export default {
   },
 
   effects: {
+    //注册
     *submit({ payload, callback }, { call, put }) {
       const response = yield call(fakeRegister, payload);
       yield put({
