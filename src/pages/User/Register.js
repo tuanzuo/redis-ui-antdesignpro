@@ -346,7 +346,7 @@ class Register extends Component {
                 {/*图形验证码*/}
                 <img
                   id="verImg"
-                  style={{ cursor: 'pointer' }}
+                  style={{ "cursor": 'pointer',"border-radius":"5px" }}
                   width="120px"
                   height="35px"
                   src={captchaInfo.image || ''}
