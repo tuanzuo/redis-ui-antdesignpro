@@ -142,6 +142,10 @@ class Register extends Component {
             //错误提示信息v1.3.0
             let flag = this.tipMsg(response);
             if (!flag) {
+              //验证码过期重新获取  v1.6.0
+              if (response && response.code == '600010') {
+                this.onGetImageCaptcha();
+              }
               return;
             }
           },
@@ -349,7 +353,7 @@ class Register extends Component {
                   style={{ "cursor": 'pointer',"border-radius":"5px" }}
                   width="120px"
                   height="35px"
-                  src={captchaInfo.image || ''}
+                  src={captchaInfo && captchaInfo.image ?  captchaInfo.image : ''}
                   onClick={this.onGetImageCaptcha}
                 />
               </Col>
