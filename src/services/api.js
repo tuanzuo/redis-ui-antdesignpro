@@ -126,6 +126,13 @@ export async function fakeChartData(params) {
   });
 }
 
+//----------验证码----------
+
+//拉取验证码
+export async function fakeCaptcha() {
+  return request(`${apiUrl}/captcha`);
+}
+
 //----------user----------
 
 export async function fakeRegister(params) {
@@ -153,6 +160,7 @@ export async function updatePwd(params) {
   });
 }
 
+//登录
 export async function fakeAccountLogin(params) {
   return request(`${apiUrl}/login`, {
     method: 'POST',

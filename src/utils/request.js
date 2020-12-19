@@ -136,7 +136,7 @@ export default function request(url, option) {
   } else {
     let authFlag = true;
     //不登录就可以访问的url
-    const noAuthPreUrlArray = ['/auth/user/register'];
+    const noAuthPreUrlArray = ['/auth/user/register', '/captcha'];
     noAuthPreUrlArray.forEach(preUrl => {
       if (authFlag && url.indexOf(preUrl) > -1) {
         authFlag = false;

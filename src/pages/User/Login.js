@@ -2,14 +2,19 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
 import Link from 'umi/link';
-import { Checkbox, Alert, Icon } from 'antd';
+import {Checkbox, Alert, Icon, Input, Popover, Row, Col, Button, Form} from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
 import { notification } from 'antd';
 import router from 'umi/router';
 import { getToken, setToken } from '@/utils/token';
 
+const FormItem = Form.Item;
+
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
+
+//v1.6.0当前输入的图形验证码
+let currentInputCaptcha;
 
 @connect(({ login, loading }) => ({
   login,
@@ -19,10 +24,16 @@ class LoginPage extends Component {
   state = {
     type: 'account',
     autoLogin: true,
+    //v1.6.0 验证码对象
+    captchaInfo: {},
   };
 
   //v1.3.0
   componentDidMount() {
+    //v1.6.0 清空验证码
+    currentInputCaptcha="";
+    //v1.6.0得到图形验证码
+    this.onGetImageCaptcha();
     /*这里有bug,如果token过期了这里会反复跳转,先注释
     //得到token用于判断是否需要登录-v1.3.0
     const token = getToken();
@@ -35,6 +46,32 @@ class LoginPage extends Component {
 
   onTabChange = type => {
     this.setState({ type });
+  };
+
+  //v1.6.0 监听图形验证码输入
+  onGetImageCaptchaChange = (e) => {
+    console.log(e.currentTarget.value)
+    currentInputCaptcha = e.currentTarget.value;
+  };
+
+  //v1.6.0 得到图形验证码
+  onGetImageCaptcha = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'captcha/fakeCaptcha',
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+        //设置验证码对象 v1.6.0
+        let captchaInfo = response.datas;
+        this.setState({
+          captchaInfo: captchaInfo,
+        });
+      },
+    });
   };
 
   onGetCaptcha = () =>
@@ -57,17 +94,37 @@ class LoginPage extends Component {
   handleSubmit = (err, values) => {
     const { type } = this.state;
     if (!err) {
+      //v1.6.0 校验验证码是否为空
+      if (!currentInputCaptcha || currentInputCaptcha == "") {
+        let notifyType = 'warning';
+        let showTime = 4.5;
+        notification[notifyType]({
+          message: '提示信息',
+          description: "请输入验证码",
+          duration: showTime,
+        });
+        return;
+      }
+
       const { dispatch } = this.props;
+      const { captchaInfo } = this.state;
       dispatch({
         type: 'login/login',
         payload: {
           ...values,
           type,
+          //v1.6.0 验证码
+          captchaKey: captchaInfo && captchaInfo.key ? captchaInfo.key : '',
+          captcha: currentInputCaptcha,
         },
         callback: response => {
           //错误提示信息
           let flag = this.tipMsg(response);
           if (!flag) {
+            //验证码过期重新获取  v1.6.0
+            if (response && response.code == '600010') {
+              this.onGetImageCaptcha();
+            }
             return;
           }
         },
@@ -107,7 +164,7 @@ class LoginPage extends Component {
 
   render() {
     const { login, submitting } = this.props;
-    const { type, autoLogin } = this.state;
+    const { type, autoLogin,captchaInfo } = this.state;
     return (
       <div className={styles.main}>
         <Login
@@ -151,6 +208,32 @@ class LoginPage extends Component {
                 this.loginForm.validateFields(this.handleSubmit);
               }}
             />
+            <Form>
+              {/*图形验证码*/}
+              <FormItem>
+                <Row gutter={8}>
+                  <Col span={16}>
+                    <Input
+                      size="large"
+                      placeholder={formatMessage({ id: 'form.verification-code.placeholder' })}
+                      onChange = {this.onGetImageCaptchaChange}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    {/*图形验证码*/}
+                    <img
+                      id="verImg"
+                      style={{ "cursor": 'pointer',"border-radius":"5px" }}
+                      width="120px"
+                      height="35px"
+                      src={captchaInfo && captchaInfo.image ?  captchaInfo.image : ''}
+                      onClick={this.onGetImageCaptcha}
+                    />
+                  </Col>
+                </Row>
+              </FormItem>
+            </Form>
+
           </Tab>
           <Submit loading={submitting}>
             <FormattedMessage id="app.login.login" />

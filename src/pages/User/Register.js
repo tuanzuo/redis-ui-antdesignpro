@@ -46,12 +46,19 @@ class Register extends Component {
     visible: false,
     help: '',
     prefix: '86',
+    //v1.6.0 验证码对象
+    captchaInfo: {},
   };
+
+  componentDidMount() {
+    //v1.6.0 得到图形验证码
+    this.onGetImageCaptcha();
+  }
 
   componentDidUpdate() {
     const { form, register } = this.props;
     const account = form.getFieldValue('name');
-    //v1.3.0
+    //v1.3.0 注册成功，跳转到注册成功页面
     if (register.registerCode === '200') {
       router.push({
         pathname: '/user/register-result',
@@ -59,12 +66,34 @@ class Register extends Component {
           account,
         },
       });
+      //v1.6.0 清空注册code--防止再次进入注册页面又跳转到注册成功页面
+      register.registerCode = undefined;
     }
   }
 
   componentWillUnmount() {
     clearInterval(this.interval);
   }
+
+  //v1.6.0 得到图形验证码
+  onGetImageCaptcha = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'captcha/fakeCaptcha',
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+        //设置验证码对象 v1.6.0
+        let captchaInfo = response.datas;
+        this.setState({
+          captchaInfo: captchaInfo,
+        });
+      },
+    });
+  };
 
   onGetCaptcha = () => {
     let count = 59;
@@ -93,6 +122,7 @@ class Register extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, dispatch } = this.props;
+    const { captchaInfo } = this.state;
     form.validateFields({ force: true }, (err, values) => {
       if (!err) {
         const { prefix } = this.state;
@@ -101,6 +131,7 @@ class Register extends Component {
           payload: {
             ...values,
             prefix,
+            captchaKey: captchaInfo.key || '',
           },
           callback: response => {
             if (response && response.code === '200') {
@@ -111,6 +142,10 @@ class Register extends Component {
             //错误提示信息v1.3.0
             let flag = this.tipMsg(response);
             if (!flag) {
+              //验证码过期重新获取  v1.6.0
+              if (response && response.code == '600010') {
+                this.onGetImageCaptcha();
+              }
               return;
             }
           },
@@ -209,7 +244,7 @@ class Register extends Component {
   render() {
     const { form, submitting } = this.props;
     const { getFieldDecorator } = form;
-    const { count, prefix, help, visible } = this.state;
+    const { count, prefix, help, visible, captchaInfo } = this.state;
     return (
       <div className={styles.main}>
         <h3>
@@ -292,6 +327,37 @@ class Register extends Component {
                 placeholder={formatMessage({ id: 'form.confirm-password.placeholder' })}
               />
             )}
+          </FormItem>
+          {/*图形验证码*/}
+          <FormItem>
+            <Row gutter={8}>
+              <Col span={16}>
+                {getFieldDecorator('captcha', {
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({ id: 'validation.verification-code.required' }),
+                    },
+                  ],
+                })(
+                  <Input
+                    size="large"
+                    placeholder={formatMessage({ id: 'form.verification-code.placeholder' })}
+                  />
+                )}
+              </Col>
+              <Col span={8}>
+                {/*图形验证码*/}
+                <img
+                  id="verImg"
+                  style={{ "cursor": 'pointer',"border-radius":"5px" }}
+                  width="120px"
+                  height="35px"
+                  src={captchaInfo && captchaInfo.image ?  captchaInfo.image : ''}
+                  onClick={this.onGetImageCaptcha}
+                />
+              </Col>
+            </Row>
           </FormItem>
           {/*<FormItem>
             <InputGroup compact>
