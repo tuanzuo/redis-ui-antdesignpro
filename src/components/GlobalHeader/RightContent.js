@@ -204,13 +204,13 @@ export default class GlobalHeaderRight extends PureComponent {
           />
         </NoticeIcon>
         {/*v1.5.0右上角用户操作*/}
-        {currentUser.name ? (
+        {currentUser && currentUser.name ? (
           <HeaderDropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>
               <Avatar
                 size="small"
                 className={styles.avatar}
-                src={currentUser.avatar || '/img/BiazfanxmamNRoxxVxka.png'}
+                src={currentUser.avatar ? currentUser.avatar : '/img/BiazfanxmamNRoxxVxka.png'}
                 alt="avatar"
               />
               <span className={styles.name}>{currentUser.name}</span>

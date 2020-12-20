@@ -71,7 +71,7 @@ class BaseView extends Component {
 
   getAvatarURL() {
     const { currentUser } = this.props;
-    if (currentUser.avatar) {
+    if (currentUser && currentUser.avatar) {
       return currentUser.avatar;
     }
     //const url = 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png';
