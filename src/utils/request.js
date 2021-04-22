@@ -145,7 +145,7 @@ export default function request(url, option) {
 
     if (authFlag) {
       //需要登录才能访问的url，没有token跳转到登录页面-v1.3.0
-      const authPreUrlArray = ['/redis/', '/auth/'];
+      const authPreUrlArray = ['/redis/', '/auth/', '/config/'];
       authPreUrlArray.forEach(preUrl => {
         if (url.indexOf(preUrl) > -1) {
           router.push('/user/login');
