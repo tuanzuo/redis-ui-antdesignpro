@@ -257,6 +257,42 @@ export async function removeRole(params) {
   });
 }
 
+//----------configmanager----------
+
+export async function queryConfigList(params) {
+  return request(`${apiUrl}/config/list?${stringify(params)}`);
+}
+
+export async function addConfig(params) {
+  return request(`${apiUrl}/config/add`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function updateConfig(params) {
+  return request(`${apiUrl}/config/update`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function removeConfig(params) {
+  return request(`${apiUrl}/config/del`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
 //----------redis----------
 
 export async function queryRedisConfigList(params) {

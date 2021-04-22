@@ -43,6 +43,8 @@ export default {
   'menu.usermanager.userlist': '用户列表',
   'menu.rolemanager': '角色管理',
   'menu.rolemanager.rolelist': '角色列表',
+  'menu.configmanager': '配置管理',
+  'menu.configmanager.configlist': '配置列表',
   'menu.connectionadmin': '连接管理',
   'menu.connectionadmin.redishome': 'Redis',
   'menu.connectionadmin.redisdata': 'Redis数据信息',

@@ -8,7 +8,7 @@ import { isUrl } from '@/utils/utils';
 import styles from './index.less';
 import IconFont from '@/components/IconFont';
 //v1.4.0
-import { UserSwitchOutlined, UsergroupAddOutlined, SolutionOutlined } from '@ant-design/icons';
+import { UserSwitchOutlined, UsergroupAddOutlined, SolutionOutlined, CloudSyncOutlined } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
 
@@ -26,6 +26,7 @@ const getIcon = icon => {
       return <IconFont type={icon} />;
     }
 
+    //Icon图标：https://ant.design/components/icon-cn/
     //v1.4.0 增加icon
     if (icon === 'UserSwitchOutlined') {
       return <UserSwitchOutlined />;
@@ -39,6 +40,10 @@ const getIcon = icon => {
     //v1.6.0 增加icon图标
     if (icon === 'SafetyCertificateOutlined') {
       return <SafetyCertificateOutlined />;
+    }
+    //v1.7.0 增加icon图标
+    if (icon === 'CloudSyncOutlined') {
+      return <CloudSyncOutlined />;
     }
 
     return <Icon type={icon} />;
