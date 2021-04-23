@@ -233,23 +233,13 @@ class ConfigList extends PureComponent {
   ];
 
   getOptHtml = record => {
-    if (record && record.status == 1) {
-      return (
-        <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleStatusModel(0, record)} style={{color:"red"}}>禁用</a>
-        </Fragment>
-      );
-    } else {
-      return (
-        <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
-          <Divider type="vertical" />
-          <a onClick={() => this.handleStatusModel(1, record)}>启用</a>
-        </Fragment>
-      );
-    }
+    return (
+      <Fragment>
+        <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
+        <Divider type="vertical" />
+        <a onClick={() => this.handleDelModel(record)} style={{color:"red"}}>删除</a>
+      </Fragment>
+    );
   };
 
   componentDidMount() {
@@ -344,17 +334,7 @@ class ConfigList extends PureComponent {
         this.handleBatchStatusModel(0);
         break;
       case 'batchDel':
-        dispatch({
-          type: 'rule/remove',
-          payload: {
-            key: selectedRows.map(row => row.key),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
+        this.handleBatchDelModel();
         break;
       default:
         break;
@@ -520,6 +500,84 @@ class ConfigList extends PureComponent {
         } else if (status == 0) {
           message.success('批量禁用成功！');
         }
+        this.handleSearch();
+      },
+    });
+  };
+
+  //删除弹窗 v1.7.0
+  handleDelModel = (record) => {
+    let statusMsg = '删除';
+    Modal.confirm({
+      title: statusMsg,
+      content: `确定${statusMsg}【${record.key}】这个配置吗？`,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.handleDel(record),
+    });
+  };
+
+  //启用、禁用 v1.7.0
+  handleDel = (record) => {
+    const { dispatch } = this.props;
+    const ids = [];
+    ids.push(record.id);
+    dispatch({
+      type: 'configmanager/remove',
+      payload: {
+        ids: ids,
+      },
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+        message.success('配置【' + record.key + '】删除成功！');
+        this.handleSearch();
+      },
+    });
+  };
+
+  //批量删除弹窗 v1.7.0
+  handleBatchDelModel = () => {
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
+
+    if (selectedRows.length === 0) return;
+
+    let msg = '删除';
+
+    Modal.confirm({
+      title: '批量' + msg,
+      content: `确定${msg}这${selectedRows.length}个配置吗？`,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.handleBatchDel(),
+    });
+  };
+
+  //批量删除 v1.7.0
+  handleBatchDel = () => {
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
+
+    if (selectedRows.length === 0) return;
+    dispatch({
+      type: 'configmanager/remove',
+      payload: {
+        ids: selectedRows.map(row => row.id),
+      },
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+        this.setState({
+          selectedRows: [],
+        });
+        message.success('批量删除成功！');
         this.handleSearch();
       },
     });
@@ -706,9 +764,9 @@ class ConfigList extends PureComponent {
     } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="batchEnableStatus">批量启用</Menu.Item>
-        <Menu.Item key="batchDisableStatus">批量禁用</Menu.Item>
-        {/*<Menu.Item key="batchDel">批量删除</Menu.Item>*/}
+        {/*<Menu.Item key="batchEnableStatus">批量启用</Menu.Item>
+        <Menu.Item key="batchDisableStatus">批量禁用</Menu.Item>*/}
+        <Menu.Item key="batchDel">批量删除</Menu.Item>
       </Menu>
     );
 
