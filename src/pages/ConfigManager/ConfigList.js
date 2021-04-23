@@ -583,7 +583,7 @@ class ConfigList extends PureComponent {
     });
   };
 
-  //v1.7.0 添加角色
+  //v1.7.0 添加
   handleAdd = (fields, form) => {
     const { dispatch } = this.props;
     dispatch({
@@ -603,7 +603,7 @@ class ConfigList extends PureComponent {
         this.handleModalVisible();
         //查询数据
         this.handleSearch();
-        message.success('角色【' + record.name + '】添加成功！');
+        message.success('配置【' + fields.key + '】添加成功！');
       },
     });
   };
@@ -628,7 +628,7 @@ class ConfigList extends PureComponent {
         this.handleUpdateModalVisible();
         //查询数据
         this.handleSearch();
-        message.success('角色【' + record.name + '】修改成功！');
+        message.success('配置【' + fields.key + '】修改成功！');
       },
     });
   };

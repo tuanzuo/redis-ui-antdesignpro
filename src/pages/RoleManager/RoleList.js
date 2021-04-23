@@ -515,7 +515,7 @@ class RoleList extends PureComponent {
         this.handleModalVisible();
         //查询数据
         this.handleSearch();
-        message.success('角色【' + record.name + '】添加成功！');
+        message.success('角色【' + fields.name + '】添加成功！');
       },
     });
   };
@@ -540,7 +540,7 @@ class RoleList extends PureComponent {
         this.handleUpdateModalVisible();
         //查询数据
         this.handleSearch();
-        message.success('角色【' + record.name + '】修改成功！');
+        message.success('角色【' + fields.name + '】修改成功！');
       },
     });
   };
