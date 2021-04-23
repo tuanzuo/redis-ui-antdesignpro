@@ -41,9 +41,9 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(',');
 const statusMap = ['10', '20', '30', '40'];
-const status = ['生效缓存配置', '失效缓存配置', '限流配置', 'token配置'];
+const status = ['缓存生效', '缓存失效', '限流', 'Token'];
 
-//添加，修改角色Form
+//添加，修改Form
 const AddUpdateForm = Form.create()(props => {
   const {
     modalVisible,
@@ -76,39 +76,54 @@ const AddUpdateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title={addOrUpdateDataFlag == 1 ? '新建角色' : '修改角色'}
+      title={addOrUpdateDataFlag == 1 ? '新建配置' : '修改配置'}
       visible={modalVisible}
+      width={640}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="角色名称">
-        {form.getFieldDecorator('name', {
-          initialValue: formVals.name,
-          rules: [{ required: true, message: '请输入最多32个字符的角色名称！', max: 32 }],
-        })(<Input placeholder="" />)}
-      </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="角色编码">
-        {form.getFieldDecorator('code', {
-          initialValue: formVals.code,
-          rules: [{ required: true, message: '请输入最多100个字符的角色编码！', max: 100 }],
-        })(<Input placeholder="" />)}
-      </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="状态">
-        {form.getFieldDecorator('status', {
-          initialValue: formVals.status,
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="类型">
+        {form.getFieldDecorator('type', {
+          initialValue: formVals.type,
           rules: [{ required: true, message: '请选择' }],
         })(
-          <Radio.Group>
-            <Radio value={1}>启用</Radio>
-            <Radio value={0}>禁用</Radio>
-          </Radio.Group>
+          <Select placeholder="" style={{ width: '30%' }}>
+            <Option value={10}>{status[0]}</Option>
+            <Option value={20}>{status[1]}</Option>
+            <Option value={30}>{status[2]}</Option>
+            <Option value={40}>{status[3]}</Option>
+          </Select>
         )}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="描述">
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="服务名">
+        {form.getFieldDecorator('serviceName', {
+          initialValue: formVals.serviceName,
+          rules: [{ required: true, message: '请输入最多100个字符的服务名！', max: 100 }],
+        })(<Input placeholder="" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Key">
+        {form.getFieldDecorator('key', {
+          initialValue: formVals.key,
+          rules: [{ required: true, message: '请输入最多100个字符的Key！', max: 100 }],
+        })(<Input placeholder="" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Key名称">
+        {form.getFieldDecorator('keyName', {
+          initialValue: formVals.keyName,
+          rules: [{ required: true, message: '请输入最多100个字符的Key名称！', max: 100 }],
+        })(<Input placeholder="" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="配置内容">
+        {form.getFieldDecorator('content', {
+          initialValue: formVals.content,
+          rules: [{ required: true, message: '请输入最多200个字符的配置内容！' }],
+        })(<TextArea placeholder="配置内容(JSON格式)" rows={3} />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="备注">
         {form.getFieldDecorator('note', {
           initialValue: formVals.note,
-          rules: [{ required: false, message: '请输入最多200个字符的角色描述！', max: 200 }],
-        })(<TextArea placeholder="描述" rows={2} />)}
+          rules: [{ required: false, message: '请输入最多300个字符的备注！', max: 300 }],
+        })(<TextArea placeholder="备注" rows={2} />)}
       </FormItem>
     </Modal>
   );
@@ -167,7 +182,7 @@ class ConfigList extends PureComponent {
         } else if (val == 40) {
           return status[3];
         } else {
-          return "未知";
+          return '未知';
         }
       },
     },
@@ -176,8 +191,12 @@ class ConfigList extends PureComponent {
       dataIndex: 'serviceName',
     },
     {
-      title: '配置key',
+      title: 'Key',
       dataIndex: 'key',
+    },
+    {
+      title: 'Key名称',
+      dataIndex: 'keyName',
     },
     {
       title: '备注',
@@ -531,7 +550,7 @@ class ConfigList extends PureComponent {
     });
   };
 
-  //v1.7.0 修改角色
+  //v1.7.0 修改
   handleUpdate = (fields, form) => {
     const { dispatch } = this.props;
     dispatch({
@@ -584,17 +603,20 @@ class ConfigList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col xxl={4} xl={6} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '24px' }}>
+          <Col xxl={2} xl={4} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '24px' }}>
             <FormItem label="服务名">
               {getFieldDecorator('serviceName')(<Input placeholder="" />)}
             </FormItem>
           </Col>
-          <Col xxl={4} xl={6} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '0px' }}>
-            <FormItem label="配置key">
-              {getFieldDecorator('key')(<Input placeholder="" />)}
+          <Col xxl={2} xl={4} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '0px' }}>
+            <FormItem label="Key">{getFieldDecorator('key')(<Input placeholder="" />)}</FormItem>
+          </Col>
+          <Col xxl={2} xl={4} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '0px' }}>
+            <FormItem label="Key名称">
+              {getFieldDecorator('keyName')(<Input placeholder="" />)}
             </FormItem>
           </Col>
-          <Col xxl={3} xl={4} lg={5} md={5} sm={7} xs={7} style={{ paddingLeft: '0px' }}>
+          <Col xxl={2} xl={3} lg={5} md={5} sm={7} xs={7} style={{ paddingLeft: '0px' }}>
             <FormItem label="类型">
               {getFieldDecorator('type')(
                 <Select placeholder="" style={{ width: '100%' }}>
