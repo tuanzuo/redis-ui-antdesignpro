@@ -154,6 +154,38 @@ class ConfigList extends PureComponent {
       title: '类型',
       dataIndex: 'configType',
       ellipsis: true,
+      width: 80,
+      filters: [
+        {
+          text: configType[0],
+          value: 10,
+        },
+        {
+          text: configType[1],
+          value: 20,
+        },
+        {
+          text: configType[2],
+          value: 30,
+        },
+        {
+          text: configType[3],
+          value: 40,
+        },
+      ],
+      render(val) {
+        if (val == 10) {
+          return configType[0];
+        } else if (val == 20) {
+          return configType[1];
+        } else if (val == 30) {
+          return configType[2];
+        } else if (val == 40) {
+          return configType[3];
+        } else {
+          return '未知';
+        }
+      },
     },
     {
       title: '服务名',
@@ -355,9 +387,9 @@ class ConfigList extends PureComponent {
   //v1.7.0 ‘新建’按钮显示弹窗
   handleModalVisible = flag => {
     this.setState({
-      //v1.7.0 控制是否展示添加修改角色的弹窗
+      //v1.7.0 控制是否展示添加修改配置的弹窗
       modalVisible: !!flag,
-      //v1.7.0 重置角色数据
+      //v1.7.0 重置配置数据
       updateData: {
         //v1.7.0 初始化状态数据，默认选中启用
         status: 1,
@@ -370,9 +402,9 @@ class ConfigList extends PureComponent {
   handleUpdateModalVisible = (flag, record) => {
     this.setState({
       updateModalVisible: !!flag,
-      //v1.7.0 控制是否展示添加修改角色的弹窗
+      //v1.7.0 控制是否展示添加修改配置的弹窗
       modalVisible: !!flag,
-      //v1.7.0 修改的角色数据
+      //v1.7.0 修改的配置数据
       updateData: record || {},
       addOrUpdateDataFlag: 2,
     });
@@ -389,7 +421,7 @@ class ConfigList extends PureComponent {
 
     Modal.confirm({
       title: statusMsg,
-      content: `确定${statusMsg}【${record.name}】这个配置吗？`,
+      content: `确定${statusMsg}【${record.configKey}】这个配置吗？`,
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleStatus(status, record),
@@ -414,9 +446,9 @@ class ConfigList extends PureComponent {
           return;
         }
         if (status == 1) {
-          message.success('角色【' + record.name + '】启用成功！');
+          message.success('配置【' + record.configKey + '】启用成功！');
         } else if (status == 0) {
-          message.success('角色【' + record.name + '】禁用成功！');
+          message.success('配置【' + record.configKey + '】禁用成功！');
         }
         this.handleSearch();
       },
@@ -482,14 +514,14 @@ class ConfigList extends PureComponent {
     let statusMsg = '删除';
     Modal.confirm({
       title: statusMsg,
-      content: `确定${statusMsg}【${record.key}】这个配置吗？`,
+      content: `确定${statusMsg}【${record.configKey}】这个配置吗？`,
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleDel(record),
     });
   };
 
-  //启用、禁用 v1.7.0
+  //删除 v1.7.0
   handleDel = (record) => {
     const { dispatch } = this.props;
     const ids = [];
@@ -505,7 +537,7 @@ class ConfigList extends PureComponent {
         if (!flag) {
           return;
         }
-        message.success('配置【' + record.key + '】删除成功！');
+        message.success('配置【' + record.configKey + '】删除成功！');
         this.handleSearch();
       },
     });
@@ -575,7 +607,7 @@ class ConfigList extends PureComponent {
         this.handleModalVisible();
         //查询数据
         this.handleSearch();
-        message.success('配置【' + fields.key + '】添加成功！');
+        message.success('配置【' + fields.configKey + '】添加成功！');
       },
     });
   };
@@ -600,7 +632,7 @@ class ConfigList extends PureComponent {
         this.handleUpdateModalVisible();
         //查询数据
         this.handleSearch();
-        message.success('配置【' + fields.key + '】修改成功！');
+        message.success('配置【' + fields.configKey + '】修改成功！');
       },
     });
   };
@@ -686,7 +718,7 @@ class ConfigList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="角色名称">
+            <FormItem label="配置名称">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
