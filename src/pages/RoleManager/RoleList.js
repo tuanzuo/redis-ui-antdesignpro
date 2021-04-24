@@ -85,13 +85,13 @@ const AddUpdateForm = Form.create()(props => {
         {form.getFieldDecorator('name', {
           initialValue: formVals.name,
           rules: [{ required: true, message: '请输入最多32个字符的角色名称！', max: 32 }],
-        })(<Input placeholder="" />)}
+        })(<Input placeholder="" autocomplete="off" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="角色编码">
         {form.getFieldDecorator('code', {
           initialValue: formVals.code,
           rules: [{ required: true, message: '请输入最多100个字符的角色编码！', max: 100 }],
-        })(<Input placeholder="" />)}
+        })(<Input placeholder="" autocomplete="off" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="状态">
         {form.getFieldDecorator('status', {

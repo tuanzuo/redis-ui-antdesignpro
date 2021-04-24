@@ -82,7 +82,13 @@ const AddUpdateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="类型">
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="服务名">
+        {form.getFieldDecorator('serviceName', {
+          initialValue: formVals.serviceName,
+          rules: [{ required: true, message: '请输入最多100个字符的服务名！', max: 100 }],
+        })(<Input placeholder="" autocomplete="off" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="配置类型">
         {form.getFieldDecorator('configType', {
           initialValue: formVals.configType,
           rules: [{ required: true, message: '请选择' }],
@@ -95,23 +101,17 @@ const AddUpdateForm = Form.create()(props => {
           </Select>
         )}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="服务名">
-        {form.getFieldDecorator('serviceName', {
-          initialValue: formVals.serviceName,
-          rules: [{ required: true, message: '请输入最多100个字符的服务名！', max: 100 }],
-        })(<Input placeholder="" />)}
-      </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="配置Key">
         {form.getFieldDecorator('configKey', {
           initialValue: formVals.configKey,
-          rules: [{ required: true, message: '请输入最多100个字符的Key！', max: 100 }],
-        })(<Input placeholder="" />)}
+          rules: [{ required: true, message: '请输入最多100个字符的配置Key！', max: 100 }],
+        })(<Input placeholder="" autocomplete="off" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Key名称">
         {form.getFieldDecorator('keyName', {
           initialValue: formVals.keyName,
           rules: [{ required: true, message: '请输入最多100个字符的Key名称！', max: 100 }],
-        })(<Input placeholder="" />)}
+        })(<Input placeholder="" autocomplete="off" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="配置内容">
         {form.getFieldDecorator('content', {
@@ -151,10 +151,15 @@ class ConfigList extends PureComponent {
 
   columns = [
     {
-      title: '类型',
+      title: '服务名',
+      dataIndex: 'serviceName',
+      ellipsis: true,
+    },
+    {
+      title: '配置类型',
       dataIndex: 'configType',
       ellipsis: true,
-      width: 80,
+      width: 120,
       filters: [
         {
           text: configType[0],
@@ -186,11 +191,6 @@ class ConfigList extends PureComponent {
           return '未知';
         }
       },
-    },
-    {
-      title: '服务名',
-      dataIndex: 'serviceName',
-      ellipsis: true,
     },
     {
       title: '配置Key',
@@ -681,7 +681,7 @@ class ConfigList extends PureComponent {
             </FormItem>
           </Col>
           <Col xxl={3} xl={4} lg={5} md={5} sm={7} xs={7} style={{ paddingLeft: '0px' }}>
-            <FormItem label="类型">
+            <FormItem label="配置类型">
               {getFieldDecorator('configType')(
                 <Select placeholder="" style={{ width: '100%' }}>
                   <Option value="10">{configType[0]}</Option>
