@@ -101,7 +101,7 @@ const AddUpdateForm = Form.create()(props => {
           rules: [{ required: true, message: '请输入最多100个字符的服务名！', max: 100 }],
         })(<Input placeholder="" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Key">
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="配置Key">
         {form.getFieldDecorator('configKey', {
           initialValue: formVals.configKey,
           rules: [{ required: true, message: '请输入最多100个字符的Key！', max: 100 }],
@@ -161,7 +161,7 @@ class ConfigList extends PureComponent {
       ellipsis: true,
     },
     {
-      title: 'Key',
+      title: '配置Key',
       dataIndex: 'configKey',
       ellipsis: true,
     },
@@ -633,20 +633,22 @@ class ConfigList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col xxl={2} xl={4} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '24px' }}>
+          <Col xxl={3} xl={5} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '24px' }}>
             <FormItem label="服务名">
               {getFieldDecorator('serviceName')(<Input placeholder="" />)}
             </FormItem>
           </Col>
-          <Col xxl={2} xl={4} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '0px' }}>
-            <FormItem label="Key">{getFieldDecorator('configKey')(<Input placeholder="" />)}</FormItem>
+          <Col xxl={3} xl={5} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '0px' }}>
+            <FormItem label="配置Key">
+              {getFieldDecorator('configKey')(<Input placeholder="" />)}
+            </FormItem>
           </Col>
-          <Col xxl={2} xl={4} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '0px' }}>
+          <Col xxl={3} xl={5} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '0px' }}>
             <FormItem label="Key名称">
               {getFieldDecorator('keyName')(<Input placeholder="" />)}
             </FormItem>
           </Col>
-          <Col xxl={2} xl={3} lg={5} md={5} sm={7} xs={7} style={{ paddingLeft: '0px' }}>
+          <Col xxl={3} xl={4} lg={5} md={5} sm={7} xs={7} style={{ paddingLeft: '0px' }}>
             <FormItem label="类型">
               {getFieldDecorator('configType')(
                 <Select placeholder="" style={{ width: '100%' }}>
