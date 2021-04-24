@@ -40,8 +40,8 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-const statusMap = ['10', '20', '30', '40'];
-const status = ['缓存生效', '缓存失效', '限流', 'Token'];
+const configTypeMap = ['10', '20', '30', '40'];
+const configType = ['缓存生效', '缓存失效', '限流', 'Token'];
 
 //添加，修改Form
 const AddUpdateForm = Form.create()(props => {
@@ -83,15 +83,15 @@ const AddUpdateForm = Form.create()(props => {
       onCancel={() => handleModalVisible()}
     >
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="类型">
-        {form.getFieldDecorator('type', {
-          initialValue: formVals.type,
+        {form.getFieldDecorator('configType', {
+          initialValue: formVals.configType,
           rules: [{ required: true, message: '请选择' }],
         })(
           <Select placeholder="" style={{ width: '30%' }}>
-            <Option value={10}>{status[0]}</Option>
-            <Option value={20}>{status[1]}</Option>
-            <Option value={30}>{status[2]}</Option>
-            <Option value={40}>{status[3]}</Option>
+            <Option value={10}>{configType[0]}</Option>
+            <Option value={20}>{configType[1]}</Option>
+            <Option value={30}>{configType[2]}</Option>
+            <Option value={40}>{configType[3]}</Option>
           </Select>
         )}
       </FormItem>
@@ -102,8 +102,8 @@ const AddUpdateForm = Form.create()(props => {
         })(<Input placeholder="" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Key">
-        {form.getFieldDecorator('key', {
-          initialValue: formVals.key,
+        {form.getFieldDecorator('configKey', {
+          initialValue: formVals.configKey,
           rules: [{ required: true, message: '请输入最多100个字符的Key！', max: 100 }],
         })(<Input placeholder="" />)}
       </FormItem>
@@ -143,60 +143,32 @@ class ConfigList extends PureComponent {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    //v1.7.0 更新角色的数据
-    updateRoleData: {},
-    //v1.7.0 添加或者修改角色的标识，1：添加，2：修改
+    //v1.7.0 更新的数据
+    updateData: {},
+    //v1.7.0 添加或者修改的标识，1：添加，2：修改
     addOrUpdateDataFlag: null,
   };
 
   columns = [
     {
       title: '类型',
-      dataIndex: 'type',
-      width: 75,
-      filters: [
-        {
-          text: status[0],
-          value: 10,
-        },
-        {
-          text: status[1],
-          value: 20,
-        },
-        {
-          text: status[2],
-          value: 30,
-        },
-        {
-          text: status[3],
-          value: 40,
-        },
-      ],
-      render(val) {
-        if (val == 10) {
-          return status[0];
-        } else if (val == 20) {
-          return status[1];
-        } else if (val == 30) {
-          return status[2];
-        } else if (val == 40) {
-          return status[3];
-        } else {
-          return '未知';
-        }
-      },
+      dataIndex: 'configType',
+      ellipsis: true,
     },
     {
       title: '服务名',
       dataIndex: 'serviceName',
+      ellipsis: true,
     },
     {
       title: 'Key',
-      dataIndex: 'key',
+      dataIndex: 'configKey',
+      ellipsis: true,
     },
     {
       title: 'Key名称',
       dataIndex: 'keyName',
+      ellipsis: true,
     },
     {
       title: '备注',
@@ -386,7 +358,7 @@ class ConfigList extends PureComponent {
       //v1.7.0 控制是否展示添加修改角色的弹窗
       modalVisible: !!flag,
       //v1.7.0 重置角色数据
-      updateRoleData: {
+      updateData: {
         //v1.7.0 初始化状态数据，默认选中启用
         status: 1,
       },
@@ -401,7 +373,7 @@ class ConfigList extends PureComponent {
       //v1.7.0 控制是否展示添加修改角色的弹窗
       modalVisible: !!flag,
       //v1.7.0 修改的角色数据
-      updateRoleData: record || {},
+      updateData: record || {},
       addOrUpdateDataFlag: 2,
     });
   };
@@ -417,7 +389,7 @@ class ConfigList extends PureComponent {
 
     Modal.confirm({
       title: statusMsg,
-      content: `确定${statusMsg}【${record.name}】这个角色吗？`,
+      content: `确定${statusMsg}【${record.name}】这个配置吗？`,
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleStatus(status, record),
@@ -467,7 +439,7 @@ class ConfigList extends PureComponent {
 
     Modal.confirm({
       title: '批量' + statusMsg,
-      content: `确定${statusMsg}这${selectedRows.length}个角色吗？`,
+      content: `确定${statusMsg}这${selectedRows.length}个配置吗？`,
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.handleBatchStatus(status),
@@ -667,7 +639,7 @@ class ConfigList extends PureComponent {
             </FormItem>
           </Col>
           <Col xxl={2} xl={4} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '0px' }}>
-            <FormItem label="Key">{getFieldDecorator('key')(<Input placeholder="" />)}</FormItem>
+            <FormItem label="Key">{getFieldDecorator('configKey')(<Input placeholder="" />)}</FormItem>
           </Col>
           <Col xxl={2} xl={4} lg={6} md={6} sm={10} xs={10} style={{ paddingLeft: '0px' }}>
             <FormItem label="Key名称">
@@ -676,12 +648,12 @@ class ConfigList extends PureComponent {
           </Col>
           <Col xxl={2} xl={3} lg={5} md={5} sm={7} xs={7} style={{ paddingLeft: '0px' }}>
             <FormItem label="类型">
-              {getFieldDecorator('type')(
+              {getFieldDecorator('configType')(
                 <Select placeholder="" style={{ width: '100%' }}>
-                  <Option value="10">{status[0]}</Option>
-                  <Option value="20">{status[1]}</Option>
-                  <Option value="30">{status[2]}</Option>
-                  <Option value="40">{status[3]}</Option>
+                  <Option value="10">{configType[0]}</Option>
+                  <Option value="20">{configType[1]}</Option>
+                  <Option value="30">{configType[2]}</Option>
+                  <Option value="40">{configType[3]}</Option>
                 </Select>
               )}
             </FormItem>
@@ -759,7 +731,7 @@ class ConfigList extends PureComponent {
       modalVisible,
       updateModalVisible,
       stepFormValues,
-      updateRoleData,
+      updateData,
       addOrUpdateDataFlag,
     } = this.state;
     const menu = (
@@ -816,7 +788,7 @@ class ConfigList extends PureComponent {
         <AddUpdateForm
           {...parentMethods}
           modalVisible={modalVisible}
-          formVals={updateRoleData}
+          formVals={updateData}
           addOrUpdateDataFlag={addOrUpdateDataFlag}
         />
       </Authorized>
