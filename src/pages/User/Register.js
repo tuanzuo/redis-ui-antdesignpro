@@ -343,6 +343,7 @@ class Register extends Component {
                   <Input
                     size="large"
                     placeholder={formatMessage({ id: 'form.verification-code.placeholder' })}
+                    autocomplete="off"
                   />
                 )}
               </Col>
