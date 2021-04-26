@@ -8,6 +8,7 @@ import HeaderSearch from '../HeaderSearch';
 import HeaderDropdown from '../HeaderDropdown';
 import SelectLang from '../SelectLang';
 import styles from './index.less';
+import { SafetyOutlined, SettingOutlined } from '@ant-design/icons';
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -104,7 +105,7 @@ export default class GlobalHeaderRight extends PureComponent {
         </Menu.Item>
         {/*v1.5.0修改密码*/}
         <Menu.Item key="userPwdUpdate">
-          <Icon type="user" />
+          <SafetyOutlined style={{ fontSize: '15px', marginLeft: '-2px' }} />
           <FormattedMessage id="menu.account.pwdsettings" defaultMessage="password settings" />
         </Menu.Item>
         {/*v1.5.0出发报警*/}

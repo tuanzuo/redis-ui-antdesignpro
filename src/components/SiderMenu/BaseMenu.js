@@ -45,6 +45,10 @@ const getIcon = icon => {
     if (icon === 'CloudSyncOutlined') {
       return <CloudSyncOutlined />;
     }
+    //v1.7.0 增加icon图标
+    if (icon === 'SafetyOutlined') {
+      return <SafetyOutlined />;
+    }
 
     return <Icon type={icon} />;
   }
