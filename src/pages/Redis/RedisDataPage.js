@@ -239,7 +239,7 @@ class SearchForm extends PureComponent {
               <FormItem label="查询条件" style={{"display":"inline-block"}}>
                 {getFieldDecorator('searchKey', {
                   rules: [{ required: false, message: '查询条件不能为空' }],
-                })(<Input autoComplete="off" placeholder="不支持直接输入*查询" />)}
+                })(<Input autoComplete="on" placeholder="不支持直接输入*查询" />)}
               </FormItem>
               <Button type="primary" htmlType="submit">查询</Button>
               <Button style={{ marginLeft: '10px' }} onClick={this.handleFormReset}>重置</Button>

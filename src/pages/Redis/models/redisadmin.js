@@ -3,6 +3,7 @@ import {
   addRedisConfig,
   removeRedisConfig,
   updateRedisConfig,
+  uploadFile,
   initRedisContext,
   clearRedisTemplateCache,
   testRedisConnection,
@@ -64,6 +65,14 @@ export default {
     },
     *updateConfig({ payload, callback }, { call, put }) {
       const response = yield call(updateRedisConfig, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *uploadFile({ payload, callback }, { call, put }) {
+      const response = yield call(uploadFile, payload);
       yield put({
         type: 'save',
         payload: response,

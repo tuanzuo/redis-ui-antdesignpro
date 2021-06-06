@@ -117,6 +117,10 @@ const apiUrl = 'http://127.0.0.1';
 // const apiUrl="";
 // console.log(window.location.protocol+"//"+window.location.host);
 
+export function getApiUrl() {
+  return apiUrl;
+}
+
 //----------dashboard----------
 
 export async function fakeChartData(params) {
@@ -315,6 +319,16 @@ export async function removeRedisConfig(id) {
 
 export async function updateRedisConfig(params) {
   return request(`${apiUrl}/redis/config/update`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function uploadFile(params) {
+  return request(`${apiUrl}/redis/config/upload`, {
     method: 'POST',
     body: {
       ...params,
