@@ -659,14 +659,19 @@ class RedisHome extends PureComponent {
     const initFileList = [];
     if(current && current.extList){
       current.extList.forEach(temp => {
-        initFileList.push({uid: temp.id, name: temp.extName, status: 'done'});
+        initFileList.push({
+          uid: temp.id,
+          name: temp.extName,
+          status: 'done',
+          url: getApiUrl() + '/redis/config/download?fileName=' + temp.extValue,
+        });
       });
     }
 
     //v1.7.0 上传文件属性
     const uploadProps = {
       action: getApiUrl() + '/redis/config/upload',
-      multiple: false,
+      multiple: true,
       withCredentials: true,
       headers: {
         Authorization: getToken(),
@@ -730,6 +735,11 @@ class RedisHome extends PureComponent {
       //     url: 'http://www.baidu.com/zzz.png',
       //   },
       // ],
+      showUploadList: {
+        showDownloadIcon: true,
+        downloadIcon: 'download ',
+        showRemoveIcon: true,
+      },
     };
 
     const getModalContent = () => {
