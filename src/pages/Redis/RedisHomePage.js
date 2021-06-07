@@ -517,6 +517,15 @@ class RedisHome extends PureComponent {
     });
   };
 
+  //下载文件 v1.7.0
+  downloadFile = temp => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'redisadmin/downloadFile',
+      payload: temp,
+    });
+  };
+
   //v1.4.0 消息提示
   tipMsg = response => {
     let flag = false;
@@ -657,13 +666,13 @@ class RedisHome extends PureComponent {
 
     //v1.7.0 已上传的文件列表
     const initFileList = [];
-    if(current && current.extList){
+    if (current && current.extList) {
       current.extList.forEach(temp => {
         initFileList.push({
           uid: temp.id,
           name: temp.extName,
+          filePath: temp.extValue,
           status: 'done',
-          url: getApiUrl() + '/redis/config/download?fileName=' + temp.extValue,
         });
       });
     }
@@ -711,6 +720,9 @@ class RedisHome extends PureComponent {
         if (file.status !== 'uploading') {
           console.log(file, fileList);
         }
+      },
+      onDownload: file => {
+        this.downloadFile({ name: file.name, fileName: file.filePath });
       },
       defaultFileList: initFileList,
       // defaultFileList: [

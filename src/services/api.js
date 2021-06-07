@@ -1,5 +1,7 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
+import { getToken } from '@/utils/token';
+import router from 'umi/router';
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');
@@ -335,6 +337,41 @@ export async function uploadFile(params) {
       method: 'post',
     },
   });
+}
+
+//v1.7.0 下载
+export async function downloadFile(params) {
+  // return request(`${apiUrl}/redis/config/download?${stringify(params)}`);
+  const downloadUrl = `${apiUrl}/redis/config/download?${stringify(params)}`;
+  const token = getToken();
+  if (token && token != 'undefined' && token != '') {
+    fetch(downloadUrl, {
+      method: 'GET',
+      credentials: 'include',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        Authorization: token,
+      }),
+    })
+      .then(response => {
+        response.blob().then(blob => {
+          const aLink = document.createElement('a');
+          document.body.appendChild(aLink);
+          aLink.style.display = 'none';
+          const objectUrl = window.URL.createObjectURL(blob);
+          aLink.href = objectUrl;
+          aLink.download = params.name;
+          aLink.click();
+          document.body.removeChild(aLink);
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  } else {
+    router.push('/user/login');
+    return;
+  }
 }
 
 export async function initRedisContext(id) {
