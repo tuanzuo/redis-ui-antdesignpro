@@ -282,6 +282,13 @@ const isOpenContent = (
   </div>
 );
 
+//v1.7.0
+const jarContent = (
+  <div style={{ width: '240px', wordBreak: 'break-all' }}>
+    上传Serializable code需要使用的Jar包
+  </div>
+);
+
 @connect(({ redisadmin, loading }) => ({
   redisadmin,
   loading: loading.models.redisadmin,
@@ -387,6 +394,7 @@ class RedisHome extends PureComponent {
       visible: true,
       current: undefined,
     });
+    currentOptExtList = [];
   };
 
   deleteModel = item => {
@@ -848,11 +856,21 @@ class RedisHome extends PureComponent {
             })(
               <TextArea
                 placeholder="序列化code(Groovy)。默认key,hashKey,value,hashValue使用：StringRedisSerializer"
-                rows={4}
+                rows={3}
               />
             )}
           </FormItem>
-          <FormItem {...this.formLayout} label="jar包">
+          <FormItem {...this.formLayout} label={
+              <span>
+                Jar包&nbsp;
+                <em className={styles.optional}>
+                  <Popover content={jarContent} title="" trigger="hover">
+                    <QuestionCircleOutlined />
+                  </Popover>
+                </em>
+              </span>
+            }
+          >
             <Upload {...uploadProps}>
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
