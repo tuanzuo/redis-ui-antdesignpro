@@ -8,6 +8,7 @@ import HeaderSearch from '../HeaderSearch';
 import HeaderDropdown from '../HeaderDropdown';
 import SelectLang from '../SelectLang';
 import styles from './index.less';
+import { SafetyOutlined, SettingOutlined } from '@ant-design/icons';
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -84,6 +85,7 @@ export default class GlobalHeaderRight extends PureComponent {
       fetchingNotices,
       loadedAllNotices,
       onNoticeVisibleChange,
+      //v1.7.0 @see Header.js-->HeaderView.handleMenuClick
       onMenuClick,
       onNoticeClear,
       skeletonCount,
@@ -92,20 +94,25 @@ export default class GlobalHeaderRight extends PureComponent {
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
         {/*v1.5.0个人中心*/}
-        <Menu.Item key="userCenter">
+        {/*<Menu.Item key="userCenter">
           <Icon type="user" />
           <FormattedMessage id="menu.account.center" defaultMessage="account center" />
-        </Menu.Item>
+        </Menu.Item>*/}
         {/*v1.5.0个人设置*/}
         <Menu.Item key="userinfo">
           <Icon type="setting" />
           <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
         </Menu.Item>
+        {/*v1.5.0修改密码*/}
+        <Menu.Item key="userPwdUpdate">
+          <SafetyOutlined style={{ fontSize: '15px', marginLeft: '-2px' }} />
+          <FormattedMessage id="menu.account.pwdsettings" defaultMessage="password settings" />
+        </Menu.Item>
         {/*v1.5.0出发报警*/}
-        <Menu.Item key="triggerError">
+        {/*<Menu.Item key="triggerError">
           <Icon type="close-circle" />
           <FormattedMessage id="menu.account.trigger" defaultMessage="Trigger Error" />
-        </Menu.Item>
+        </Menu.Item>*/}
         <Menu.Divider />
         {/*v1.4.0退出登录*/}
         <Menu.Item key="logout">
@@ -128,7 +135,7 @@ export default class GlobalHeaderRight extends PureComponent {
     return (
       <div className={className}>
         {/*v1.5.0右上角搜索*/}
-        <HeaderSearch
+        {/*<HeaderSearch
           className={`${styles.action} ${styles.search}`}
           placeholder={formatMessage({ id: 'component.globalHeader.search' })}
           dataSource={[
@@ -142,7 +149,7 @@ export default class GlobalHeaderRight extends PureComponent {
           onPressEnter={value => {
             console.log('enter', value); // eslint-disable-line
           }}
-        />
+        />*/}
         {/*v1.5.0右上角使用文档*/}
         <Tooltip title={formatMessage({ id: 'component.globalHeader.help' })}>
           <a
@@ -181,7 +188,7 @@ export default class GlobalHeaderRight extends PureComponent {
             title={formatMessage({ id: 'component.globalHeader.notification' })}
             name="notification"
             emptyText={formatMessage({ id: 'component.globalHeader.notification.empty' })}
-            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg"
+            emptyImage={'/img/wAhyIChODzsoKIOBHcBk.svg'}
             {...loadMoreProps}
           />
           <NoticeIcon.Tab
@@ -190,7 +197,7 @@ export default class GlobalHeaderRight extends PureComponent {
             title={formatMessage({ id: 'component.globalHeader.message' })}
             name="message"
             emptyText={formatMessage({ id: 'component.globalHeader.message.empty' })}
-            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/sAuJeJzSKbUmHfBQRzmZ.svg"
+            emptyImage={'/img/sAuJeJzSKbUmHfBQRzmZ.svg'}
             {...loadMoreProps}
           />
           <NoticeIcon.Tab
@@ -199,7 +206,7 @@ export default class GlobalHeaderRight extends PureComponent {
             title={formatMessage({ id: 'component.globalHeader.event' })}
             name="event"
             emptyText={formatMessage({ id: 'component.globalHeader.event.empty' })}
-            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
+            emptyImage={'/img/HsIsxMZiWKrNUavQUXqx.svg'}
             {...loadMoreProps}
           />
         </NoticeIcon>

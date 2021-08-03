@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
 //v1.5.0 uuid
-import uuid from 'react-uuid'
+import uuid from 'react-uuid';
 import {
   Row,
   Col,
@@ -171,12 +171,11 @@ class UserList extends PureComponent {
       ],
       render(val) {
         if (val == 0) {
-          return <Badge status={statusMap[val]} text={status[val]} style={{color: "red"}}/>;
-
+          return <Badge status={statusMap[val]} text={status[val]} style={{ color: 'red' }} />;
         } else if (val == 1) {
-          return <Badge status={statusMap[val]} text={status[val]} style={{color: "#00a87e"}}/>;
+          return <Badge status={statusMap[val]} text={status[val]} style={{ color: '#00a87e' }} />;
         } else {
-          return <Badge status={statusMap[val]} text='未知' style={{color: "red"}}/>;
+          return <Badge status={statusMap[val]} text="未知" style={{ color: 'red' }} />;
         }
       },
     },
@@ -185,14 +184,14 @@ class UserList extends PureComponent {
       title: '拥有角色',
       ellipsis: true,
       render: (text, record) => {
-        const {roleMap} = this.state;
+        const { roleMap } = this.state;
         let roleNames = [];
         if (record && record.roleIds && record.roleIds.length > 0) {
           record.roleIds.map(roleId => {
             roleNames.push(roleMap[roleId]);
           });
         }
-        return roleNames.join(",");
+        return roleNames.join(',');
       },
     },
     {
@@ -246,7 +245,9 @@ class UserList extends PureComponent {
     if (record && record.status == 1) {
       return (
         <Fragment>
-          <a onClick={() => this.handleStatusModel(0, record)} style={{color:"red"}}>禁用</a>
+          <a onClick={() => this.handleStatusModel(0, record)} style={{ color: 'red' }}>
+            禁用
+          </a>
           <Divider type="vertical" />
           <Dropdown overlay={this.moreOptMenu} trigger={['click']}>
             <a
@@ -467,7 +468,7 @@ class UserList extends PureComponent {
     console.log(record);
     //v1.5.0重置密码
     const pwduuid = uuid();
-    var pwdArray = pwduuid.toString().split("-");
+    var pwdArray = pwduuid.toString().split('-');
     var restPwd = pwdArray[0];
 
     Modal.confirm({
@@ -609,6 +610,7 @@ class UserList extends PureComponent {
   //v1.4.0 给用户分配角色
   grantRole = (fields, form) => {
     const { dispatch } = this.props;
+    const { currentClickRecordData } = this.state;
     dispatch({
       type: 'usermanager/grantRole',
       payload: {
@@ -626,7 +628,7 @@ class UserList extends PureComponent {
         this.handleModalVisible();
         //查询数据
         this.handleSearch();
-        message.success('用户【' + record.name + '】分配角色成功！');
+        message.success('用户【' + currentClickRecordData.name + '】分配角色成功！');
       },
     });
   };

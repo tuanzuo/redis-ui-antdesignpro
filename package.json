@@ -31,10 +31,11 @@
     "docker:push": "npm run docker-hub:build && npm run docker:tag && docker push antdesign/ant-design-pro"
   },
   "dependencies": {
-    "@ant-design/icons": "^4.2.2",
+    "@ant-design/icons": "^4.6.2",
+    "@ant-design/pro-layout": "^6.19.3",
     "@antv/data-set": "^0.10.1",
     "@babel/runtime": "^7.3.1",
-    "antd": "^3.13.0",
+    "antd": "^3.26.20",
     "bizcharts": "^3.4.3",
     "bizcharts-plugin-slider": "^2.1.1-beta.1",
     "classnames": "^2.2.6",

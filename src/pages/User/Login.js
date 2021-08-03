@@ -217,6 +217,7 @@ class LoginPage extends Component {
                       size="large"
                       placeholder={formatMessage({ id: 'form.verification-code.placeholder' })}
                       onChange = {this.onGetImageCaptchaChange}
+                      autocomplete="off"
                     />
                   </Col>
                   <Col span={8}>

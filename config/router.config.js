@@ -146,6 +146,22 @@ export default [
             ],
           },
 
+          // configmanager
+          {
+            name: 'configmanager',
+            icon: 'CloudSyncOutlined', //v1.4.0 见src\components\SiderMenu\BaseMenu.js
+            path: '/configmanager',
+            // 控制权限 v1.7.0
+            authority: ['superadmin'],
+            routes: [
+              {
+                path: '/configmanager/list',
+                name: 'configlist',
+                component: './ConfigManager/ConfigList',
+              },
+            ],
+          },
+
           // redis
           {
             name: 'connectionadmin', //菜单名字

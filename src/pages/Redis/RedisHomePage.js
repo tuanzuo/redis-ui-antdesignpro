@@ -7,6 +7,11 @@ import router from 'umi/router';
 import { Controlled as CodeMirror } from 'react-codemirror2';
 // 安装命令：cnpm install react-monaco-editor --save
 import MonacoEditor from 'react-monaco-editor';
+// token工具
+import { getToken, } from '@/utils/token';
+// api工具
+import { getApiUrl, } from '@/services/api';
+
 
 import {
   Form,
@@ -29,11 +34,12 @@ import {
   BackTop,
   Select,
   Badge,
-  Tag
+  Tag,
+  Upload,
 } from 'antd';
 
 //需要执行cnpm install --save @ant-design/icons命令进行安装
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined,InboxOutlined,UploadOutlined  } from '@ant-design/icons';
 import { findDOMNode } from 'react-dom';
 import styles from './RedisHomePage.less';
 import StandardFormRow from '@/components/StandardFormRow';
@@ -43,6 +49,7 @@ import Authorized from '@/utils/Authorized';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const Panel = Collapse.Panel;
+const { Dragger } = Upload;
 
 const topColResponsiveProps = {
   xs: 24,
@@ -75,6 +82,8 @@ let RedisHomeObject;
 let searchKeyConst = {};
 // 当前操作的redis连接信息
 let currentOptObject;
+// 当前操作的redis连接信息的扩展数据List v1.7.0
+let currentOptExtList = [];
 // 当前页数
 let currentPageNum = 1;
 
@@ -150,7 +159,7 @@ class SearchForm extends PureComponent {
                       {getFieldDecorator('searchKey', {
                         rules: [{ required: false, message: '名称不能为空' }],
                       })(
-                        <Input autoComplete="off" onPressEnter={this.handleSearch} placeholder="支持名称或地址模糊查询" style={{ width: '180px' }}/>
+                        <Input autoComplete="on" onPressEnter={this.handleSearch} placeholder="支持名称或地址模糊查询" style={{ width: '180px' }}/>
                       )}
                     </FormItem>
                     <FormItem label="是否公开" style={{"display":"inline-block"}}>
@@ -273,6 +282,13 @@ const isOpenContent = (
   </div>
 );
 
+//v1.7.0
+const jarContent = (
+  <div style={{ width: '240px', wordBreak: 'break-all' }}>
+    上传Serializable code需要使用的Jar包
+  </div>
+);
+
 @connect(({ redisadmin, loading }) => ({
   redisadmin,
   loading: loading.models.redisadmin,
@@ -378,6 +394,7 @@ class RedisHome extends PureComponent {
       visible: true,
       current: undefined,
     });
+    currentOptExtList = [];
   };
 
   deleteModel = item => {
@@ -396,6 +413,8 @@ class RedisHome extends PureComponent {
       current: item,
     });
     currentOptObject = item;
+    //v1.7.0 设置扩展数据
+    currentOptExtList = item.extList || [];
   };
 
   handleDone = () => {
@@ -475,7 +494,7 @@ class RedisHome extends PureComponent {
       // 保存数据到后台
       dispatch({
         type: id ? 'redisadmin/updateConfig' : 'redisadmin/addConfig',
-        payload: { id, ...values },
+        payload: {id, exts: currentOptExtList, ...values},
         callback: response => {
           //错误提示信息
           let flag = this.tipMsg(response);
@@ -503,6 +522,15 @@ class RedisHome extends PureComponent {
         this.refeshList(searchKeyConst);
         message.success('删除成功!');
       },
+    });
+  };
+
+  //下载文件 v1.7.0
+  downloadFile = temp => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'redisadmin/downloadFile',
+      payload: temp,
     });
   };
 
@@ -644,6 +672,96 @@ class RedisHome extends PureComponent {
       ];
     };
 
+    //v1.7.0 已上传的文件列表
+    const initFileList = [];
+    if (current && current.extList) {
+      current.extList.forEach(temp => {
+        initFileList.push({
+          uid: temp.id,
+          name: temp.extName,
+          filePath: temp.extValue,
+          status: 'done',
+        });
+      });
+    }
+
+    //v1.7.0 上传文件属性
+    const uploadProps = {
+      action: getApiUrl() + '/redis/config/upload',
+      multiple: true,
+      withCredentials: true,
+      headers: {
+        Authorization: getToken(),
+      },
+      beforeUpload: file => {
+        if (!file.name.endsWith("jar") && file.type !== 'jar') {
+          message.error(`${file.name} is not a jar file`);
+          file.status = "error";
+        }
+        return file.type === 'jar' || file.name.endsWith("jar") ? true : Upload.LIST_IGNORE;
+      },
+      onChange({ file, fileList }) {
+        //删除文件
+        if(file.status == 'removed'){
+          let currentOptExtListTemp = [];
+          currentOptExtList.forEach(temp =>{
+            if(temp.id != file.uid){
+              currentOptExtListTemp.push(temp);
+            }
+          });
+          currentOptExtList = currentOptExtListTemp;
+        }
+        //文件上传成功
+        if(file.status == 'done'){
+          if (file.name.endsWith("jar")) {
+            currentOptExtList.push(
+              {
+                extName: file.name,
+                extValue: file.response.datas,
+              }
+            );
+          } else {
+            file.status = 'error';
+            file.response = file.response.datas;
+          }
+        }
+        if (file.status !== 'uploading') {
+          console.log(file, fileList);
+        }
+      },
+      onDownload: file => {
+        this.downloadFile({ name: file.name, fileName: file.filePath });
+      },
+      defaultFileList: initFileList,
+      // defaultFileList: [
+      //   {
+      //     uid: '1',
+      //     name: 'xxx.png',
+      //     status: 'done',
+      //     response: 'Server Error 500', // custom error message to show
+      //     url: 'http://www.baidu.com/xxx.png',
+      //   },
+      //   {
+      //     uid: '2',
+      //     name: 'yyy.png',
+      //     status: 'done',
+      //     url: 'http://www.baidu.com/yyy.png',
+      //   },
+      //   {
+      //     uid: '3',
+      //     name: 'zzz.png',
+      //     status: 'error',
+      //     response: 'Server Error 500', // custom error message to show
+      //     url: 'http://www.baidu.com/zzz.png',
+      //   },
+      // ],
+      showUploadList: {
+        showDownloadIcon: true,
+        downloadIcon: 'download ',
+        showRemoveIcon: true,
+      },
+    };
+
     const getModalContent = () => {
       return (
         <Form onSubmit={this.handleSubmit}>
@@ -738,9 +856,24 @@ class RedisHome extends PureComponent {
             })(
               <TextArea
                 placeholder="序列化code(Groovy)。默认key,hashKey,value,hashValue使用：StringRedisSerializer"
-                rows={4}
+                rows={3}
               />
             )}
+          </FormItem>
+          <FormItem {...this.formLayout} label={
+              <span>
+                Jar包&nbsp;
+                <em className={styles.optional}>
+                  <Popover content={jarContent} title="" trigger="hover">
+                    <QuestionCircleOutlined />
+                  </Popover>
+                </em>
+              </span>
+            }
+          >
+            <Upload {...uploadProps}>
+              <Button icon={<UploadOutlined />}>Upload</Button>
+            </Upload>
           </FormItem>
           <FormItem {...this.formLayout} label="备注">
             {getFieldDecorator('note', {

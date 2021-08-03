@@ -68,6 +68,11 @@ class HeaderView extends Component {
       router.push('/account/settings/base');
       return;
     }
+    //v1.7.0修改密码
+    if (key === 'userPwdUpdate') {
+      router.push('/account/settings/security');
+      return;
+    }
     //v1.4.0退出登录
     if (key === 'logout') {
       dispatch({
