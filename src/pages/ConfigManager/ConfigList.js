@@ -204,8 +204,11 @@ class ConfigList extends PureComponent {
     },
     {
       title: '备注',
-      dataIndex: 'note',
+      //dataIndex: 'note',
       ellipsis: true,
+      render: (text, record) => {
+        return record.note || '-';
+      },
     },
     {
       title: '创建时间',
