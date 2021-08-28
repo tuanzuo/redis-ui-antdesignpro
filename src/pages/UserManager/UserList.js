@@ -191,13 +191,16 @@ class UserList extends PureComponent {
             roleNames.push(roleMap[roleId]);
           });
         }
-        return roleNames.join(',');
+        return roleNames.join(',') || '-';
       },
     },
     {
       title: '描述',
-      dataIndex: 'note',
+      //dataIndex: 'note',
       ellipsis: true,
+      render: (text, record) => {
+        return record.note || '-';
+      },
     },
     {
       title: '创建时间',
