@@ -1008,7 +1008,7 @@ class RedisHome extends PureComponent {
                   onClose={this.handleServerInfoCancel}
                   destroyOnClose={true}
                  >
-            <Collapse accordion>
+            <Collapse defaultActiveKey={['100']} >
               <a href='https://redis.io/commands/info' target='_blank'>
                 <Tag color="blue">参数说明</Tag>
               </a>
