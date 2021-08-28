@@ -8,6 +8,7 @@ import {
   initRedisContext,
   clearRedisTemplateCache,
   testRedisConnection,
+  queryRedisServerInfo,
   queryRedisKeyList,
   queryRedisKeyValue,
   delRedisKeys,
@@ -109,6 +110,14 @@ export default {
     },
     *testConnection({ payload, callback }, { call, put }) {
       const response = yield call(testRedisConnection, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *fetchRedisServerInfo({ payload, callback }, { call, put }) {
+      const response = yield call(queryRedisServerInfo, payload);
       yield put({
         type: 'save',
         payload: response,

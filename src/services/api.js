@@ -392,6 +392,10 @@ export async function testRedisConnection(params) {
   });
 }
 
+export async function queryRedisServerInfo(id) {
+  return request(`${apiUrl}/redis/admin/server/info/${id}`);
+}
+
 export async function queryRedisKeyList(params) {
   return request(`${apiUrl}/redis/admin/key/list?${stringify(params)}`);
 }
