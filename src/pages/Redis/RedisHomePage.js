@@ -90,6 +90,8 @@ let currentOptObject;
 let currentOptExtList = [];
 // 当前页数
 let currentPageNum = 1;
+//当前查询最小的redis配置id v1.7.0
+let currentMinId = 0;
 
 @connect(({ redisadmin, loading }) => ({
   redisadmin,
@@ -340,6 +342,8 @@ class RedisHome extends PureComponent {
         if (!flag) {
           return;
         }
+        //当前查询最大的id v。7.0
+        currentMinId = response.datas.currentMinId;
       },
     });
   };
@@ -352,10 +356,11 @@ class RedisHome extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'redisadmin/appendFetchConfigList',
-      payload: { ...searchKeyConst, pageNum },
+      payload: {...searchKeyConst, pageNum, preMinId: currentMinId},
       callback: resp => {
         if (resp && resp.datas && resp.datas.configList && resp.datas.configList.length > 0) {
           currentPageNum++;
+          currentMinId = resp.datas.currentMinId;
         } else {
           this.setState({
             fetchMoreButtonDisabled: true,
