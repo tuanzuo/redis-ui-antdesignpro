@@ -1,6 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+// JSON显示器:https://ant.design/docs/react/recommendation-cn
+// https://github.com/mac-s-g/react-json-view
+import ReactJson from 'react-json-view';
 // 代码编辑器：https://github.com/scniro/react-codemirror2
 // 安装命令：cnpm install react-codemirror2 codemirror --save
 // 代码编辑器：https://github.com/react-monaco-editor/react-monaco-editor
@@ -36,10 +39,11 @@ import {
   Badge,
   Tag,
   Upload,
+  Divider,
 } from 'antd';
 
 //需要执行cnpm install --save @ant-design/icons命令进行安装
-import { QuestionCircleOutlined,InboxOutlined,UploadOutlined  } from '@ant-design/icons';
+import { QuestionCircleOutlined,InboxOutlined,UploadOutlined,InfoCircleOutlined } from '@ant-design/icons';
 import { findDOMNode } from 'react-dom';
 import styles from './RedisHomePage.less';
 import StandardFormRow from '@/components/StandardFormRow';
@@ -302,6 +306,7 @@ class RedisHome extends PureComponent {
 
   state = {
     visible: false,
+    serverInfoModalVisible: false,
     done: false,
     dataLoading: true, // 开启加载中
     fetchMoreButtonDisabled: false, //“加载更多”按钮
@@ -395,6 +400,33 @@ class RedisHome extends PureComponent {
       current: undefined,
     });
     currentOptExtList = [];
+  };
+
+  showServerInfoModel = item =>{
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'redisadmin/fetchRedisServerInfo',
+      payload: item.id,
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+        this.setState({
+          serverInfoModalVisible: true,
+          current: item,
+          currentRedisServerInfo: response.datas,
+        });
+      },
+    });
+  };
+
+  handleServerInfoCancel = () => {
+    setTimeout(() => this.addBtn.blur(), 0);
+    this.setState({
+      serverInfoModalVisible: false,
+    });
   };
 
   deleteModel = item => {
@@ -563,7 +595,7 @@ class RedisHome extends PureComponent {
     const { redisadmin, loading } = this.props;
     const { configList } = redisadmin;
 
-    const { visible, done, current = {} } = this.state;
+    const { visible, serverInfoModalVisible, done, currentRedisServerInfo={}, current = {} } = this.state;
 
     const colItems = configList.map((temp, index) => (
       <Col {...topColResponsiveProps} key={temp.id}>
@@ -572,15 +604,27 @@ class RedisHome extends PureComponent {
           size="small"
           title={`[${temp.name}]redis连接信息`}
           extra={
-            <a
-              title={'删除连接信息'}
-              onClick={e => {
-                e.preventDefault();
-                this.deleteModel(temp);
-              }}
-            >
-              <Icon type="close-circle" twoToneColor="red" theme="twoTone" width={50} height={50} />
-            </a>
+            <div>
+              <a
+                title={'redis服务器信息'}
+                onClick={e => {
+                  e.preventDefault();
+                  this.showServerInfoModel(temp);
+                }}
+              >
+                <InfoCircleOutlined />
+              </a>
+              &nbsp;&nbsp;
+              <a
+                title={'删除连接信息'}
+                onClick={e => {
+                  e.preventDefault();
+                  this.deleteModel(temp);
+                }}
+              >
+                <Icon type="close-circle" twoToneColor="red" theme="twoTone" width={50} height={50} />
+              </a>
+            </div>
           }
           style={
             {
@@ -957,6 +1001,109 @@ class RedisHome extends PureComponent {
           >
             {getModalContent()}
           </Modal>
+          {/*redis服务器信息modal v1.7.0*/}
+          <Drawer title={'【'+current.name+'】redis服务器信息'}
+                  visible={serverInfoModalVisible}
+                  width="calc(100vw - 40%)"
+                  onClose={this.handleServerInfoCancel}
+                  destroyOnClose={true}
+                 >
+            <Collapse accordion>
+              <a href='https://redis.io/commands/info' target='_blank'>
+                <Tag color="blue">参数说明</Tag>
+              </a>
+              <Panel header="Server" key="1">
+                <ReactJson
+                  name="服务器信息"
+                  src={currentRedisServerInfo.server}
+                  displayDataTypes={false}
+                  onEdit={false}
+                  theme="monokai"
+                />
+              </Panel>
+              <Panel header="Clients" key="2">
+                <ReactJson
+                  name="已连接客户端信息"
+                  src={currentRedisServerInfo.clients}
+                  displayDataTypes={false}
+                  onEdit={false}
+                  theme="monokai"
+                />
+              </Panel>
+              <Panel header="Memory" key="3">
+                <ReactJson
+                  name="内存信息"
+                  src={currentRedisServerInfo.memory}
+                  displayDataTypes={false}
+                  onEdit={false}
+                  theme="monokai"
+                />
+              </Panel>
+              <Panel header="Persistence" key="4">
+                <ReactJson
+                  name="持久化信息"
+                  src={currentRedisServerInfo.persistence}
+                  displayDataTypes={false}
+                  onEdit={false}
+                  theme="monokai"
+                />
+              </Panel>
+              <Panel header="Stats" key="5">
+                <ReactJson
+                  name="统计信息"
+                  src={currentRedisServerInfo.stats}
+                  displayDataTypes={false}
+                  onEdit={false}
+                  theme="monokai"
+                />
+              </Panel>
+              <Panel header="Replication" key="6">
+                <ReactJson
+                  name="主/从复制信息"
+                  src={currentRedisServerInfo.replication}
+                  displayDataTypes={false}
+                  onEdit={false}
+                  theme="monokai"
+                />
+              </Panel>
+              <Panel header="CPU" key="7">
+                <ReactJson
+                  name="CPU信息"
+                  src={currentRedisServerInfo.cpu}
+                  displayDataTypes={false}
+                  onEdit={false}
+                  theme="monokai"
+                />
+              </Panel>
+              <Panel header="Commandstats" key="8">
+                <ReactJson
+                  name="命令统计信息"
+                  src={currentRedisServerInfo.commandstats}
+                  displayDataTypes={false}
+                  onEdit={false}
+                  theme="monokai"
+                />
+              </Panel>
+              <Panel header="Cluster" key="9">
+                <ReactJson
+                  name="集群信息"
+                  src={currentRedisServerInfo.cluster}
+                  displayDataTypes={false}
+                  onEdit={false}
+                  theme="monokai"
+                />
+              </Panel>
+              <Panel header="Keyspace" key="10">
+                <ReactJson
+                  name="数据库相关的统计信息"
+                  src={currentRedisServerInfo.keyspace}
+                  displayDataTypes={false}
+                  onEdit={false}
+                  theme="monokai"
+                />
+              </Panel>
+            </Collapse>
+          </Drawer>
         </Authorized>
       </div>
     );
