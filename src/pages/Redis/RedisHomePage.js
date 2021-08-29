@@ -408,11 +408,18 @@ class RedisHome extends PureComponent {
   };
 
   showServerInfoModel = item =>{
+    this.setState({
+      dataLoading: true, // 开启加载中
+    });
     const { dispatch } = this.props;
     dispatch({
       type: 'redisadmin/fetchRedisServerInfo',
       payload: item.id,
       callback: response => {
+        this.setState({
+          dataLoading: false, // 关闭加载中
+        });
+
         //错误提示信息
         let flag = this.tipMsg(response);
         if (!flag) {
@@ -1013,101 +1020,103 @@ class RedisHome extends PureComponent {
                   onClose={this.handleServerInfoCancel}
                   destroyOnClose={true}
                  >
-            <Collapse defaultActiveKey={['100']} >
-              <a href='https://redis.io/commands/info' target='_blank'>
-                <Tag color="blue">参数说明</Tag>
-              </a>
-              <Panel header="Server" key="1">
-                <ReactJson
-                  name="服务器信息"
-                  src={currentRedisServerInfo.server}
-                  displayDataTypes={false}
-                  onEdit={false}
-                  theme="monokai"
-                />
-              </Panel>
-              <Panel header="Clients" key="2">
-                <ReactJson
-                  name="已连接客户端信息"
-                  src={currentRedisServerInfo.clients}
-                  displayDataTypes={false}
-                  onEdit={false}
-                  theme="monokai"
-                />
-              </Panel>
-              <Panel header="Memory" key="3">
-                <ReactJson
-                  name="内存信息"
-                  src={currentRedisServerInfo.memory}
-                  displayDataTypes={false}
-                  onEdit={false}
-                  theme="monokai"
-                />
-              </Panel>
-              <Panel header="Persistence" key="4">
-                <ReactJson
-                  name="持久化信息"
-                  src={currentRedisServerInfo.persistence}
-                  displayDataTypes={false}
-                  onEdit={false}
-                  theme="monokai"
-                />
-              </Panel>
-              <Panel header="Stats" key="5">
-                <ReactJson
-                  name="统计信息"
-                  src={currentRedisServerInfo.stats}
-                  displayDataTypes={false}
-                  onEdit={false}
-                  theme="monokai"
-                />
-              </Panel>
-              <Panel header="Replication" key="6">
-                <ReactJson
-                  name="主/从复制信息"
-                  src={currentRedisServerInfo.replication}
-                  displayDataTypes={false}
-                  onEdit={false}
-                  theme="monokai"
-                />
-              </Panel>
-              <Panel header="CPU" key="7">
-                <ReactJson
-                  name="CPU信息"
-                  src={currentRedisServerInfo.cpu}
-                  displayDataTypes={false}
-                  onEdit={false}
-                  theme="monokai"
-                />
-              </Panel>
-              <Panel header="Commandstats" key="8">
-                <ReactJson
-                  name="命令统计信息"
-                  src={currentRedisServerInfo.commandstats}
-                  displayDataTypes={false}
-                  onEdit={false}
-                  theme="monokai"
-                />
-              </Panel>
-              <Panel header="Cluster" key="9">
-                <ReactJson
-                  name="集群信息"
-                  src={currentRedisServerInfo.cluster}
-                  displayDataTypes={false}
-                  onEdit={false}
-                  theme="monokai"
-                />
-              </Panel>
-              <Panel header="Keyspace" key="10">
-                <ReactJson
-                  name="数据库相关的统计信息"
-                  src={currentRedisServerInfo.keyspace}
-                  displayDataTypes={false}
-                  onEdit={false}
-                  theme="monokai"
-                />
-              </Panel>
-            </Collapse>
+            <Spin spinning={this.state.dataLoading} delay={100}>
+              <Collapse defaultActiveKey={['100']} >
+                <a href='https://redis.io/commands/info' target='_blank'>
+                  <Tag color="blue">参数说明</Tag>
+                </a>
+                <Panel header="Server" key="1">
+                  <ReactJson
+                    name="服务器信息"
+                    src={currentRedisServerInfo.server}
+                    displayDataTypes={false}
+                    onEdit={false}
+                    theme="monokai"
+                  />
+                </Panel>
+                <Panel header="Clients" key="2">
+                  <ReactJson
+                    name="已连接客户端信息"
+                    src={currentRedisServerInfo.clients}
+                    displayDataTypes={false}
+                    onEdit={false}
+                    theme="monokai"
+                  />
+                </Panel>
+                <Panel header="Memory" key="3">
+                  <ReactJson
+                    name="内存信息"
+                    src={currentRedisServerInfo.memory}
+                    displayDataTypes={false}
+                    onEdit={false}
+                    theme="monokai"
+                  />
+                </Panel>
+                <Panel header="Persistence" key="4">
+                  <ReactJson
+                    name="持久化信息"
+                    src={currentRedisServerInfo.persistence}
+                    displayDataTypes={false}
+                    onEdit={false}
+                    theme="monokai"
+                  />
+                </Panel>
+                <Panel header="Stats" key="5">
+                  <ReactJson
+                    name="统计信息"
+                    src={currentRedisServerInfo.stats}
+                    displayDataTypes={false}
+                    onEdit={false}
+                    theme="monokai"
+                  />
+                </Panel>
+                <Panel header="Replication" key="6">
+                  <ReactJson
+                    name="主/从复制信息"
+                    src={currentRedisServerInfo.replication}
+                    displayDataTypes={false}
+                    onEdit={false}
+                    theme="monokai"
+                  />
+                </Panel>
+                <Panel header="CPU" key="7">
+                  <ReactJson
+                    name="CPU信息"
+                    src={currentRedisServerInfo.cpu}
+                    displayDataTypes={false}
+                    onEdit={false}
+                    theme="monokai"
+                  />
+                </Panel>
+                <Panel header="Commandstats" key="8">
+                  <ReactJson
+                    name="命令统计信息"
+                    src={currentRedisServerInfo.commandstats}
+                    displayDataTypes={false}
+                    onEdit={false}
+                    theme="monokai"
+                  />
+                </Panel>
+                <Panel header="Cluster" key="9">
+                  <ReactJson
+                    name="集群信息"
+                    src={currentRedisServerInfo.cluster}
+                    displayDataTypes={false}
+                    onEdit={false}
+                    theme="monokai"
+                  />
+                </Panel>
+                <Panel header="Keyspace" key="10">
+                  <ReactJson
+                    name="数据库相关的统计信息"
+                    src={currentRedisServerInfo.keyspace}
+                    displayDataTypes={false}
+                    onEdit={false}
+                    theme="monokai"
+                  />
+                </Panel>
+              </Collapse>
+            </Spin>
           </Drawer>
         </Authorized>
       </div>
