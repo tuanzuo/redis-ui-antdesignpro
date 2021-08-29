@@ -8,7 +8,7 @@ import HeaderSearch from '../HeaderSearch';
 import HeaderDropdown from '../HeaderDropdown';
 import SelectLang from '../SelectLang';
 import styles from './index.less';
-import { SafetyOutlined, SettingOutlined } from '@ant-design/icons';
+import { SafetyOutlined, SettingOutlined,UsergroupAddOutlined } from '@ant-design/icons';
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -113,6 +113,15 @@ export default class GlobalHeaderRight extends PureComponent {
           <Icon type="close-circle" />
           <FormattedMessage id="menu.account.trigger" defaultMessage="Trigger Error" />
         </Menu.Item>*/}
+        <Menu.Divider />
+        <Menu.Item key="registDay">
+          <Icon type="user" />
+          {'已注册' + (currentUser && currentUser.registerDay ? currentUser.registerDay : 0) + '天'}
+        </Menu.Item>
+        <Menu.Item key="onlineUser">
+          <UsergroupAddOutlined style={{ fontSize: '15px', marginLeft: '-2px' }} />
+          {(currentUser && currentUser.onlineUserCount ? currentUser.onlineUserCount : 0) + '人在线'}
+        </Menu.Item>
         <Menu.Divider />
         {/*v1.4.0退出登录*/}
         <Menu.Item key="logout">
