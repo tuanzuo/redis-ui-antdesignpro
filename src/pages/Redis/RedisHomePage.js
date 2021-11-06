@@ -610,7 +610,7 @@ class RedisHome extends PureComponent {
     const { visible, serverInfoModalVisible, done, currentRedisServerInfo={}, current = {} } = this.state;
 
     const colItems = configList.map((temp, index) => (
-      <Col {...topColResponsiveProps} key={temp.id}>
+      <Col {...topColResponsiveProps} key={index}>
         <Card
           bordered={true}
           size="small"
