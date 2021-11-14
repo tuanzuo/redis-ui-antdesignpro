@@ -67,7 +67,6 @@ const cachedSave = (response, hashcode) => {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function requestman(url, option) {
-  debugger
   const options = {
     expirys: isAntdPro(),
     ...option,

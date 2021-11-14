@@ -50,7 +50,7 @@ const { Panel } = Collapse;
 const { TabPane } = Tabs;
 const { Paragraph } = Typography;
 
-const colorArray = ['magenta','red','volcano','orange','gold','lime','green','cyan','blue','geekblue','purple'];
+const colorArray = ['magenta','red','volcano','orange','gold','green','cyan','blue','geekblue','purple'];
 const headers = "headers";
 const body = "body";
 const params = "params";
@@ -211,7 +211,7 @@ const AddUpdateInterfaceForm = Form.create()(props => {
   return (
     <Drawer title={'接口信息'}
             visible={modalVisible}
-            width="calc(100vw - 10%)"
+            width="calc(100vw - 15%)"
             onClose={() => handleModalVisible(false)}
             destroyOnClose={true}
     >
@@ -598,15 +598,15 @@ class InterfaceList extends PureComponent {
     if (data && data.length > 0) {
       return (
         data.map((pdata, index) => (
-          <Panel header={pdata.configName + ' ('+pdata.subList.length+')'} key={index} extra={this.genExtra(pdata)}>
+          <Panel header={pdata.configName +' ['+pdata.sort+']'+ ' ('+pdata.subList.length+')'} key={index} extra={this.genExtra(pdata)}>
             {
               pdata.subList.map((subdata,subIndex) => (
-                <Tag style={{width:'8%',textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap"}} color={colorArray[subIndex%colorArray.length]} title={subdata.configName+' '+subdata.requestUrl} closable={false} onClose={()=> this.handleDelModel({id:subdata.id,ifDel:1,...subdata})} onClick={() => this.handleModalVisible(true,"update", pdata, subdata)}>
-                  {subdata.configName}
+                <Tag style={{width:'15%',textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap",cursor:"pointer"}} color={colorArray[subIndex%colorArray.length]} title={subdata.configName+' '+subdata.requestUrl} closable={false} onClose={()=> this.handleDelModel({id:subdata.id,ifDel:1,...subdata})} onClick={() => this.handleModalVisible(true,"update", pdata, subdata)}>
+                  {subdata.configName+' ['+subdata.sort+']'}
                 </Tag>
               ))
             }
-            <Tag style={{width:'8%',textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap"}} title={'点我添加接口'} onClick={() => this.handleModalVisible(true,"add", pdata)}>
+            <Tag style={{width:'8%',textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap",cursor:"pointer",borderColor:"red"}} title={'点我添加接口'} onClick={() => this.handleModalVisible(true,"add", pdata)}>
               <PlusOutlined /> 点我添加接口
             </Tag>
           </Panel>
@@ -615,7 +615,7 @@ class InterfaceList extends PureComponent {
     } else {
       return (
         <Panel header={"请添加"} key={1} extra={this.genInitExtra()}>
-          <Tag style={{width:'8%',textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap"}} color='#87d068' title={'点我添加接口'} onClick={() => this.handleModalVisible(true,"add")}>
+          <Tag style={{width:'8%',textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap",cursor:"pointer"}} color='#87d068' title={'点我添加接口'} onClick={() => this.handleModalVisible(true,"add")}>
             <PlusOutlined /> 点我添加接口
           </Tag>
         </Panel>
@@ -626,18 +626,21 @@ class InterfaceList extends PureComponent {
   genExtra = (pdata) => (
     <div>
       <PlusOutlined
+        title={'添加接口'}
         onClick={() => {
           this.handleModalVisible(true,"add", pdata);
         }}
       />
       &nbsp;&nbsp;
       <EditOutlined
+        title={'修改分类'}
         onClick={() => {
           this.handleModalVisibleToCategory(true,"update", pdata);
         }}
       />
       &nbsp;&nbsp;
       <DeleteOutlined
+        title={'删除分类'}
         onClick={() => {
           this.handleDelCategoryModel(pdata);
         }}
@@ -708,7 +711,7 @@ class InterfaceList extends PureComponent {
         {/*v1.7.1 权限控制*/}
         <Authorized authority={['admin', 'test', 'develop']}>
           <Card bordered={false}>
-            <Collapse defaultActiveKey={['1']} ghost>
+            <Collapse ghost>
               {this.handleContentHtml(data)}
             </Collapse>
           </Card>
