@@ -1333,10 +1333,11 @@ class RedisData extends PureComponent {
     if (keyValueIsJson) {
       return (
         <ReactJson
-          name="JsonValue"
+          name={false}
           src={currentKeyValueToJsonValue}
           displayDataTypes={false}
           onEdit={false}
+          style={{borderRadius: 3, wordBreak: "break-all"}}
           theme="monokai"
         />
       );

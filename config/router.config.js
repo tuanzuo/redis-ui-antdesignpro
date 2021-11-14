@@ -187,6 +187,20 @@ export default [
               },
             ],
           },
+
+          // Postman v1.7.1
+          {
+            name: 'postman',
+            icon: 'CloudSyncOutlined', //v1.4.0 见src\components\SiderMenu\BaseMenu.js
+            path: '/postman',
+            routes: [
+              {
+                path: '/postman/list',
+                name: 'interfacelist',
+                component: './Postman/InterfaceList',
+              },
+            ],
+          },
           /**【新建的路由配置一定要在‘404’前新建，不然会报404】*/
           {
             component: '404',

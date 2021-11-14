@@ -1,5 +1,6 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
+import requestman from '@/utils/requestman';
 import { getToken } from '@/utils/token';
 import router from 'umi/router';
 
@@ -458,4 +459,74 @@ export async function addKeyValue(params) {
       method: 'post',
     },
   });
+}
+
+
+//-------------postman----------------
+export async function queryPostmanConfigList(params) {
+  return request(`${apiUrl}/auth/postman/config/list?${stringify(params)}`);
+}
+
+export async function addPostmanConfig(params) {
+  return request(`${apiUrl}/auth/postman/config/add`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function updatePostmanConfig(params) {
+  return request(`${apiUrl}/auth/postman/config/update`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function delPostmanConfig(params) {
+  return request(`${apiUrl}/auth/postman/config/del`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function sendRequest(paramsObject) {
+  if (!paramsObject.headers || paramsObject.headers == '') {
+    paramsObject.headers = "{}";
+  }
+  let headersObject = JSON.parse(paramsObject.headers);
+
+  if (paramsObject.cookies && paramsObject.cookies != '' && paramsObject.cookies != '{}') {
+    headersObject.cookie = stringify(JSON.parse(paramsObject.cookies));
+  }
+
+  let url = paramsObject.requestUrl;
+  if (paramsObject.params && paramsObject.params != '' && paramsObject.params != '{}') {
+    url += '?' + stringify(JSON.parse(paramsObject.params))
+  }
+
+  if (paramsObject.requestType == 'get') {
+    return requestman(url, {
+      method: 'GET',
+      headers: headersObject,
+    });
+  }
+  else
+  if (paramsObject.requestType == 'post') {
+    if (!paramsObject.body || paramsObject.body == '') {
+      paramsObject.body = "{}";
+    }
+    return requestman(url, {
+      method: 'POST',
+      headers: headersObject,
+      body: JSON.parse(paramsObject.body),
+    });
+  }
 }

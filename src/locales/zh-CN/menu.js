@@ -46,6 +46,8 @@ export default {
   'menu.rolemanager.rolelist': '角色列表',
   'menu.configmanager': '配置管理',
   'menu.configmanager.configlist': '配置列表',
+  'menu.postman': 'Postman',
+  'menu.postman.interfacelist': '接口列表',
   'menu.connectionadmin': '连接管理',
   'menu.connectionadmin.redishome': 'Redis',
   'menu.connectionadmin.redisdata': 'Redis数据信息',
