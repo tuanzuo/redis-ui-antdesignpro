@@ -1337,7 +1337,7 @@ class RedisData extends PureComponent {
           src={currentKeyValueToJsonValue}
           displayDataTypes={false}
           onEdit={false}
-          style={{borderRadius: 3, wordBreak: "break-all"}}
+          style={{borderRadius: 4, wordBreak: "break-all"}}
           theme="monokai"
         />
       );

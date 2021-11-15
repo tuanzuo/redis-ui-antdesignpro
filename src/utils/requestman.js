@@ -1,11 +1,10 @@
 import fetch from 'dva/fetch';
+//跨域fetch：https://github.com/lquixada/cross-fetch/
+import crossfetch from 'cross-fetch';
 import { notification } from 'antd';
 import router from 'umi/router';
 import hash from 'hash.js';
 import { isAntdPro } from './utils';
-
-//跨域请求：https://github.com/lquixada/cross-fetch
-import crossfetch from 'cross-fetch';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -121,7 +120,7 @@ export default function requestman(url, option) {
       sessionStorage.removeItem(`${hashcode}:timestamp`);
     }
   }
-  return fetch(url, newOptions)
+  return crossfetch(url, newOptions)
     .then(checkStatus)
     .then(response => cachedSave(response, hashcode))
     .then(response => {

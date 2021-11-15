@@ -512,6 +512,17 @@ export async function sendRequest(paramsObject) {
     url += '?' + stringify(JSON.parse(paramsObject.params))
   }
 
+  //判断是否走后端服务进行请求(为了避免浏览器跨域的问题) v1.7.1
+  if(paramsObject.serverRequestFlag){
+    return request(`${apiUrl}/auth/postman/config/request`, {
+      method: 'POST',
+      body: {
+        ...paramsObject,
+        method: 'post',
+      },
+    });
+  }
+  else
   //v1.7.1 如果有cookie设置则只有请求后端接口才能携带上cookie
   if (paramsObject.cookies && paramsObject.cookies != '' && paramsObject.cookies != '{}') {
     return request(`${apiUrl}/auth/postman/config/request`, {

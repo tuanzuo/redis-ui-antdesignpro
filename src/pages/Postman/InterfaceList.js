@@ -35,14 +35,30 @@ import {
   Drawer,
   Spin,
   Typography,
+  Switch,
+  Popover,
 } from 'antd';
 
-import { EditOutlined,PlusOutlined,DeleteOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined,EditOutlined,PlusOutlined,DeleteOutlined } from '@ant-design/icons';
 
 import styles from './InterfaceList.less';
 
 //v1.7.1 权限控制
 import Authorized from '@/utils/Authorized';
+
+const isOpenContent = (
+  <div style={{ width: '500px', wordBreak: 'break-all' }}>
+    <strong>服务端请求：</strong>表示请求通过服务端进行发起，无跨域问题。
+    <br />
+    <strong>浏览器请求：</strong>表示从浏览器直接发起请求，有跨域问题且不支持cookies参数。
+    <br />
+    <strong>chrome浏览器关闭跨域：</strong>
+    <br />1、在d盘新建一个chromedev的文件夹；
+    <br />2、将原来的Chrome快捷方式复制一个到桌面；
+    <br />3、右击复制后的快捷方式，点击属性，在‘目标’中追加如下参数 --disable-web-security --user-data-dir=d:\chromedev
+    <br />注意：--disable-web-security前面有一个空格
+  </div>
+);
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -148,25 +164,28 @@ const AddUpdateInterfaceForm = Form.create()(props => {
   const okHandle = (flag) => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      //send
-      if ('send' == flag) {
-        let values = {
-          headers: requestObject.headers || '{}',
-          body: requestObject.body || '{}',
-          params: requestObject.params || '{}',
-          cookies: requestObject.cookies || '{}',
-          ...fieldsValue,
-        };
-        handleSend(values, form);
-      }
 
-      let configInfo = {
-        requestType: fieldsValue.requestType,
-        requestUrl: fieldsValue.requestUrl,
+      let otherValues = {
         headers: requestObject.headers || '{}',
         body: requestObject.body || '{}',
         params: requestObject.params || '{}',
         cookies: requestObject.cookies || '{}',
+        serverRequestFlag: requestObject.serverRequestFlag != undefined ? requestObject.serverRequestFlag : true,
+      };
+
+      //send
+      if ('send' == flag) {
+        let values = {
+          ...otherValues,
+          ...fieldsValue,
+        };
+        handleSend(values, form);
+        return;
+      }
+      let configInfo = {
+        requestType: fieldsValue.requestType,
+        requestUrl: fieldsValue.requestUrl,
+        ...otherValues,
       };
       let values = {
         ...fieldsValue,
@@ -179,17 +198,24 @@ const AddUpdateInterfaceForm = Form.create()(props => {
       if ('add' == flag) {
         handleAdd(values, form);
       }
+      else
       if ('update' == flag) {
         values.id = formVals.id;
         values.pid = formVals.pid;
         handleUpdate(values, form);
       }
+      else
       if ('del' == flag) {
         values.id = formVals.id;
         values.ifDel = 1;
         handleDelModel(values, form);
       }
     });
+  };
+
+  //处理服务器请求还是浏览器请求标识
+  const handleServerRequestFlag = (checked,changeEvent) => {
+    requestObject.serverRequestFlag = checked;
   };
 
   // 重置
@@ -211,13 +237,13 @@ const AddUpdateInterfaceForm = Form.create()(props => {
   return (
     <Drawer title={'接口信息'}
             visible={modalVisible}
-            width="calc(100vw - 15%)"
+            width="calc(100vw - 4%)"
             onClose={() => handleModalVisible(false)}
             destroyOnClose={true}
     >
       <Form layout="vertical" hideRequiredMark>
         <Row gutter={16}>
-          <Col lg={4} md={12} sm={24}>
+          <Col lg={3} md={12} sm={24}>
             <Form.Item label={"分类名称："}>
               {form.getFieldDecorator('categoryName', {
                 rules: [{ required: true, message: '请输入最多200个字符！', max: 200 }],
@@ -268,14 +294,22 @@ const AddUpdateInterfaceForm = Form.create()(props => {
               )}
             </Form.Item>
           </Col>
-          <Col lg={4} md={12} sm={24}>
+          <Col lg={5} md={12} sm={24}>
             <Form.Item label={"执行"}>
               <Button onClick={()=> okHandle('send')} type="primary" style={{ marginRight: 8 }} title={"发送请求"}>
                 send
               </Button>
-              <Button onClick={()=> handleFormReset()} style={{ marginLeft: '2px' }} title={"重置"}>
+              <Button onClick={()=> handleFormReset()} style={{ marginLeft: '1px' }} title={"重置"}>
                 reset
               </Button>
+              &nbsp;&nbsp;
+              <Switch onChange={(checked,changeEvent)=> handleServerRequestFlag(checked,changeEvent)} defaultChecked={formVals.serverRequestFlag != undefined?formVals.serverRequestFlag:true} checkedChildren={'服务端请求'} unCheckedChildren={'浏览器请求'} title={'服务端请求：表示请求通过服务端进行发起，无跨域问题。浏览器请求：表示从浏览器直接发起请求，有跨域问题且不支持cookies参数'} />
+              &nbsp;
+              <em>
+                <Popover content={isOpenContent} title="" trigger="hover">
+                  <QuestionCircleOutlined />
+                </Popover>
+              </em>
             </Form.Item>
           </Col>
         </Row>
@@ -380,6 +414,8 @@ class InterfaceList extends PureComponent {
 
   //显示弹窗
   handleModalVisible = (flag, optFlag, pdata, subdata) => {
+    requestObject = {};
+
     let data = {};
     data.optFlag = optFlag;
 
@@ -402,6 +438,7 @@ class InterfaceList extends PureComponent {
       data.body = JSON.parse(configInfo.body);
       data.params = JSON.parse(configInfo.params);
       data.cookies = JSON.parse(configInfo.cookies);
+      data.serverRequestFlag = configInfo.serverRequestFlag != undefined ? configInfo.serverRequestFlag : true;
 
       resultData.result = '';
       resultData.resultJson = JSON.parse('{}');
@@ -410,23 +447,43 @@ class InterfaceList extends PureComponent {
       requestObject.body = configInfo.body;
       requestObject.params = configInfo.params;
       requestObject.cookies = configInfo.cookies;
+      requestObject.serverRequestFlag = data.serverRequestFlag;
     }
 
-    this.setState({
-      //控制是否展示添加修改角色的弹窗
-      modalVisible: !!flag,
-      formValues: data,
-      formResultValues: resultData,
-    });
+    if (flag) {
+      this.setState({
+        //控制是否展示添加修改角色的弹窗
+        modalVisible: !!flag,
+        formValues: data,
+        formResultValues: resultData,
+      });
+    } else {
+      this.setState({
+        //控制是否展示添加修改角色的弹窗
+        modalVisible: !!flag,
+        formValues: {},
+        formResultValues: {},
+      });
+    }
   };
 
   handleModalVisibleToCategory = (flag, optFlag, pdata, subdata) => {
-    this.setState({
-      //控制是否展示添加修改角色的弹窗
-      modalVisibleToCategory: !!flag,
-      formValuesToCategory: pdata || {},
-      addOrUpdateDataFlagToCategory: optFlag,
-    });
+    requestObject = {};
+    if (flag) {
+      this.setState({
+        //控制是否展示添加修改角色的弹窗
+        modalVisibleToCategory: !!flag,
+        formValuesToCategory: pdata || {},
+        addOrUpdateDataFlagToCategory: optFlag,
+      });
+    } else {
+      this.setState({
+        //控制是否展示添加修改角色的弹窗
+        modalVisibleToCategory: !!flag,
+        formValuesToCategory: {},
+        addOrUpdateDataFlagToCategory: null,
+      });
+    }
   };
 
   handleAdd = (fields, form) => {
@@ -443,8 +500,10 @@ class InterfaceList extends PureComponent {
         if (!flag) {
           return;
         }
-        this.handleModalVisible(false,"add");
+        message.success('保存成功!');
         requestObject = {};
+        this.handleModalVisible(false,"add");
+        this.handleModalVisibleToCategory(false,"add");
         this.reloadData();
       },
     });
@@ -464,9 +523,10 @@ class InterfaceList extends PureComponent {
         if (!flag) {
           return;
         }
+        message.success('保存成功!');
+        requestObject = {};
         this.handleModalVisible(false,"update");
         this.handleModalVisibleToCategory(false,"update");
-        requestObject = {};
         this.reloadData();
       },
     });
@@ -511,14 +571,21 @@ class InterfaceList extends PureComponent {
         if (!flag) {
           return;
         }
-        this.handleModalVisible(false,"update");
         requestObject = {};
+        this.handleModalVisible(false,"update");
+        this.handleModalVisibleToCategory(false,"update");
         this.reloadData();
+        message.success('删除成功!');
       },
     });
   };
 
   handleSend = (fields, form) => {
+    //发送请求前清空result
+    this.setState({
+      formResultValues: {}
+    });
+
     let data = fields;
     const { dispatch } = this.props;
     dispatch({
@@ -551,7 +618,7 @@ class InterfaceList extends PureComponent {
           name={false}
           src={jsonValue}
           displayDataTypes={false}
-          style={{borderRadius:3, wordBreak: "break-all"}}
+          style={{borderRadius:4, wordBreak: "break-all"}}
           theme="monokai"
         />
       );
@@ -567,7 +634,7 @@ class InterfaceList extends PureComponent {
         onAdd={(temp) => this.handleReactJson(type, temp)}
         onEdit={(temp) => this.handleReactJson(type, temp)}
         onDelete={(temp) => this.handleReactJson(type, temp)}
-        style={{borderRadius:3, wordBreak: "break-all"}}
+        style={{borderRadius:4, wordBreak: "break-all"}}
         theme="monokai"
       />
     );
