@@ -52,7 +52,7 @@ const isOpenContent = (
     <br />
     <strong>浏览器请求：</strong>表示从浏览器直接发起请求，有跨域问题且不支持cookies参数。
     <br />
-    <strong>chrome浏览器关闭跨域：</strong>
+    <strong>chrome浏览器关闭跨域限制：</strong>
     <br />1、在d盘新建一个chromedev的文件夹；
     <br />2、将原来的Chrome快捷方式复制一个到桌面；
     <br />3、右击复制后的快捷方式，点击属性，在‘目标’中追加如下参数 --disable-web-security --user-data-dir=d:\chromedev
