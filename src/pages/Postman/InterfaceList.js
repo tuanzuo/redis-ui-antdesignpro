@@ -39,7 +39,7 @@ import {
   Popover,
 } from 'antd';
 
-import { QuestionCircleOutlined,EditOutlined,PlusOutlined,DeleteOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined,EditOutlined,PlusOutlined,DeleteOutlined,ShareAltOutlined } from '@ant-design/icons';
 
 import styles from './InterfaceList.less';
 
@@ -74,6 +74,45 @@ const cookies = "cookies";
 let requestObject = {};
 
 const text = "test";
+
+//分享Form
+const ShareForm = Form.create()(props => {
+  const {
+    modalVisible,
+    form,
+    handleShare,
+    handleModalVisibleToShare,
+    formVals,
+  } = props;
+
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      let data ={
+        ...fieldsValue,
+        ...formVals,
+      };
+      handleShare(data, form);
+    });
+  };
+  return (
+    <Modal
+      destroyOnClose
+      title={'分享接口数据'}
+      visible={modalVisible}
+      width={640}
+      onOk={okHandle}
+      onCancel={() => handleModalVisibleToShare(false)}
+    >
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="分享的用户名：">
+        {form.getFieldDecorator('shareUserNames', {
+          initialValue: formVals.shareUserNames || '',
+          rules: [{ required: true, message: '请输入用户名，多个用户名使用英文逗号分割' }],
+        })(<Input placeholder="" autocomplete="off" />)}
+      </FormItem>
+    </Modal>
+  );
+});
 
 //添加，修改接口分类Form
 const AddUpdateCategoryForm = Form.create()(props => {
@@ -153,6 +192,7 @@ const AddUpdateInterfaceForm = Form.create()(props => {
     handleDel,
     handleDelModel,
     handleModalVisible,
+    handleModalVisibleToShare,
     handleSend,
     getReactJsonHtml,
     getReactJsonHtmlToInterface,
@@ -229,6 +269,15 @@ const AddUpdateInterfaceForm = Form.create()(props => {
       return (
         <Button onClick={() => okHandle('del')} type="danger" style={{ marginRight: 8 }} title={"删除"}>
           Delete
+        </Button>
+      )
+    }
+  };
+  const shareButtonHtml = (temp) =>{
+    if(temp.optFlag && temp.optFlag=='update'){
+      return (
+        <Button onClick={() => handleModalVisibleToShare(true, 'share', null, temp)} style={{ marginRight: 8 }} title={"分享接口"}>
+          Share
         </Button>
       )
     }
@@ -369,6 +418,7 @@ const AddUpdateInterfaceForm = Form.create()(props => {
           Close
         </Button>
         {delButtonHtml(formVals)}
+        {shareButtonHtml(formVals)}
       </div>
     </Drawer>
   );
@@ -391,6 +441,9 @@ class InterfaceList extends PureComponent {
     modalVisibleToCategory: false,
     formValuesToCategory: {},
     addOrUpdateDataFlagToCategory: null,
+
+    modalVisibleToShare: false,
+    formValuesToShare: {},
   };
 
   componentDidMount() {
@@ -428,6 +481,7 @@ class InterfaceList extends PureComponent {
     if (pdata && subdata) {
       data.id = subdata.id;
       data.pid = subdata.pid;
+      data.category = subdata.category;
       data.categoryName = pdata.configName;
       data.requestName = subdata.configName;
       data.sort = subdata.sort;
@@ -482,6 +536,27 @@ class InterfaceList extends PureComponent {
         modalVisibleToCategory: !!flag,
         formValuesToCategory: {},
         addOrUpdateDataFlagToCategory: null,
+      });
+    }
+  };
+
+  handleModalVisibleToShare = (flag, optFlag, pdata, subdata) => {
+    if (flag) {
+      let data = pdata;
+      if (subdata) {
+        data = subdata;
+      }
+
+      this.setState({
+        //控制是否展示添加修改角色的弹窗
+        modalVisibleToShare: !!flag,
+        formValuesToShare: data,
+      });
+    } else {
+      this.setState({
+        //控制是否展示添加修改角色的弹窗
+        modalVisibleToShare: !!flag,
+        formValuesToShare: {}
       });
     }
   };
@@ -576,6 +651,26 @@ class InterfaceList extends PureComponent {
         this.handleModalVisibleToCategory(false,"update");
         this.reloadData();
         message.success('删除成功!');
+      },
+    });
+  };
+
+  handleShare = (fields, form) =>{
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'postman/share',
+      payload: {
+        ...fields,
+      },
+      callback: response => {
+        //错误提示信息
+        let flag = this.tipMsg(response);
+        if (!flag) {
+          return;
+        }
+        this.handleModalVisibleToShare(false,"share");
+        this.reloadData();
+        message.success('分享成功!');
       },
     });
   };
@@ -712,6 +807,13 @@ class InterfaceList extends PureComponent {
           this.handleDelCategoryModel(pdata);
         }}
       />
+      &nbsp;&nbsp;
+      <ShareAltOutlined
+        title={'分享分类'}
+        onClick={() => {
+          this.handleModalVisibleToShare(true,"share", pdata);
+        }}
+      />
     </div>
   );
 
@@ -758,6 +860,8 @@ class InterfaceList extends PureComponent {
       modalVisibleToCategory,
       formValuesToCategory,
       addOrUpdateDataFlagToCategory,
+      modalVisibleToShare,
+      formValuesToShare,
     } = this.state;
 
     const parentMethods = {
@@ -765,8 +869,10 @@ class InterfaceList extends PureComponent {
       handleUpdate: this.handleUpdate,
       handleDel: this.handleDel,
       handleDelModel: this.handleDelModel,
+      handleShare: this.handleShare,
       handleModalVisible: this.handleModalVisible,
       handleModalVisibleToCategory: this.handleModalVisibleToCategory,
+      handleModalVisibleToShare: this.handleModalVisibleToShare,
       handleSend: this.handleSend,
       getReactJsonHtml: this.getReactJsonHtml,
       getReactJsonHtmlToInterface: this.getReactJsonHtmlToInterface,
@@ -783,6 +889,11 @@ class InterfaceList extends PureComponent {
             </Collapse>
           </Card>
 
+          <ShareForm
+            {...parentMethods}
+            modalVisible={modalVisibleToShare}
+            formVals={formValuesToShare}
+          />
           <AddUpdateCategoryForm
             {...parentMethods}
             modalVisible={modalVisibleToCategory}

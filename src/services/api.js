@@ -497,6 +497,16 @@ export async function delPostmanConfig(params) {
   });
 }
 
+export async function sharePostmanConfig(params) {
+  return request(`${apiUrl}/auth/postman/config/share`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
 export async function sendRequest(paramsObject) {
   if (!paramsObject.headers || paramsObject.headers == '') {
     paramsObject.headers = "{}";

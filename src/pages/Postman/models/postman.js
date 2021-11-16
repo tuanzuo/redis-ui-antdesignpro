@@ -3,6 +3,7 @@ import {
   addPostmanConfig,
   updatePostmanConfig,
   delPostmanConfig,
+  sharePostmanConfig,
   sendRequest,
 } from '@/services/api';
 
@@ -40,6 +41,14 @@ export default {
     },
     *del({ payload, callback }, { call, put }) {
       const response = yield call(delPostmanConfig, payload);
+      yield put({
+        type: 'onlySave',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *share({ payload, callback }, { call, put }) {
+      const response = yield call(sharePostmanConfig, payload);
       yield put({
         type: 'onlySave',
         payload: response,
