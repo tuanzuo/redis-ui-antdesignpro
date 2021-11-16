@@ -237,7 +237,7 @@ const AddUpdateInterfaceForm = Form.create()(props => {
   return (
     <Drawer title={'接口信息'}
             visible={modalVisible}
-            width="calc(100vw - 4%)"
+            width="calc(100vw - 0%)"
             onClose={() => handleModalVisible(false)}
             destroyOnClose={true}
     >
@@ -668,12 +668,12 @@ class InterfaceList extends PureComponent {
           <Panel header={pdata.configName +' ['+pdata.sort+']'+ ' ('+pdata.subList.length+')'} key={index} extra={this.genExtra(pdata)}>
             {
               pdata.subList.map((subdata,subIndex) => (
-                <Tag style={{width:'15%',textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap",cursor:"pointer"}} color={colorArray[subIndex%colorArray.length]} title={subdata.configName+' '+subdata.requestUrl} closable={false} onClose={()=> this.handleDelModel({id:subdata.id,ifDel:1,...subdata})} onClick={() => this.handleModalVisible(true,"update", pdata, subdata)}>
+                <Tag style={{minWidth:"50px",maxWidth:"200px",textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap",cursor:"pointer"}} color={colorArray[subIndex%colorArray.length]} title={subdata.configName+' '+subdata.requestUrl} closable={false} onClose={()=> this.handleDelModel({id:subdata.id,ifDel:1,...subdata})} onClick={() => this.handleModalVisible(true,"update", pdata, subdata)}>
                   {subdata.configName+' ['+subdata.sort+']'}
                 </Tag>
               ))
             }
-            <Tag style={{width:'8%',textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap",cursor:"pointer",borderColor:"red"}} title={'点我添加接口'} onClick={() => this.handleModalVisible(true,"add", pdata)}>
+            <Tag style={{minWidth:"50px",maxWidth:"200px",textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap",cursor:"pointer",borderColor:"red"}} title={'点我添加接口'} onClick={() => this.handleModalVisible(true,"add", pdata)}>
               <PlusOutlined /> 点我添加接口
             </Tag>
           </Panel>
@@ -682,7 +682,7 @@ class InterfaceList extends PureComponent {
     } else {
       return (
         <Panel header={"请添加"} key={1} extra={this.genInitExtra()}>
-          <Tag style={{width:'8%',textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap",cursor:"pointer"}} color='#87d068' title={'点我添加接口'} onClick={() => this.handleModalVisible(true,"add")}>
+          <Tag style={{minWidth:"50px",maxWidth:"200px",textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap",cursor:"pointer"}} color='#87d068' title={'点我添加接口'} onClick={() => this.handleModalVisible(true,"add")}>
             <PlusOutlined /> 点我添加接口
           </Tag>
         </Panel>

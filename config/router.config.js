@@ -191,7 +191,7 @@ export default [
           // Postman v1.7.1
           {
             name: 'postman',
-            icon: 'CloudSyncOutlined', //v1.4.0 见src\components\SiderMenu\BaseMenu.js
+            icon: 'ApiOutlined', //v1.4.0 见src\components\SiderMenu\BaseMenu.js
             path: '/postman',
             routes: [
               {
