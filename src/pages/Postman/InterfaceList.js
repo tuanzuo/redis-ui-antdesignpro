@@ -78,6 +78,8 @@ const text = "test";
 //分享Form
 const ShareForm = Form.create()(props => {
   const {
+    loading,
+    dataLoading,
     modalVisible,
     form,
     handleShare,
@@ -101,6 +103,7 @@ const ShareForm = Form.create()(props => {
       title={'分享接口数据'}
       visible={modalVisible}
       width={640}
+      zIndex={1001}
       onOk={okHandle}
       onCancel={() => handleModalVisibleToShare(false)}
     >
@@ -108,7 +111,7 @@ const ShareForm = Form.create()(props => {
         {form.getFieldDecorator('shareUserNames', {
           initialValue: formVals.shareUserNames || '',
           rules: [{ required: true, message: '请输入用户名，多个用户名使用英文逗号分割' }],
-        })(<Input placeholder="" autocomplete="off" />)}
+        })(<Input placeholder="请输入用户名，多个用户名使用英文逗号分割" autocomplete="off" />)}
       </FormItem>
     </Modal>
   );
@@ -117,6 +120,8 @@ const ShareForm = Form.create()(props => {
 //添加，修改接口分类Form
 const AddUpdateCategoryForm = Form.create()(props => {
   const {
+    loading,
+    dataLoading,
     modalVisible,
     form,
     handleAdd,
@@ -185,6 +190,8 @@ const AddUpdateCategoryForm = Form.create()(props => {
 //添加，修改接口Form
 const AddUpdateInterfaceForm = Form.create()(props => {
   const {
+    loading,
+    dataLoading,
     form,
     modalVisible,
     handleAdd,
@@ -267,7 +274,7 @@ const AddUpdateInterfaceForm = Form.create()(props => {
   const delButtonHtml = (temp) =>{
     if(temp.optFlag && temp.optFlag=='update'){
       return (
-        <Button onClick={() => okHandle('del')} type="danger" style={{ marginRight: 8 }} title={"删除"}>
+        <Button loading={loading} onClick={() => okHandle('del')} type="danger" style={{ marginRight: 8 }} title={"删除"}>
           Delete
         </Button>
       )
@@ -276,7 +283,7 @@ const AddUpdateInterfaceForm = Form.create()(props => {
   const shareButtonHtml = (temp) =>{
     if(temp.optFlag && temp.optFlag=='update'){
       return (
-        <Button onClick={() => handleModalVisibleToShare(true, 'share', null, temp)} style={{ marginRight: 8 }} title={"分享接口"}>
+        <Button loading={loading} onClick={() => handleModalVisibleToShare(true, 'share', null, temp)} style={{ marginRight: 8 }} title={"分享接口"}>
           Share
         </Button>
       )
@@ -345,7 +352,7 @@ const AddUpdateInterfaceForm = Form.create()(props => {
           </Col>
           <Col lg={5} md={12} sm={24}>
             <Form.Item label={"执行"}>
-              <Button onClick={()=> okHandle('send')} type="primary" style={{ marginRight: 8 }} title={"发送请求"}>
+              <Button loading={loading} onClick={()=> okHandle('send')} type="primary" style={{ marginRight: 8 }} title={"发送请求"}>
                 send
               </Button>
               <Button onClick={()=> handleFormReset()} style={{ marginLeft: '1px' }} title={"重置"}>
@@ -385,18 +392,20 @@ const AddUpdateInterfaceForm = Form.create()(props => {
           </Col>
         </Row>
         <Row gutter={16}>
-          <Col lg={9} md={12} sm={24}>
-            <Form.Item label={"返回结果："} className={styles.treeContainer}>
-              <Paragraph ellipsis={{ rows: 1, expandable: true }}>
-                {formResultVals.result}
-              </Paragraph>
-            </Form.Item>
-          </Col>
-          <Col lg={15} md={12} sm={24} className={styles.treeContainer}>
-            <Form.Item label={"返回结果(JSON)："}>
-              {getReactJsonHtml(true, formResultVals.resultJson)}
-            </Form.Item>
-          </Col>
+            <Spin spinning={dataLoading} delay={100}>
+            <Col lg={9} md={12} sm={24}>
+              <Form.Item label={"返回结果："} className={styles.treeContainer}>
+                <Paragraph ellipsis={{ rows: 1, expandable: true }}>
+                  {formResultVals.result}
+                </Paragraph>
+              </Form.Item>
+            </Col>
+            <Col lg={15} md={12} sm={24} className={styles.treeContainer}>
+              <Form.Item label={"返回结果(JSON)："}>
+                {getReactJsonHtml(true, formResultVals.resultJson)}
+              </Form.Item>
+            </Col>
+          </Spin>
         </Row>
       </Form>
       <div
@@ -411,14 +420,14 @@ const AddUpdateInterfaceForm = Form.create()(props => {
           textAlign: 'right',
         }}
       >
-        <Button onClick={()=> okHandle(formVals.optFlag)} type="primary" style={{ marginRight: 8 }} title={"保存"}>
+        <Button loading={loading} onClick={()=> okHandle(formVals.optFlag)} type="primary" style={{ marginRight: 8 }} title={"保存"}>
           Save
         </Button>
+        {shareButtonHtml(formVals)}
         <Button onClick={() => handleModalVisible(false)} style={{ marginRight: 8 }} title={"关闭"}>
           Close
         </Button>
         {delButtonHtml(formVals)}
-        {shareButtonHtml(formVals)}
       </div>
     </Drawer>
   );
@@ -432,6 +441,7 @@ const AddUpdateInterfaceForm = Form.create()(props => {
 @Form.create()
 class InterfaceList extends PureComponent {
   state = {
+    dataLoading: true, // 开启加载中
     modalVisible: false,
     //接口数据
     formValues: {},
@@ -450,12 +460,20 @@ class InterfaceList extends PureComponent {
     this.reloadData();
   }
 
-  reloadData = ()=>{
+  reloadData = (optFlag)=>{
+    this.setState({
+      dataLoading: true, // 开启加载中
+    });
     const { dispatch } = this.props;
     dispatch({
       type: 'postman/fetch',
       callback: response => {
-        this.handleRestToformVals();
+        this.setState({
+          dataLoading: false, // 开启加载中
+        });
+        if ('share' != optFlag) {
+          this.handleRestToformVals();
+        }
         //错误提示信息
         let flag = this.tipMsg(response);
         if (!flag) {
@@ -562,6 +580,9 @@ class InterfaceList extends PureComponent {
   };
 
   handleAdd = (fields, form) => {
+    this.setState({
+      dataLoading: true, // 开启加载中
+    });
     let data = fields;
     const { dispatch } = this.props;
     dispatch({
@@ -570,6 +591,9 @@ class InterfaceList extends PureComponent {
         ...fields,
       },
       callback: response => {
+        this.setState({
+          dataLoading: false, // 关闭加载中
+        });
         //错误提示信息
         let flag = this.tipMsg(response);
         if (!flag) {
@@ -585,6 +609,9 @@ class InterfaceList extends PureComponent {
   };
 
   handleUpdate = (fields, form) => {
+    this.setState({
+      dataLoading: true, // 开启加载中
+    });
     let data = fields;
     const { dispatch } = this.props;
     dispatch({
@@ -593,6 +620,9 @@ class InterfaceList extends PureComponent {
         ...fields,
       },
       callback: response => {
+        this.setState({
+          dataLoading: false, // 关闭加载中
+        });
         //错误提示信息
         let flag = this.tipMsg(response);
         if (!flag) {
@@ -628,6 +658,9 @@ class InterfaceList extends PureComponent {
   };
 
   handleDel = (values) =>{
+    this.setState({
+      dataLoading: true, // 开启加载中
+    });
     let fields = {
       id: values.id,
       category: values.category,
@@ -641,6 +674,9 @@ class InterfaceList extends PureComponent {
         ...fields,
       },
       callback: response => {
+        this.setState({
+          dataLoading: false, // 关闭加载中
+        });
         //错误提示信息
         let flag = this.tipMsg(response);
         if (!flag) {
@@ -656,6 +692,9 @@ class InterfaceList extends PureComponent {
   };
 
   handleShare = (fields, form) =>{
+    this.setState({
+      dataLoading: true, // 开启加载中
+    });
     const { dispatch } = this.props;
     dispatch({
       type: 'postman/share',
@@ -663,13 +702,16 @@ class InterfaceList extends PureComponent {
         ...fields,
       },
       callback: response => {
+        this.setState({
+          dataLoading: false, // 关闭加载中
+        });
         //错误提示信息
         let flag = this.tipMsg(response);
         if (!flag) {
           return;
         }
         this.handleModalVisibleToShare(false,"share");
-        this.reloadData();
+        this.reloadData('share');
         message.success('分享成功!');
       },
     });
@@ -678,7 +720,8 @@ class InterfaceList extends PureComponent {
   handleSend = (fields, form) => {
     //发送请求前清空result
     this.setState({
-      formResultValues: {}
+      formResultValues: {},
+      dataLoading: true, // 开启加载中
     });
 
     let data = fields;
@@ -689,6 +732,9 @@ class InterfaceList extends PureComponent {
         ...fields,
       },
       callback: response => {
+        this.setState({
+          dataLoading: false, // 关闭加载中
+        });
         let resultValues = {};
         resultValues.result = JSON.stringify(response);
         resultValues.resultJson = JSON.parse(JSON.stringify(response));
@@ -809,7 +855,7 @@ class InterfaceList extends PureComponent {
       />
       &nbsp;&nbsp;
       <ShareAltOutlined
-        title={'分享分类'}
+        title={'分享分类下的接口'}
         onClick={() => {
           this.handleModalVisibleToShare(true,"share", pdata);
         }}
@@ -862,6 +908,7 @@ class InterfaceList extends PureComponent {
       addOrUpdateDataFlagToCategory,
       modalVisibleToShare,
       formValuesToShare,
+      dataLoading,
     } = this.state;
 
     const parentMethods = {
@@ -883,28 +930,36 @@ class InterfaceList extends PureComponent {
       <div>
         {/*v1.7.1 权限控制*/}
         <Authorized authority={['admin', 'test', 'develop']}>
-          <Card bordered={false}>
-            <Collapse ghost>
-              {this.handleContentHtml(data)}
-            </Collapse>
-          </Card>
+          <Spin spinning={this.state.dataLoading} delay={100}>
+            <Card bordered={false}>
+              <Collapse ghost>
+                {this.handleContentHtml(data)}
+              </Collapse>
+            </Card>
+          </Spin>
 
           <ShareForm
             {...parentMethods}
             modalVisible={modalVisibleToShare}
             formVals={formValuesToShare}
+            loading={loading}
+            dataLoading={dataLoading}
           />
           <AddUpdateCategoryForm
             {...parentMethods}
             modalVisible={modalVisibleToCategory}
             formVals={formValuesToCategory}
             addOrUpdateDataFlag={addOrUpdateDataFlagToCategory}
+            loading={loading}
+            dataLoading={dataLoading}
           />
           <AddUpdateInterfaceForm
             {...parentMethods}
             modalVisible={modalVisible}
             formVals={formValues}
             formResultVals={formResultValues}
+            loading={loading}
+            dataLoading={dataLoading}
           />
         </Authorized>
       </div>
