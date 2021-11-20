@@ -806,11 +806,11 @@ class InterfaceList extends PureComponent {
     if (data && data.length > 0) {
       return (
         data.map((pdata, index) => (
-          <Panel header={pdata.configName +' ['+pdata.sort+']'+ ' ('+pdata.subList.length+')'} key={index} extra={this.genExtra(pdata)}>
+          <Panel header={'['+pdata.sort+'] '+ pdata.configName +' ('+pdata.subList.length+')'} key={index} extra={this.genExtra(pdata)}>
             {
               pdata.subList.map((subdata,subIndex) => (
                 <Tag style={{minWidth:"50px",maxWidth:"200px",textOverflow:"ellipsis",overflow:"hidden",whiteSpace:"nowrap",cursor:"pointer"}} color={colorArray[subIndex%colorArray.length]} title={subdata.configName+' '+subdata.requestUrl} closable={false} onClose={()=> this.handleDelModel({id:subdata.id,ifDel:1,...subdata})} onClick={() => this.handleModalVisible(true,"update", pdata, subdata)}>
-                  {subdata.configName+' ['+subdata.sort+']'}
+                  {'['+subdata.sort+'] '+subdata.configName}
                 </Tag>
               ))
             }
